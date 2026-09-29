@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>payDream 프로토타입</title>
+<style>
+  :root { --bg: #f1f5f9; --card: #ffffff; --text: #1f2937; --muted: #6b7280; --line: #e5e7eb; --brand: #2563eb; --brand-soft: #eff6ff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f172a; --card: #1e293b; --text: #e5e7eb; --muted: #94a3b8; --line: #334155; --brand: #60a5fa; --brand-soft: #1e3a5f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 56px 16px; }
+  .brand { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: var(--brand); }
+  h1 { margin: 8px 0 4px; font-size: 20px; }
+  p.lead { margin: 0 0 32px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  a.card { display: block; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
+  a.card:hover { border-color: var(--brand); transform: translateY(-2px); }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 600; }
+  .card h2 { margin: 12px 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .go { margin-top: 16px; color: var(--brand); font-size: 13px; font-weight: 600; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">payDream</div>
+  <h1>화면 프로토타입</h1>
+  <p class="lead">중소기업용 급여·근태 SaaS payDream의 클릭 가능한 화면 프로토타입입니다. 모든 데이터는 예시이며 실제 서비스와 연결되어 있지 않습니다.</p>
+  <div class="grid">
+    <a class="card" href="payroll.html">
+      <span class="tag">회원사</span>
+      <h2>급여 SaaS</h2>
+      <p>관리자(시스템 모드)와 직원 모드 — 인사·근태·급여 계산·명세서·신청/결재·설정</p>
+      <div class="go">열기 →</div>
+    </a>
+    <a class="card" href="backoffice.html">
+      <span class="tag">운영자</span>
+      <h2>운영 콘솔</h2>
+      <p>payDream 운영팀용 백오피스 — 회원사·구독/결제·증빙·미납·1:1 문의·공지·통계</p>
+      <div class="go">열기 →</div>
+    </a>
+  </div>
+  <footer>데스크톱 브라우저에서 보기를 권장합니다. 상단 좌측 “시스템 / 직원모드” 전환으로 두 모드를 모두 볼 수 있습니다.</footer>
+</main>
+</body>
+</html>

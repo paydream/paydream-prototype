@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>payDream — 운영자 Back-office 프로토타입</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: { blue: {
+    50:"#eef1fb",100:"#dbe1f5",200:"#b9c3ea",300:"#8f9fdc",400:"#5a6ecb",
+    500:"#2f45b3",600:"#1428A0",700:"#101f80",800:"#0c1866",900:"#0a1450"
+  } } } } };
+</script>
+<style>
+  body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+</style>
+</head>
+<body class="bg-slate-100">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+// ─── 아이콘 ───
+function Ic({ d, cls }) { return <svg className={cls || "h-5 w-5"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7">{d}</svg>; }
+const P = (dd) => <path strokeLinecap="round" strokeLinejoin="round" d={dd} />;
+const ICN = {
+  dash: P("M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"),
+  cust: P("M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z"),
+  bill: P("M3 10h18M7 15h1m4 0h1M3 6h18v12H3z"),
+  cs: P("M8 10h8M8 14h5M21 12a9 9 0 11-3.5-7.1L21 3v6h-6"),
+  stat: P("M4 19V5m4 14v-8m4 8V9m4 10v-5m4 5V7"),
+  set: P("M10.3 3.3a1 1 0 013.4 0l.2.9a7 7 0 011.6.9l.9-.3a1 1 0 011.2.5l1 1.7a1 1 0 01-.2 1.3l-.7.6a7 7 0 010 1.8l.7.6a1 1 0 01.2 1.3l-1 1.7a1 1 0 01-1.2.5l-.9-.3a7 7 0 01-1.6.9l-.2.9a1 1 0 01-3.4 0l-.2-.9a7 7 0 01-1.6-.9l-.9.3a1 1 0 01-1.2-.5l-1-1.7a1 1 0 01.2-1.3l.7-.6a7 7 0 010-1.8l-.7-.6a1 1 0 01-.2-1.3l1-1.7a1 1 0 011.2-.5l.9.3a7 7 0 011.6-.9z M12 12m-2.5 0a2.5 2.5 0 105 0 2.5 2.5 0 10-5 0"),
+  search: P("M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"),
+  excel: P("M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"),
+};
+
+// ─── 디자인 시스템 ───
+const INP = "rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
+const TONE = {
+  emerald:"bg-emerald-50 text-emerald-700", amber:"bg-amber-50 text-amber-700", red:"bg-red-50 text-red-600",
+  slate:"bg-slate-100 text-slate-600", blue:"bg-blue-50 text-blue-700", gray:"bg-gray-100 text-gray-500",
+};
+function Badge({ tone="gray", children }) { return <span className={"inline-flex items-center rounded px-2 py-0.5 text-xs font-medium " + (TONE[tone]||TONE.gray)}>{children}</span>; }
+const ST_TONE = { "체험":"amber","유료":"emerald","정지":"red","해지":"slate","활성":"emerald","이용중":"emerald","연체":"red","해지예정":"amber","결제완료":"emerald","발급완료":"emerald","발급대기":"amber","미발급":"red","대기":"amber","승인":"emerald","반려":"red","발행":"blue","수납":"emerald","취소":"slate","처리중":"blue","완료":"emerald","보류":"slate","게시중":"emerald","예약":"amber","종료":"slate","성공":"emerald","승인대기":"amber","실패":"red","잠금":"red" };
+const PRI_TONE = { "높음":"red","보통":"amber","낮음":"slate" };
+function StatusBadge({ s }){ return <Badge tone={ST_TONE[s]||"gray"}>{s}</Badge>; }
+
+function Pri({ p }){ const t={P0:"bg-emerald-100 text-emerald-700",P1:"bg-blue-100 text-blue-700",P2:"bg-amber-100 text-amber-700"}[p]; return <span className={"rounded px-1.5 py-0.5 text-[10px] font-bold "+t}>{p}</span>; }
+function ScrHead({ id, title, pri, path, desc }){
+  return (
+    <div className="mb-4">
+      <div className="mb-1 flex items-center gap-2"><h1 className="text-lg font-bold text-gray-800">{title}</h1><span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{id}</span><Pri p={pri} /></div>
+      <p className="text-xs text-gray-400">{path}</p>
+      {desc && <p className="mt-1 max-w-4xl text-sm text-gray-600">{desc}</p>}
+    </div>
+  );
+}
+function Card({ title, right, children, pad=true }){
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      {title && <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3"><span className="text-sm font-semibold text-gray-700">{title}</span>{right}</div>}
+      <div className={pad?"p-5":""}>{children}</div>
+    </div>
+  );
+}
+function Stat({ n, l, tone="text-gray-800", sub }){
+  return <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm"><p className={"text-2xl font-bold "+tone}>{n}</p><p className="mt-1 text-xs text-gray-500">{l}</p>{sub && <p className="mt-0.5 text-[11px] text-gray-400">{sub}</p>}</div>;
+}
+function Delta({ v }){ const up=v.includes("▲"); return <span className={"text-sm font-semibold "+(up?"text-red-500":"text-blue-600")}>({v})</span>; }
+function Kpi({ l, n, delta }){
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm">
+      <p className="text-sm text-gray-500">{l}</p>
+      <p className="mt-2 text-2xl font-bold text-gray-800">{n} {delta && <Delta v={delta} />}</p>
+    </div>
+  );
+}
+function Modal({ title, badge, onClose, children, footer, wide }){
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} className={"flex max-h-[88vh] w-full flex-col rounded-lg bg-white shadow-xl "+(wide?"max-w-2xl":"max-w-lg")}>
+        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+          <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-800">{title}</span>{badge && <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500">{badge}</span>}</div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+        </div>
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-5 text-sm">{children}</div>
+        {footer && <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-3">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+const Btn = ({ tone="primary", children, ...p }) => {
+  const c = tone==="primary" ? "bg-blue-600 text-white hover:bg-blue-700" : tone==="danger" ? "bg-red-600 text-white hover:bg-red-700" : "border border-gray-300 text-gray-600 hover:bg-gray-50";
+  return <button {...p} className={"rounded-md px-4 py-1.5 text-sm font-medium "+c}>{children}</button>;
+};
+function Field({ label, req, hint, children }){
+  return <div><label className="mb-1 block text-sm font-medium text-gray-700">{req && <span className="text-red-500">*</span>}{label}</label>{children}{hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}</div>;
+}
+
+// ─── Mock 데이터 ───
+const TENANTS = [
+  { name:"(주)한빛테크", biz:"124-81-00021", email:"admin@hanbit.co.kr", plan:"Pro", seats:"42명", status:"유료", mrr:"69,400", next:"2026-09-15", last:"2026-08-15", signup:"2024-03-02", period:"2024-03-02 ~ 자동갱신", pays:29, owner:"김대표", route:"검색광고" },
+  { name:"블루오션물류", biz:"212-88-11234", email:"ceo@blueocean.kr", plan:"Basic", seats:"18명", status:"유료", mrr:"36,000", next:"2026-09-03", last:"2026-08-03", signup:"2025-01-11", period:"2025-01-11 ~ 자동갱신", pays:19, owner:"이사장", route:"지인추천" },
+  { name:"그린바이오", biz:"312-86-55110", email:"lab@greenbio.io", plan:"Basic", seats:"7명", status:"체험", mrr:"0", next:"2026-09-05", last:"–", signup:"2026-08-22", period:"2026-08-22 ~ 09-05 (체험)", pays:0, owner:"박연구", route:"네이버" },
+  { name:"미래에듀", biz:"506-81-33221", email:"hr@miraeedu.ac", plan:"Pro", seats:"31명", status:"정지", mrr:"56,200", next:"연체", last:"2026-07-15", signup:"2023-06-01", period:"2023-06-01 ~ 정지", pays:37, owner:"최원장", route:"블로그" },
+  { name:"소상공회계", biz:"101-29-77654", email:"sosang@acc.co.kr", plan:"Starter", seats:"5명", status:"해지", mrr:"0", next:"–", last:"2026-06-03", signup:"2024-11-20", period:"2024-11-20 ~ 2026-09-03", pays:21, owner:"정대리", route:"구글" },
+];
+const SIGNUPS = [
+  { name:"(주)넥스트커머스", biz:"220-81-45678", who:"홍길동", when:"2026-08-30", biz_ok:true, dup:false },
+  { name:"우리동네마트", biz:"113-90-11223", who:"김상점", when:"2026-08-29", biz_ok:true, dup:true },
+  { name:"클라우드랩", biz:"888-88-88888", who:"이개발", when:"2026-08-28", biz_ok:false, dup:false },
+];
+const PLANS = [
+  { name:"Starter", target:"1~5인", price:"9,000원 정액", feat:"급여계산·명세서·4대보험·이체", pub:true },
+  { name:"Basic", target:"6~30인", price:"9,000원 + 인당 1,500원", feat:"근태·연차·전자신청", pub:true },
+  { name:"Pro", target:"31~100인", price:"19,000원 + 인당 1,200원", feat:"권한·리포트·다지점", pub:true },
+];
+const SUBS = [
+  { name:"(주)한빛테크", plan:"Pro", cycle:"월", seats:42, status:"이용중", next:"2026-09-15", amt:"69,400" },
+  { name:"블루오션물류", plan:"Basic", cycle:"월", seats:18, status:"이용중", next:"2026-09-03", amt:"36,000" },
+  { name:"그린바이오", plan:"Basic", cycle:"–", seats:7, status:"체험", next:"2026-09-05", amt:"0" },
+  { name:"미래에듀", plan:"Pro", cycle:"월", seats:31, status:"연체", next:"2026-08-15", amt:"56,200" },
+  { name:"소상공회계", plan:"Starter", cycle:"월", seats:5, status:"해지예정", next:"2026-09-03", amt:"9,000" },
+];
+const INVOICES = [
+  { no:"INV-2608-0021", name:"(주)한빛테크", amt:"69,400", status:"결제완료", date:"2026-08-15", evid:"세금계산서", issue:"발급완료" },
+  { no:"INV-2608-0022", name:"블루오션물류", amt:"36,000", status:"결제완료", date:"2026-08-03", evid:"현금영수증", issue:"발급완료" },
+  { no:"INV-2608-0024", name:"미래에듀", amt:"56,200", status:"연체", date:"2026-08-15", evid:"세금계산서", issue:"미발급" },
+  { no:"INV-2609-0031", name:"(주)한빛테크", amt:"69,400", status:"발행", date:"2026-09-15", evid:"세금계산서", issue:"발급대기" },
+];
+const PAYMENTS = [
+  { at:"2026-08-15 03:10", name:"(주)한빛테크", amt:"69,400", pay:"카드", status:"결제완료", appr:"30021547" },
+  { at:"2026-08-03 03:10", name:"블루오션물류", amt:"36,000", pay:"카드", status:"결제완료", appr:"30021002" },
+  { at:"2026-08-15 03:12", name:"미래에듀", amt:"56,200", pay:"카드", status:"실패", appr:"–" },
+];
+const OVERDUE = [
+  { name:"미래에듀", amt:"56,200", days:17, retry:"D+7 (3회차)", next:"2026-09-01" },
+  { name:"두손상사", amt:"36,000", days:5, retry:"D+3 (2회차)", next:"2026-08-31" },
+];
+const TICKETS = [
+  { no:"TCK-2026-0912", cat:"급여", who:"한지민", title:"급여 명세서 항목이 이상해요", name:"(주)한빛테크", ch:"웹", pri:"높음", stat:"대기", owner:"–", sla:"28분 남음", last:"2026-08-30 10:12" },
+  { no:"TCK-2026-0911", cat:"급여", who:"이사장", title:"2026 4대보험 요율 반영 시점 문의", name:"블루오션물류", ch:"메일", pri:"보통", stat:"처리중", owner:"박상담", sla:"3시간 남음", last:"2026-08-30 09:40" },
+  { no:"TCK-2026-0908", cat:"근태", who:"최원장", title:"근태 엑셀 업로드가 실패합니다", name:"미래에듀", ch:"웹", pri:"높음", stat:"완료", owner:"김상담", sla:"–", last:"2026-08-29 17:20" },
+  { no:"TCK-2026-0905", cat:"구독·결제", who:"박연구", title:"결제 수단 변경은 어떻게 하나요", name:"그린바이오", ch:"챗", pri:"낮음", stat:"보류", owner:"박상담", sla:"–", last:"2026-08-29 14:03" },
+];
+const NOTICES = [
+  { title:"[점검] 9/7(일) 02:00~05:00 정기 시스템 점검 안내", target:"전체", period:"2026-09-01 ~ 09-07", imp:"중요", stat:"게시중" },
+  { title:"2026년 4대보험 요율 반영 안내", target:"전체", period:"2026-08-20 ~", imp:"일반", stat:"게시중" },
+  { title:"[Pro] 다지점 관리 기능 업데이트", target:"Pro", period:"2026-08-15 ~ 08-31", imp:"일반", stat:"종료" },
+  { title:"추석 연휴 고객센터 운영 안내", target:"전체", period:"예약 · 2026-09-10", imp:"일반", stat:"예약" },
+];
+const OPERATORS = [
+  { name:"김운영", email:"kim@paydream.io", role:"운영관리자", stat:"활성", last:"2026-08-30 09:00" },
+  { name:"이빌링", email:"lee@paydream.io", role:"빌링담당", stat:"활성", last:"2026-08-29 18:20" },
+  { name:"박상담", email:"park@paydream.io", role:"CS", stat:"활성", last:"2026-08-30 08:40" },
+  { name:"최분석", email:"choi@paydream.io", role:"분석", stat:"잠금", last:"2026-08-20 11:00" },
+];
+const AUDIT = [
+  { at:"2026-08-30 10:15", op:"박상담", act:"대리 접속 시작", target:"(주)한빛테크", ip:"10.1.2.33", res:"성공" },
+  { at:"2026-08-30 09:50", op:"이빌링", act:"환불 처리 요청", target:"미래에듀 · 56,200원", ip:"10.1.2.10", res:"승인대기" },
+  { at:"2026-08-29 18:22", op:"김운영", act:"회원사 상태 전환(정지)", target:"미래에듀", ip:"10.1.2.5", res:"성공" },
+  { at:"2026-08-29 14:03", op:"박상담", act:"민감정보 조회", target:"블루오션물류 결제내역", ip:"10.1.2.33", res:"성공" },
+];
+
+// ─── 공용 테이블 ───
+function Table({ cols, rows, render, onRow, min="720px" }){
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left text-sm" style={{minWidth:min}}>
+        <thead><tr className="border-b border-gray-200 text-xs font-semibold text-slate-500">{cols.map((c,i)=><th key={i} className={"px-4 py-2.5 "+(c.r?"text-right":c.c?"text-center":"")}>{c.t}</th>)}</tr></thead>
+        <tbody>{rows.map((r,i)=>(
+          <tr key={i} onClick={()=>onRow&&onRow(r)} className={"border-b border-gray-100 "+(onRow?"cursor-pointer hover:bg-blue-50/40":"hover:bg-slate-50")}>{render(r,i)}</tr>
+        ))}</tbody>
+      </table>
+    </div>
+  );
+}
+const Td = ({ r, c, cls="", children }) => <td className={"px-4 py-3 "+(r?"text-right ":c?"text-center ":"")+cls}>{children}</td>;
+
+// ═══ 화면들 ═══
+function Toast({ msg }){ return msg ? <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{msg}</div> : null; }
+
+function Dashboard({ go, open }){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-DSH-01" title="운영 대시보드" pri="P0" path="대시보드 > 홈" desc="회원사·구독·결제·CS 핵심 지표 요약과 이상징후(결제실패·SLA·이탈) 경보." />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <input type="date" defaultValue="2026-08-01" className={INP} />
+          <span className="text-gray-400">~</span>
+          <input type="date" defaultValue="2026-08-31" className={INP} />
+        </div>
+        <div className="flex gap-1">{["오늘","이번 달","지난 달","최근 90일"].map(p=><button key={p} className="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-50">{p}</button>)}</div>
+        <select className={INP+" bg-white"}><option>요금제: 전체</option><option>Starter</option><option>Basic</option><option>Pro</option></select>
+        <div className="relative min-w-[160px] flex-1"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} /><input placeholder="회원사 검색" className={INP+" w-full pl-8"} /></div>
+        <button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">조회</button>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Kpi l="방문자 수" n="1,842" delta="▲132" />
+        <Kpi l="신규 가입자 수" n="9" delta="▲3" />
+        <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm">
+          <p className="text-sm text-gray-500">결제 수 / 결제 금액</p>
+          <p className="mt-2 text-2xl font-bold text-gray-800">6 <Delta v="▲2" /> <span className="mx-1 text-gray-300">/</span> 284,000 <Delta v="▲69,400" /></p>
+        </div>
+        <Kpi l="체험 중 회원사 수" n="17" delta="▲2" />
+      </div>
+      <p className="mt-1 text-[11px] text-gray-400">※ 괄호 안은 이전 기간(전일/전기간) 대비 증감. 조회 기간에 따라 갱신됩니다.</p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card title="결제 실패·미납" right={<button onClick={()=>go("BO-BILL-08")} className="text-xs font-medium text-blue-600 hover:underline">미납 관리 →</button>}>
+          <Table min="420px" cols={[{t:"회원사"},{t:"미납액",r:1},{t:"경과",c:1},{t:"상태",c:1}]} rows={OVERDUE} render={r=>(<>
+            <Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td><Td r={1} cls="font-mono text-red-500">{r.amt}</Td><Td c={1} cls="text-gray-500">{r.days}일</Td><Td c={1}><Badge tone="amber">{r.retry}</Badge></Td>
+          </>)} />
+        </Card>
+        <Card title="문의 대기" right={<button onClick={()=>go("BO-SUP-01")} className="text-xs font-medium text-blue-600 hover:underline">문의함 →</button>}>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between rounded-md bg-amber-50 px-3 py-2"><span className="text-amber-700">미배정</span><Badge tone="amber">5건</Badge></div>
+            <div className="flex items-center justify-between rounded-md bg-blue-50 px-3 py-2"><span className="text-blue-700">처리중</span><Badge tone="blue">3건</Badge></div>
+            <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2"><span className="text-slate-600">오늘 처리 완료</span><Badge tone="slate">21건</Badge></div>
+          </div>
+        </Card>
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card title="최근 가입 회원사" right={<button onClick={()=>go("BO-CMP-01")} className="text-xs font-medium text-blue-600 hover:underline">회원 리스트 →</button>}>
+          <Table min="420px" cols={[{t:"회원사"},{t:"신청자"},{t:"가입일"},{t:"상태",c:1}]} rows={SIGNUPS} render={r=>(<>
+            <Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td><Td cls="text-gray-600">{r.who}</Td><Td cls="text-gray-500">{r.when}</Td><Td c={1}><Badge tone="amber">체험</Badge></Td>
+          </>)} />
+        </Card>
+        <Card title="전환 퍼널 (오늘)">
+          <div className="space-y-2">
+            {[["방문","1,842","bg-indigo-500",100],["신규 가입","9","bg-blue-500",62],["유료 전환","2","bg-emerald-500",28]].map(([l,v,c,w])=>(
+              <div key={l} className="flex items-center gap-2 text-sm"><span className="w-20 text-gray-600">{l}</span><div className="h-4 flex-1 rounded bg-gray-100"><div className={"h-4 rounded "+c} style={{width:w+"%"}} /></div><span className="w-14 text-right font-mono font-medium text-gray-700">{v}</span></div>
+            ))}
+            <div className="flex justify-end gap-4 pt-1 text-xs text-gray-500"><span>방문→가입 <b className="text-gray-700">0.49%</b></span><span>가입→유료 <b className="text-gray-700">22.2%</b></span></div>
+          </div>
+        </Card>
+      </div>
+      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
+        <b className="text-blue-700">이탈 경보</b> — 사용량 급감 3사·해지예정 1사. 회원 리스트에서 리스크 태그로 필터해 CS 선제 대응하세요.
+      </div>
+    </div>
+  );
+}
+
+function TenantList({ go, setSel }){
+  const [q,setQ]=useState("");
+  const rows=TENANTS.filter(t=>(t.name+t.biz+t.owner+t.email).toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-CMP-01" title="회원 리스트" pri="P0" path="회원 관리 > 회원 리스트" desc="가입 회원사(테넌트)를 상태·요금제·규모로 검색·조회하고 엑셀로 내보냅니다." />
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <div className="relative min-w-[200px] flex-1"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} /><input value={q} onChange={e=>setQ(e.target.value)} placeholder="회사명·가입 이메일·사업자번호 검색" className={INP+" w-full pl-8"} /></div>
+          <select className={INP+" bg-white"}><option>상태: 전체</option><option>유료</option><option>체험</option><option>정지</option><option>해지</option></select>
+          <select className={INP+" bg-white"}><option>요금제: 전체</option><option>Starter</option><option>Basic</option><option>Pro</option></select>
+          <Btn tone="ghost"><span className="inline-flex items-center gap-1"><Ic cls="h-4 w-4 text-gray-400" d={ICN.excel} />엑셀</span></Btn>
+        </div>
+        <Table min="1080px" cols={[{t:"회사명 · 사업자번호"},{t:"요금제"},{t:"이용 직원 수",c:1},{t:"상태",c:1},{t:"월간 반복 매출",r:1},{t:"결제 횟수",c:1},{t:"다음 갱신"},{t:"가입일"},{t:"구독 기간"},{t:""}]}
+          rows={rows} onRow={t=>{setSel(t);go("BO-CMP-02");}} render={t=>(<>
+            <Td><div><button onClick={e=>{e.stopPropagation();setSel(t);go("BO-CMP-02");}} className="font-medium text-blue-700 hover:underline">{t.name}</button><p className="font-mono text-xs text-gray-400">{t.biz}</p></div></Td>
+            <Td cls="text-gray-600">{t.plan}</Td>
+            <Td c={1} cls="text-gray-600">{t.seats}</Td>
+            <Td c={1}><StatusBadge s={t.status} /></Td>
+            <Td r={1} cls="font-mono text-gray-700">{t.mrr==="0"?"–":t.mrr+"원"}</Td>
+            <Td c={1} cls="text-gray-600">{t.pays>0?t.pays+"회":"–"}</Td>
+            <Td cls={"text-gray-500 "+(t.next==="연체"?"text-red-500 font-medium":"")}>{t.next}</Td>
+            <Td cls="text-gray-500">{t.signup}</Td>
+            <Td cls="text-gray-500">{t.period}</Td>
+            <Td c={1}><span className="text-xs font-medium text-blue-600">상세 →</span></Td>
+          </>)} />
+      </Card>
+    </div>
+  );
+}
+
+function TenantDetail({ sel, go, flash }){
+  const t = sel || TENANTS[0];
+  const [modal,setModal]=useState(null);
+  const [active,setActive]=useState("sec-ov");
+  const SECS=[["개요","sec-ov"],["구독/결제","sec-bill"],["사용량","sec-use"],["담당자","sec-mgr"],["문의이력","sec-tkt"],["운영메모","sec-memo"]];
+  const goSec=id=>{ setActive(id); const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); };
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-CMP-02" title="회원 상세정보" pri="P0" path="회원 관리 > 회원 리스트 > 상세" desc="개요·구독/결제·사용량·담당자·문의이력·운영메모를 한 화면에 통합. 상단 앵커(A링크) 클릭 시 해당 섹션으로 이동. 결제 수단 관리·상태 전환·대리접속·메모 마스터." />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-blue-600 text-lg font-bold text-white">{t.name[0]}</div>
+          <div><p className="text-base font-bold text-gray-800">{t.name} <StatusBadge s={t.status} /></p><p className="mt-0.5 text-sm text-gray-500">{t.biz} · {t.plan} · 좌석 {t.seats} · 가입 {t.signup}</p></div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Btn tone="ghost" onClick={()=>setModal("impersonate")}>대리 접속</Btn>
+          <Btn tone="ghost" onClick={()=>go("BO-CMP-08")}>해지 처리</Btn>
+          <Btn onClick={()=>setModal("status")}>상태 전환</Btn>
+        </div>
+      </div>
+      <div className="sticky top-0 z-10 -mx-5 mb-4 flex gap-1 border-b border-gray-200 bg-slate-100/95 px-5 py-1 backdrop-blur">
+        {SECS.map(([nm,id])=><button key={id} onClick={()=>goSec(id)} className={"rounded-md px-3 py-1.5 text-sm "+(active===id?"bg-blue-50 font-medium text-blue-700":"text-gray-500 hover:text-gray-700")}>{nm}</button>)}
+      </div>
+
+      <div className="space-y-5">
+        <section id="sec-ov" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">개요</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card title="기본 정보"><dl className="space-y-2 text-sm">{[["대표자",t.owner],["가입 이메일",t.email],["사업자번호",t.biz],["요금제",t.plan],["유입경로",t.route],["가입일",t.signup]].map(([k,v])=><div key={k} className="flex justify-between gap-3"><dt className="shrink-0 text-gray-500">{k}</dt><dd className="text-right font-medium text-gray-700">{v}</dd></div>)}</dl></Card>
+            <Card title="구독 요약"><dl className="space-y-2 text-sm">{[["상태",t.status],["월간 반복 매출",t.mrr==="0"?"–":t.mrr+"원"],["이용 직원 수",t.seats],["결제 횟수",t.pays>0?t.pays+"회":"–"],["구독 기간",t.period],["다음 갱신",t.next]].map(([k,v])=><div key={k} className="flex justify-between"><dt className="text-gray-500">{k}</dt><dd className="font-medium text-gray-700">{v}</dd></div>)}</dl></Card>
+          </div>
+        </section>
+
+        <section id="sec-bill" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">구독 · 결제</h3>
+          <div className="space-y-4">
+            <Card title="결제 수단 관리" right={<Btn tone="ghost" onClick={()=>setModal("paymethod")}>결제 수단 변경</Btn>}>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-3 rounded-md border border-gray-200 bg-slate-50/60 px-4 py-3">
+                  <span className="flex h-8 w-12 items-center justify-center rounded bg-blue-600 text-[10px] font-bold text-white">CARD</span>
+                  <div><p className="text-sm font-medium text-gray-800">신한카드 ****-****-****-6411</p><p className="text-xs text-gray-400">정기결제(빌링키) 등록 · 유효 09/28</p></div>
+                  <Badge tone="emerald">기본</Badge>
+                </div>
+                <div className="text-xs text-gray-500">다음 자동결제 <b className="text-gray-700">{t.next}</b> · 결제일 실패 시 미납 관리(BO-BILL-08)로 이관</div>
+              </div>
+            </Card>
+            <Card title="결제 내역" right={<button onClick={()=>go("BO-BILL-07")} className="text-xs text-blue-600 hover:underline">결제 내역 →</button>}>
+              <Table min="480px" cols={[{t:"결제 건"},{t:"금액",r:1},{t:"상태",c:1},{t:"일자"}]} rows={INVOICES.slice(0,3)} render={r=>(<><Td cls="font-mono text-gray-700">{r.no}</Td><Td r={1} cls="font-mono">{r.amt}원</Td><Td c={1}><StatusBadge s={r.status} /></Td><Td cls="text-gray-500">{r.date}</Td></>)} />
+            </Card>
+          </div>
+        </section>
+
+        <section id="sec-use" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">사용량</h3>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Card title="이용 직원 수"><p className="text-2xl font-bold text-blue-600">{t.seats}</p><div className="mt-2 h-2 rounded bg-gray-100"><div className="h-2 rounded bg-blue-600" style={{width:"84%"}} /></div><p className="mt-1 text-xs text-gray-400">플랜 한도의 84%</p></Card>
+            <Card title="기능 사용(집계)"><ul className="space-y-1 text-sm text-gray-600"><li>급여계산 · 이번 달 3회</li><li>근태집계 · 42건</li><li>전자계약 · 8건</li></ul></Card>
+            <Card title="저장용량"><p className="text-2xl font-bold text-gray-800">2.1<span className="text-sm">/5GB</span></p><div className="mt-2 h-2 rounded bg-gray-100"><div className="h-2 rounded bg-emerald-500" style={{width:"42%"}} /></div></Card>
+          </div>
+          <div className="mt-3 flex items-start gap-2 rounded-lg border-l-4 border-slate-400 bg-slate-50 px-4 py-3 text-xs text-gray-600">
+            <Ic cls="mt-0.5 h-4 w-4 shrink-0 text-slate-400" d={P("M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zM16 11V7a4 4 0 00-8 0v4")} />
+            <span><b className="text-slate-700">개인정보 보호</b> — 운영자는 회원사 데이터의 수탁·처리자로서 <b>이용 직원 수·사용량 집계</b>만 조회합니다. 개별 직원의 개인정보(이름·주민번호·급여 등)는 이 화면에 노출되지 않으며, 지원이 필요한 경우에만 <b>대리 접속</b>(사유·시간제한·읽기전용·감사 로그)을 통해 최소 범위로 접근합니다.</span>
+          </div>
+        </section>
+
+        <section id="sec-mgr" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">담당자</h3>
+          <Card title="회원사 담당자">
+            <Table min="420px" cols={[{t:"이름"},{t:"역할"},{t:"연락처"},{t:"최근 접속"}]} rows={[{n:t.owner,r:"최고관리자",p:"010-1234-5678",l:"2026-08-30"},{n:"경리담당",r:"결제담당",p:"010-2222-3333",l:"2026-08-28"}]} render={r=>(<><Td cls="font-medium text-gray-800">{r.n}</Td><Td><Badge tone="blue">{r.r}</Badge></Td><Td cls="text-gray-600">{r.p}</Td><Td cls="text-gray-500">{r.l}</Td></>)} />
+          </Card>
+        </section>
+
+        <section id="sec-tkt" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">문의 이력</h3>
+          <Card title="연결 티켓" right={<button onClick={()=>go("BO-SUP-01")} className="text-xs font-medium text-blue-600 hover:underline">문의함에서 보기 →</button>} pad={false}>
+            <Table min="560px" cols={[{t:"문의"},{t:"최근 답변"},{t:"알림 발송",c:1},{t:"상태",c:1}]}
+              rows={[
+                {no:"TCK-2026-0912", title:"급여 명세서 항목이 이상해요", ans:"–", when:"08-30", ch:"–", stat:"대기"},
+                {no:"TCK-2026-0841", title:"4대보험 요율 문의", ans:"2026년 요율표 링크와 함께 안내 완료.", when:"08-12", ch:"메일", stat:"완료"},
+              ]} render={r=>(<>
+                <Td><div><p className="font-medium text-gray-800">{r.title}</p><p className="text-xs text-gray-400">{r.no} · {r.when}</p></div></Td>
+                <Td cls="text-gray-600">{r.ans}</Td>
+                <Td c={1}><Badge tone="blue">{r.ch}</Badge></Td>
+                <Td c={1}><StatusBadge s={r.stat} /></Td>
+              </>)} />
+          </Card>
+          <p className="mt-1 text-[11px] text-gray-400">※ 문의함(BO-SUP-01)에서 답변 전송 시 답변 내용·알림 발송 결과가 이 이력에 자동 기록됩니다.</p>
+        </section>
+
+        <section id="sec-memo" className="scroll-mt-14">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">운영 메모</h3>
+          <Card title="운영 메모·태그"><div className="mb-3 flex gap-2"><Badge tone="blue">VIP</Badge><Badge tone="amber">이탈위험</Badge></div><textarea className={INP+" w-full"} rows="3" placeholder="운영 메모 입력" /><div className="mt-2 flex justify-end"><Btn onClick={()=>flash("메모를 저장했습니다.")}>저장</Btn></div></Card>
+        </section>
+      </div>
+
+      {modal==="paymethod" && <Modal title="결제 수단 변경" badge="BO-CMP-02-M1" onClose={()=>setModal(null)}
+        footer={<><Btn tone="ghost" onClick={()=>setModal(null)}>취소</Btn><Btn onClick={()=>{setModal(null);flash("결제 수단 변경 링크를 회원사 결제담당에게 발송했습니다.");}}>변경 링크 발송</Btn></>}>
+        <div className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-xs text-amber-700">보안상 카드/계좌 정보는 운영자가 직접 입력하지 않습니다. 회원사 결제담당에게 <b>PG 정기결제(빌링키) 등록 링크</b>를 발송해 본인이 등록하도록 합니다.</div>
+        <Field label="현재 수단"><input readOnly value="신한카드 ****-6411 (빌링키)" className={INP+" w-full bg-gray-50"} /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="변경 수단 유형"><select className={INP+" w-full bg-white"}><option>카드(빌링키)</option><option disabled>계좌 자동이체(CMS) · P1</option><option disabled>가상계좌 · P1</option></select></Field>
+          <Field label="발송 대상"><select className={INP+" w-full bg-white"}><option>결제담당(경리담당)</option><option>최고관리자</option></select></Field>
+        </div>
+        <p className="text-xs text-gray-400">변경 완료 시 다음 청구부터 새 수단으로 자동결제됩니다. 처리 이력은 감사 로그(BO-ADM-03)에 기록됩니다.</p>
+      </Modal>}
+      {modal==="status" && <StatusModal t={t} onClose={()=>setModal(null)} flash={flash} />}
+      {modal==="impersonate" && <Modal title="대리 접속(임퍼서네이션)" badge="BO-CMP-05" onClose={()=>setModal(null)}
+        footer={<><Btn tone="ghost" onClick={()=>setModal(null)}>취소</Btn><Btn tone="danger" onClick={()=>{setModal(null);flash("대리 접속 세션을 시작했습니다(감사 로그 기록).");}}>대리 접속 시작</Btn></>}>
+        <Field label="대상" ><input readOnly value={t.name+" · "+t.owner} className={INP+" w-full bg-gray-50"} /></Field>
+        <Field label="접속 사유" req hint="지원 티켓 번호 연결 권장"><input placeholder="예: TCK-2026-0912 명세서 오류 지원" className={INP+" w-full"} /></Field>
+        <label className="flex items-center gap-2 text-gray-700"><input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300" />읽기 전용 · 30분 자동 만료</label>
+        <div className="rounded-md border-l-4 border-red-400 bg-red-50 px-3 py-2 text-xs text-red-700">대리 접속 중 전 행위는 감사 로그(BO-ADM-03)에 기록됩니다.</div>
+      </Modal>}
+    </div>
+  );
+}
+function StatusModal({ t, onClose, flash }){
+  const [to,setTo]=useState("유료");
+  return <Modal title="상태 전환" badge="BO-CMP-04-M1" onClose={onClose}
+    footer={<><Btn tone="ghost" onClick={onClose}>취소</Btn><Btn tone="danger" onClick={()=>{onClose();flash(t.name+" 상태를 '"+to+"'(으)로 전환했습니다.");}}>전환 확정</Btn></>}>
+    <div className="flex items-center gap-2 text-sm"><span className="text-gray-500">현재</span><StatusBadge s={t.status} /><span className="text-gray-400">→</span><StatusBadge s={to} /></div>
+    <Field label="전환 상태" req><select value={to} onChange={e=>setTo(e.target.value)} className={INP+" w-full bg-white"}>{["체험","유료","정지","해지"].map(o=><option key={o}>{o}</option>)}</select></Field>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="사유" req><input placeholder="전환 근거" className={INP+" w-full"} /></Field>
+      <Field label="효력일" req><input type="date" defaultValue="2026-09-01" className={INP+" w-full"} /></Field>
+    </div>
+    <div className="space-y-1.5 rounded-md border border-gray-200 bg-slate-50/60 p-3 text-sm">
+      {[["결제 정지",to==="정지"],["계정 비활성",to==="정지"||to==="해지"],["데이터 보존",to==="해지"]].map(([l,on])=>(
+        <label key={l} className="flex items-center gap-2 text-gray-700"><input type="checkbox" defaultChecked={on} className="h-4 w-4 rounded border-gray-300 text-blue-600" />{l}</label>
+      ))}
+    </div>
+    <p className="text-xs text-gray-400">미납 정지는 미납 관리(BO-BILL-08)와, 해지는 해지·탈퇴(BO-CMP-08) 절차와 연동됩니다.</p>
+  </Modal>;
+}
+
+function Terminate({ flash }){
+  const [step,setStep]=useState(false);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-CMP-08" title="해지·탈퇴 처리" pri="P0" path="회원 관리 > 회원사" desc="회원사가 제출한 서비스 해지 신청(SET-05)을 운영자가 확인·처리. 상세 사유·데이터 처리 선택 확인, 데이터 보존기간은 시스템모드와 동일 기준. 환불 정책은 추후 결정. 파기 실행은 2인 승인·이력." />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card title="해지 신청 내용 (회원사 제출)">
+          <div className="space-y-4">
+            <Field label="대상 회원사"><input readOnly value="소상공회계 (101-29-77654)" className={INP+" w-full bg-gray-50"} /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="해지 사유(분류)"><input readOnly value="비용 부담" className={INP+" w-full bg-gray-50"} /></Field>
+              <Field label="희망 해지일"><input readOnly value="2026-09-03" className={INP+" w-full bg-gray-50"} /></Field>
+            </div>
+            <Field label="상세 사유 (회원사 기입)">
+              <div className="min-h-[68px] whitespace-pre-line rounded-md border border-gray-200 bg-slate-50/60 px-3 py-2 text-sm text-gray-700">직원 수가 줄어 상시 구독 유지 비용이 부담됩니다. 성수기에만 쓰다 보니 요금제가 맞지 않아요. 재계약은 추후 검토하겠습니다.</div>
+            </Field>
+            <Field label="데이터 처리 (회원사 선택)" hint="시스템모드 서비스 해지 신청(SET-05)에서 회원사가 선택한 값">
+              <div className="space-y-1 rounded-md border border-gray-200 bg-slate-50/50 p-3 text-sm text-gray-700">
+                <p>· 처리 방식: <b>보존 후 파기</b></p>
+                <p>· 보존기간: <b>90일(기본)</b> <span className="text-xs text-gray-400">— 경과 후 자동 파기</span></p>
+                <p>· 백업(내보내기) 요청: <b>요청함</b></p>
+              </div>
+            </Field>
+          </div>
+        </Card>
+        <div className="space-y-4">
+          <Card title="잔여기간·정산">
+            <dl className="space-y-2 text-sm">{[["구독 종료일","2026-09-03"],["잔여일수","2일"],["요금제","Starter · 월 9,000원"]].map(([k,v])=><div key={k} className="flex justify-between"><dt className="text-gray-500">{k}</dt><dd className="font-medium text-gray-700">{v}</dd></div>)}</dl>
+            <div className="mt-3 rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-xs text-amber-700"><b>환불 정책 추후 결정</b> — 잔여기간 환불 처리 기준은 미정입니다. 정책 확정 후 환불 관리(BO-BILL-09)와 연동됩니다.</div>
+          </Card>
+          <div className="rounded-lg border-l-4 border-red-400 bg-red-50 px-4 py-3 text-sm text-red-700">파기 실행은 <b>2인 승인 + 본인확인</b> 후 진행되며, 개인정보 파기 이력은 영구 보존됩니다.</div>
+          <div className="flex justify-end gap-2"><Btn tone="ghost" onClick={()=>flash("해지를 접수하고 파기 일정을 예약했습니다.")}>해지 접수·파기 예약</Btn><Btn tone="danger" onClick={()=>setStep(true)}>파기 실행</Btn></div>
+        </div>
+      </div>
+      {step && <Modal title="데이터 파기 실행 승인" badge="BO-CMP-08-M1" onClose={()=>setStep(false)}
+        footer={<><Btn tone="ghost" onClick={()=>setStep(false)}>취소</Btn><Btn tone="danger" onClick={()=>{setStep(false);flash("파기 승인 요청을 전송했습니다(2인 승인 대기).");}}>승인 요청</Btn></>}>
+        <div className="rounded-md border-l-4 border-red-400 bg-red-50 px-3 py-2 text-xs text-red-700">이 작업은 되돌릴 수 없습니다. 회원사 전체 데이터가 영구 삭제됩니다.</div>
+        <Field label="본인확인(비밀번호 재입력)" req><input type="password" className={INP+" w-full"} /></Field>
+        <Field label="확인 문구 입력" req hint="'파기확인' 입력"><input className={INP+" w-full"} placeholder="파기확인" /></Field>
+      </Modal>}
+    </div>
+  );
+}
+
+function PlansScreen({ flash }){
+  const [modal,setModal]=useState(null);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-01" title="요금제(플랜) 관리" pri="P0" path="구독·결제 > 요금제" desc="플랜·대상·월 요금(정액/인당)·포함 기능 정의. 버전·시행일 관리(기존 구독 소급 없음). ※ 요금은 가안." />
+      <div className="mb-3 flex justify-end"><Btn onClick={()=>setModal({mode:"add"})}>+ 플랜 추가</Btn></div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PLANS.map(p=>(
+          <div key={p.name} className="flex flex-col rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between"><p className="text-base font-bold text-gray-800">{p.name}</p>{p.pub?<Badge tone="emerald">공개</Badge>:<Badge tone="slate">비공개</Badge>}</div>
+            <p className="mt-1 text-xs text-gray-400">대상 {p.target}</p>
+            <p className="mt-2 text-lg font-bold text-blue-600">{p.price}<span className="text-xs font-normal text-gray-400"> / 월</span></p>
+            <p className="mt-2 flex-1 text-xs text-gray-500">{p.feat}</p>
+            <button onClick={()=>setModal({mode:"edit",p})} className="mt-3 w-full rounded-md border border-gray-300 py-1.5 text-xs text-gray-600 hover:bg-gray-50">편집</button>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-gray-400">※ 요금제는 가안 · 플랜 수정 시 버전+1 · 기존 구독은 계약 버전 유지(소급 없음).</p>
+      {modal && <Modal title={modal.mode==="add"?"플랜 추가":"플랜 편집"} badge="BO-BILL-01-M1" onClose={()=>setModal(null)} wide
+        footer={<><Btn tone="ghost" onClick={()=>setModal(null)}>취소</Btn><Btn onClick={()=>{setModal(null);flash("플랜을 저장했습니다(버전+1).");}}>저장</Btn></>}>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="플랜명" req><input defaultValue={modal.p?modal.p.name:""} className={INP+" w-full"} /></Field>
+          <Field label="공개 여부"><select defaultValue={modal.p&&!modal.p.pub?"비공개":"공개"} className={INP+" w-full bg-white"}><option>공개</option><option>비공개</option></select></Field>
+          <Field label="대상(규모)" req><input defaultValue={modal.p?modal.p.target:""} placeholder="예: 6~30인" className={INP+" w-full"} /></Field>
+          <Field label="시행일" req><input type="date" defaultValue="2026-09-01" className={INP+" w-full"} /></Field>
+        </div>
+        <Field label="월 요금" req hint="정액 또는 '기본액 + 인당 단가' 형식"><input defaultValue={modal.p?modal.p.price:""} placeholder="예: 9,000원 + 인당 1,500원" className={INP+" w-full"} /></Field>
+        <Field label="포함 기능"><textarea rows="2" defaultValue={modal.p?modal.p.feat:""} className={INP+" w-full"} /></Field>
+      </Modal>}
+    </div>
+  );
+}
+
+function SubList({ go, flash, open }){
+  const [modal,setModal]=useState(null);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-04" title="구독 목록" pri="P0" path="구독·결제 > 구독" desc="회원사×플랜×주기×상태 조회. 다음 청구일·금액·좌석수 표시." />
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <select className={INP+" bg-white"}><option>상태: 전체</option><option>체험</option><option>이용중</option><option>연체</option><option>정지</option><option>해지예정</option></select>
+          <select className={INP+" bg-white"}><option>플랜: 전체</option></select>
+          <Btn tone="ghost"><span className="inline-flex items-center gap-1"><Ic cls="h-4 w-4 text-gray-400" d={ICN.excel} />엑셀</span></Btn>
+        </div>
+        <Table min="820px" cols={[{t:"회사명"},{t:"요금제"},{t:"주기",c:1},{t:"이용 직원수",c:1},{t:"상태",c:1},{t:"다음 청구일"},{t:"결제금액",r:1},{t:""}]}
+          rows={SUBS} render={s=>(<>
+            <Td><button onClick={()=>open(s.name)} className="font-medium text-blue-700 hover:underline">{s.name}</button></Td><Td cls="text-gray-600">{s.plan}</Td><Td c={1} cls="text-gray-500">{s.cycle}</Td>
+            <Td c={1} cls="text-gray-600">{s.seats}</Td><Td c={1}><StatusBadge s={s.status} /></Td><Td cls="text-gray-500">{s.next}</Td>
+            <Td r={1} cls="font-mono">{s.amt==="0"?"–":s.amt+"원"}</Td>
+            <Td c={1}><button onClick={()=>setModal(s)} className="text-xs font-medium text-blue-600 hover:underline">변경</button></Td>
+          </>)} />
+      </Card>
+      {modal && <SubChange s={modal} onClose={()=>setModal(null)} flash={flash} />}
+    </div>
+  );
+}
+function SubChange({ s, onClose, flash }){
+  const [ty,setTy]=useState("업그레이드");
+  return <Modal title="구독 상세·변경" badge="BO-BILL-05-M1" onClose={onClose} wide
+    footer={<><Btn tone="ghost" onClick={onClose}>취소</Btn><Btn onClick={()=>{onClose();flash(s.name+" 구독을 변경했습니다(비례정산 인보이스 생성).");}}>변경 적용</Btn></>}>
+    <div className="rounded-lg border border-gray-200 bg-gray-50/60 p-4 text-sm"><p className="font-semibold text-gray-800">{s.name}</p><p className="text-xs text-gray-500">현재: {s.plan} · {s.cycle} · 좌석 {s.seats} · {s.amt}원</p></div>
+    <Field label="변경 유형" req><select value={ty} onChange={e=>setTy(e.target.value)} className={INP+" w-full bg-white"}>{["업그레이드","다운그레이드","좌석 증감","주기 변경","해지 예약"].map(o=><option key={o}>{o}</option>)}</select></Field>
+    {ty==="좌석 증감" && <Field label="변경 후 좌석"><input type="number" defaultValue={s.seats} className={INP+" w-full text-right"} /></Field>}
+    {(ty==="업그레이드"||ty==="다운그레이드") && <Field label="변경 후 플랜"><select className={INP+" w-full bg-white"}>{PLANS.map(p=><option key={p.name}>{p.name}</option>)}</select></Field>}
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="효력"><select className={INP+" w-full bg-white"}><option>즉시(비례정산)</option><option>차기 갱신일</option></select></Field>
+      <div className="rounded-md border border-blue-200 bg-blue-50/50 px-3 py-2"><p className="text-xs text-gray-500">비례정산(proration)</p><p className="text-lg font-bold text-blue-700">+ 82,300원</p></div>
+    </div>
+    <p className="text-xs text-gray-400">변경 이력은 보존되며, 해지 예약은 기간 말 종료됩니다.</p>
+  </Modal>;
+}
+
+function Invoices({ flash, open }){
+  const [modal,setModal]=useState(null);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-06" title="결제증빙발급" pri="P0" path="구독·결제 > 결제증빙발급" desc="결제 건에 대해 결제 증빙(세금계산서·현금영수증)을 운영자가 발급·재발급·조회합니다. 국세청 전송 상태를 관리하고 PDF로 내려받습니다. 회원사는 결제 내역·영수증(SET-08)에서 조회·다운로드만 합니다." />
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <Stat n="2" l="발급완료" tone="text-emerald-600" />
+        <Stat n="1" l="미발급" tone="text-red-500" />
+        <Stat n="1" l="발급대기" tone="text-amber-600" />
+      </div>
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <select className={INP+" bg-white"}><option>증빙유형: 전체</option><option>세금계산서</option><option>현금영수증</option></select>
+          <select className={INP+" bg-white"}><option>발급상태: 전체</option><option>발급완료</option><option>미발급</option><option>발급대기</option></select>
+        </div>
+        <Table min="820px" cols={[{t:"결제 건"},{t:"회사명"},{t:"공급가액(VAT 별도)",r:1},{t:"증빙유형",c:1},{t:"발급상태",c:1},{t:"결제일"},{t:""}]}
+          rows={INVOICES} render={r=>(<>
+            <Td cls="font-mono text-gray-700">{r.no}</Td><Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td>
+            <Td r={1} cls="font-mono">{r.amt}원</Td>
+            <Td c={1}><Badge tone={r.evid==="현금영수증"?"blue":"slate"}>{r.evid}</Badge></Td>
+            <Td c={1}>{r.issue==="발급완료"?<Badge tone="emerald">발급완료</Badge>:r.issue==="미발급"?<Badge tone="red">미발급</Badge>:<Badge tone="amber">발급대기</Badge>}</Td>
+            <Td cls="text-gray-500">{r.date}</Td>
+            <Td c={1}><button onClick={()=>setModal(r)} className="text-xs font-medium text-blue-600 hover:underline">{r.issue==="발급완료"?"조회·재발급":"발급"}</button></Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
+        <b className="text-blue-700">결제 증빙</b> — 세금계산서(사업자)·현금영수증(비사업자·지출증빙)을 결제 건 기준으로 운영자가 발급합니다. 금액은 공급가액(VAT 별도) 기준이며 부가세 10%를 더한 합계로 발행됩니다. 회원사 요청(유형 변경·재발급)은 1:1 문의(SET-09)로 접수됩니다. 국세청 전송 실패 시 재전송하고, 수정·취소는 수정세금계산서/발급취소로 처리합니다.
+      </div>
+      {modal && <Modal title={"결제 증빙 발급 · "+modal.no} badge="BO-BILL-06-M1" onClose={()=>setModal(null)} wide
+        footer={<><Btn tone="ghost" onClick={()=>{setModal(null);flash("증빙 PDF를 다운로드했습니다.");}}>PDF</Btn><Btn onClick={()=>{setModal(null);flash(modal.evid+"를 발급·국세청 전송했습니다.");}}>{modal.issue==="발급완료"?"재발급":modal.evid+" 발급"}</Btn></>}>
+        <div className="flex justify-between"><div><p className="font-semibold text-gray-800">{modal.name}</p><p className="text-xs text-gray-500">{modal.no} · {modal.date}</p></div>{modal.issue==="발급완료"?<Badge tone="emerald">발급완료</Badge>:<Badge tone="amber">{modal.issue}</Badge>}</div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="증빙 유형" req><select defaultValue={modal.evid} className={INP+" w-full bg-white"}><option>세금계산서</option><option>현금영수증</option></select></Field>
+          <Field label="발급 구분"><select className={INP+" w-full bg-white"}><option>정발행</option><option>역발행</option><option>수정(수정세금계산서)</option></select></Field>
+        </div>
+        <table className="w-full text-sm"><tbody>
+          {(()=>{const supply=Number(modal.amt.replace(/[^0-9]/g,""));const vat=Math.floor(supply*0.1);return [["공급가액",supply.toLocaleString()],["부가세(10%)",vat.toLocaleString()],["합계",(supply+vat).toLocaleString()]];})().map(([k,v])=><tr key={k} className="border-b border-gray-100"><td className="py-2 text-gray-600">{k}</td><td className="py-2 text-right font-mono">{v}원</td></tr>)}
+                  </tbody></table>
+        <div className="rounded-md border-l-4 border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-gray-600">발급 시 국세청에 전자 전송됩니다. 전송 실패 시 목록에서 재전송할 수 있습니다.</div>
+      </Modal>}
+    </div>
+  );
+}
+
+function Payments({ open }){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-07" title="결제 내역" pri="P0" path="구독·결제 > 청구·결제" desc="결제 승인·취소·부분취소 이력과 수단 조회. PG 대사 키 포함." />
+      <Card pad={false}>
+        <Table min="720px" cols={[{t:"일시"},{t:"회원사"},{t:"금액",r:1},{t:"수단",c:1},{t:"상태",c:1},{t:"승인번호"}]}
+          rows={PAYMENTS} render={r=>(<>
+            <Td cls="text-gray-500">{r.at}</Td><Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td>
+            <Td r={1} cls="font-mono">{r.amt}원</Td><Td c={1}><Badge tone="blue">{r.pay}</Badge></Td>
+            <Td c={1}>{r.status==="결제완료"?<Badge tone="emerald">결제완료</Badge>:<Badge tone="red">실패</Badge>}</Td><Td cls="font-mono text-gray-500">{r.appr}</Td>
+          </>)} />
+      </Card>
+    </div>
+  );
+}
+
+function Overdue({ flash, open }){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-08" title="미납·연체 관리" pri="P0" path="구독·결제 > 청구·결제" desc="결제 실패·미납 회원사 관리. 자동 재시도(dunning)·독촉 알림·정지 정책." />
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <Stat n="2" l="미납 회원사" tone="text-red-500" />
+        <Stat n="92,200원" l="미납 총액" tone="text-red-500" />
+        <Stat n="D+3~7" l="재시도(dunning) 진행" tone="text-amber-600" />
+      </div>
+      <Card pad={false}>
+        <Table min="760px" cols={[{t:"회원사"},{t:"미납액",r:1},{t:"경과",c:1},{t:"재시도",c:1},{t:"다음 시도"},{t:""}]}
+          rows={OVERDUE} render={r=>(<>
+            <Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td><Td r={1} cls="font-mono text-red-500">{r.amt}원</Td>
+            <Td c={1} cls="text-gray-500">{r.days}일</Td><Td c={1}><Badge tone="amber">{r.retry}</Badge></Td><Td cls="text-gray-500">{r.next}</Td>
+            <Td c={1}><div className="flex justify-center gap-2">
+              <button onClick={()=>flash(r.name+" 재결제를 시도했습니다.")} className="text-xs font-medium text-blue-600 hover:underline">재시도</button>
+              <button onClick={()=>flash(r.name+" 독촉 알림을 발송했습니다.")} className="text-xs font-medium text-gray-500 hover:underline">독촉</button>
+            </div></Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+        <b>dunning 정책</b> — 실패 시 D+1/3/7 자동 재시도, D+14 서비스 정지 전환(BO-CMP-04). 각 단계 독촉 알림(이메일·알림톡) 발송·이력 보존. 회원사 화면에는 미납 기간 동안 상단 미납 안내 배너가 표시됩니다(SET-07 참고).
+      </div>
+    </div>
+  );
+}
+
+function Placeholder({ id, title, pri, path }){
+  return <div className="p-5"><ScrHead id={id} title={title} pri={pri} path={path} desc="본 프로토타입 1차 범위는 셸 + 핵심 P0(대시보드·회원사·구독/결제)입니다. 이 화면은 화면정의서 기준으로 다음 차수에 구현됩니다." />
+    <div className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-white text-sm text-gray-400">화면정의서 정의 완료 · 구현 예정 ({id})</div></div>;
+}
+
+// ─── CS·공지 ───
+function SupportInbox({ flash, open }){
+  const [modal,setModal]=useState(null);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-SUP-01" title="1:1 문의함" pri="P0" path="CS·공지 > 문의" desc="회원사 관리자가 급여 SaaS 1:1 문의(SET-09)에서 등록한 티켓을 기간·상태·분류·담당자로 조회·관리합니다. 담당자 배정·정형답변(매크로)·상태 변경을 처리하며, 답변은 회원사 SET-09 화면과 이메일·알림톡으로 전달됩니다." />
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <Stat n="1" l="미배정" tone="text-amber-600" />
+        <Stat n="1" l="처리중" tone="text-blue-600" />
+        <Stat n="21" l="오늘 완료" tone="text-emerald-600" />
+      </div>
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <div className="flex items-center gap-1.5">
+            <input type="date" defaultValue="2026-08-01" className={INP} />
+            <span className="text-gray-400">~</span>
+            <input type="date" defaultValue="2026-08-31" className={INP} />
+          </div>
+          <div className="flex gap-1">{["오늘","7일","30일"].map(p=><button key={p} className="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-50">{p}</button>)}</div>
+          <select className={INP+" bg-white"}><option>상태: 전체</option><option>대기</option><option>처리중</option><option>완료</option><option>보류</option></select>
+          <select className={INP+" bg-white"}><option>분류: 전체</option><option>급여</option><option>근태</option><option>구독·결제</option><option>계정·권한</option><option>기타</option></select>
+          <select className={INP+" bg-white"}><option>담당자: 전체</option><option>미배정</option><option>박상담</option><option>김상담</option></select>
+          <div className="relative min-w-[160px] flex-1"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} /><input placeholder="제목·회원사 검색" className={INP+" w-full pl-8"} /></div>
+          <button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">조회</button>
+        </div>
+        <Table min="760px" cols={[{t:"제목"},{t:"분류",c:1},{t:"회원사 · 문의자"},{t:"상태",c:1},{t:"담당자"},{t:""}]}
+          rows={TICKETS} render={t=>(<>
+            <Td><div><button onClick={()=>setModal(t)} className="text-left font-medium text-blue-700 hover:underline">{t.title}</button><p className="text-xs text-gray-400">{t.no} · {t.last}</p></div></Td>
+            <Td c={1}><Badge tone="slate">{t.cat}</Badge></Td>
+            <Td><button onClick={()=>open(t.name)} className="text-blue-700 hover:underline">{t.name}</button><p className="text-xs text-gray-400">{t.who}</p></Td>
+            <Td c={1}><StatusBadge s={t.stat} /></Td>
+            <Td cls="text-gray-600">{t.owner}</Td>
+            <Td c={1}><button onClick={()=>setModal(t)} className="text-xs font-medium text-blue-600 hover:underline">답변 →</button></Td>
+          </>)} />
+      </Card>
+      {modal && <Modal title={"문의 상세 · "+modal.no} badge="BO-SUP-02" onClose={()=>setModal(null)} wide
+        footer={<><Btn tone="ghost" onClick={()=>{setModal(null);flash("보류 처리했습니다.");}}>보류</Btn><Btn tone="ghost" onClick={()=>{setModal(null);flash("담당자를 배정했습니다.");}}>담당자 배정</Btn><Btn onClick={()=>{setModal(null);flash("답변을 전송했습니다. 회원 상세정보(문의이력)에 기록되고 메일·알림톡으로 발송됩니다.");}}>답변 전송</Btn></>}>
+        <div className="flex items-center justify-between"><div><p className="font-semibold text-gray-800">{modal.title}</p><p className="text-xs text-gray-500"><button onClick={()=>{setModal(null);open(modal.name);}} className="text-blue-600 hover:underline">{modal.name}</button> · {modal.who} · {modal.cat} · {modal.last}</p></div><StatusBadge s={modal.stat} /></div>
+        <div className="space-y-2 rounded-md border border-gray-100 bg-slate-50/60 p-3 text-sm">
+          <div className="rounded-md bg-white px-3 py-2 shadow-sm"><p className="text-xs text-gray-400">고객</p><p className="text-gray-700">8월 급여 명세서에서 연장수당이 두 번 잡히는 것 같아요. 확인 부탁드립니다.</p></div>
+          <div className="ml-6 rounded-md bg-blue-50 px-3 py-2"><p className="text-xs text-blue-400">상담원</p><p className="text-gray-700">안녕하세요. 해당 회차 근태 집계를 확인해 재계산 안내드리겠습니다.</p></div>
+        </div>
+        <Field label="정형답변(매크로)"><select className={INP+" w-full bg-white"}><option>선택…</option><option>[안내] 재계산 절차</option><option>[안내] 4대보험 요율</option><option>[요청] 화면 캡처 요청</option></select></Field>
+        <Field label="답변"><textarea rows="3" className={INP+" w-full"} placeholder="고객에게 보낼 답변" /></Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="상태"><select defaultValue={modal.stat} className={INP+" w-full bg-white"}>{["대기","처리중","완료","보류"].map(o=><option key={o}>{o}</option>)}</select></Field>
+          <Field label="담당자"><select defaultValue={modal.owner==="–"?"미배정":modal.owner} className={INP+" w-full bg-white"}>{["미배정","박상담","김상담"].map(o=><option key={o}>{o}</option>)}</select></Field>
+        </div>
+        <Field label="답변 알림 발송">
+          <div className="flex flex-wrap items-center gap-4 rounded-md border border-gray-100 bg-slate-50/60 px-3 py-2 text-sm text-gray-700">
+            <label className="flex items-center gap-1.5"><input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300" />이메일 <span className="text-xs text-gray-400">(문의 등록 이메일)</span></label>
+            <label className="flex items-center gap-1.5"><input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300" />카카오 알림톡 <span className="text-xs text-gray-400">(대체발송: SMS)</span></label>
+          </div>
+        </Field>
+        <div className="rounded-md border-l-4 border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-gray-600">답변 전송 시 답변 내용이 <b>회원 상세정보(BO-CMP-02) 문의이력</b>에 기록되고, 선택한 채널(이메일·알림톡)로 회원에게 발송됩니다. 알림톡 실패 시 SMS로 자동 대체 발송됩니다.</div>
+      </Modal>}
+    </div>
+  );
+}
+function Wysiwyg({ html }){
+  const ref=useRef(null);
+  const cmd=(c,v)=>{ ref.current&&ref.current.focus(); document.execCommand(c,false,v); };
+  const link=()=>{ const u=prompt("링크 URL을 입력하세요","https://"); if(u) cmd("createLink",u); };
+  const img=()=>{ const u=prompt("이미지 URL을 입력하세요 (파일 업로드는 개발 단계 연동)","https://"); if(u) cmd("insertImage",u); };
+  const Tb=({onClick,label,title,cls=""})=>(<button type="button" title={title} onMouseDown={e=>e.preventDefault()} onClick={onClick} className={"rounded px-2 py-1 text-sm text-gray-600 hover:bg-white hover:text-gray-900 "+cls}>{label}</button>);
+  const Sep=()=><span className="mx-0.5 h-4 w-px bg-gray-300" />;
+  return (
+    <div className="rounded-md border border-gray-300 bg-white">
+      <div className="flex flex-wrap items-center gap-0.5 rounded-t-md border-b border-gray-200 bg-gray-50 px-2 py-1.5">
+        <select onChange={e=>{cmd("formatBlock",e.target.value); e.target.selectedIndex=0;}} className="mr-1 rounded border border-gray-200 bg-white px-1.5 py-1 text-xs text-gray-600">
+          <option value="">본문 스타일</option><option value="H2">제목 H2</option><option value="H3">제목 H3</option><option value="P">본문</option>
+        </select>
+        <Tb onClick={()=>cmd("bold")} label="B" title="굵게" cls="font-bold" />
+        <Tb onClick={()=>cmd("italic")} label="I" title="기울임" cls="italic" />
+        <Tb onClick={()=>cmd("underline")} label="U" title="밑줄" cls="underline" />
+        <Sep />
+        <Tb onClick={()=>cmd("insertUnorderedList")} label="• 목록" title="글머리 목록" />
+        <Tb onClick={()=>cmd("insertOrderedList")} label="1. 목록" title="번호 목록" />
+        <Sep />
+        <Tb onClick={link} label="🔗 링크" title="링크 삽입" />
+        <Tb onClick={img} label="🖼 이미지" title="이미지 삽입(URL)" />
+        <Sep />
+        <Tb onClick={()=>cmd("removeFormat")} label="서식 지우기" title="서식 지우기" cls="text-xs" />
+      </div>
+      <div ref={ref} contentEditable suppressContentEditableWarning
+        className="min-h-[180px] max-w-none px-3 py-2 text-sm leading-relaxed text-gray-700 focus:outline-none [&_h2]:text-lg [&_h2]:font-bold [&_h2]:my-1 [&_h3]:text-base [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-blue-600 [&_a]:underline [&_img]:my-2 [&_img]:max-w-full [&_img]:rounded"
+        dangerouslySetInnerHTML={{__html: html||'<p class="text-gray-400">공지 본문을 입력하세요. 상단 도구모음으로 서식·링크·이미지를 넣을 수 있습니다.</p>'}} />
+      <div className="flex items-center justify-between border-t border-gray-100 px-3 py-1.5 text-[11px] text-gray-400">
+        <span>이미지는 URL 삽입 지원(파일 업로드는 개발 단계 스토리지 연동). 저장 시 HTML로 보관됩니다.</span>
+      </div>
+    </div>
+  );
+}
+function Notices({ flash }){
+  const [modal,setModal]=useState(null);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-SUP-04" title="공지사항" pri="P0" path="CS·공지 > 공지·알림" desc="서비스 공지를 기간·검색으로 조회하고 등록·게시기간·노출대상·중요도로 관리합니다. 예약 게시·이력." />
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <div className="flex items-center gap-1.5">
+            <input type="date" defaultValue="2026-08-01" className={INP} />
+            <span className="text-gray-400">~</span>
+            <input type="date" defaultValue="2026-09-30" className={INP} />
+          </div>
+          <select className={INP+" bg-white"}><option>상태: 전체</option><option>게시중</option><option>예약</option><option>종료</option></select>
+          <select className={INP+" bg-white"}><option>노출 대상: 전체</option><option>Starter</option><option>Basic</option><option>Pro</option></select>
+          <div className="relative min-w-[160px] flex-1"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} /><input placeholder="제목·본문 검색" className={INP+" w-full pl-8"} /></div>
+          <button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">조회</button>
+          <Btn onClick={()=>setModal({mode:"add"})}>+ 공지 등록</Btn>
+        </div>
+        <Table min="820px" cols={[{t:"제목"},{t:"노출 대상",c:1},{t:"게시기간"},{t:"중요도",c:1},{t:"상태",c:1},{t:""}]}
+          rows={NOTICES} render={n=>(<>
+            <Td cls="font-medium text-gray-800">{n.title}</Td>
+            <Td c={1}><Badge tone={n.target==="전체"?"slate":"blue"}>{n.target}</Badge></Td>
+            <Td cls="text-gray-500">{n.period}</Td>
+            <Td c={1}>{n.imp==="중요"?<Badge tone="red">중요</Badge>:<Badge tone="slate">일반</Badge>}</Td>
+            <Td c={1}><StatusBadge s={n.stat} /></Td>
+            <Td c={1}><button onClick={()=>setModal({mode:"edit",n})} className="text-xs font-medium text-blue-600 hover:underline">편집</button></Td>
+          </>)} />
+      </Card>
+      {modal && <Modal title={modal.mode==="add"?"공지 등록":"공지 편집"} badge="BO-SUP-04-M1" onClose={()=>setModal(null)} wide
+        footer={<><Btn tone="ghost" onClick={()=>{setModal(null);flash("임시저장했습니다.");}}>임시저장</Btn><Btn onClick={()=>{setModal(null);flash("공지를 게시했습니다.");}}>게시</Btn></>}>
+        <Field label="제목" req><input defaultValue={modal.n?modal.n.title:""} className={INP+" w-full"} /></Field>
+        <Field label="본문" req><Wysiwyg html={modal.n?modal.n.body:""} /></Field>
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="노출 대상"><select defaultValue={modal.n?modal.n.target:"전체"} className={INP+" w-full bg-white"}>{["전체","Starter","Basic","Pro","세그먼트"].map(o=><option key={o}>{o}</option>)}</select></Field>
+          <Field label="중요도"><select defaultValue={modal.n?modal.n.imp:"일반"} className={INP+" w-full bg-white"}>{["일반","중요"].map(o=><option key={o}>{o}</option>)}</select></Field>
+          <Field label="게시 방식"><select className={INP+" w-full bg-white"}><option>즉시 게시</option><option>예약 게시</option></select></Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="게시 시작"><input type="date" defaultValue="2026-09-01" className={INP+" w-full"} /></Field>
+          <Field label="게시 종료"><input type="date" className={INP+" w-full"} /></Field>
+        </div>
+      </Modal>}
+    </div>
+  );
+}
+
+// ─── 통계·운영 ───
+function RevenueStats(){
+  const bars=[["신규","+92,000","bg-emerald-500",70],["확장","+41,000","bg-blue-500",40],["축소","-12,000","bg-amber-400",18],["해지","-57,100","bg-red-400",52]];
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-STAT-02" title="매출·구독 지표" pri="P0" path="통계·운영 > 통계" desc="월 반복 매출·연 반복 매출·회원사당 평균 매출·해지율 등 구독 매출 핵심 지표. 확정 결제 기준·환불 반영." />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <input type="month" defaultValue="2026-08" className={INP} />
+          <span className="text-gray-400">~</span>
+          <input type="month" defaultValue="2026-08" className={INP} />
+        </div>
+        <div className="flex gap-1">{["이번 달","지난 달","최근 6개월","올해"].map(p=><button key={p} className="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-50">{p}</button>)}</div>
+        <button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">조회</button>
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat n="640,000원" l="월 반복 매출" tone="text-emerald-600" sub="전월 대비 +4.1%" />
+        <Stat n="7,680,000원" l="연 반복 매출" tone="text-emerald-600" />
+        <Stat n="52,300원" l="회원사당 평균 매출" tone="text-blue-600" />
+        <Stat n="1.8%" l="해지율" tone="text-red-500" sub="회원사 기준" />
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card title="월 반복 매출 변동 구성 (이번 달)">
+          <div className="space-y-2">
+            {bars.map(([l,v,c,w])=>(
+              <div key={l} className="flex items-center gap-2 text-sm"><span className="w-20 text-gray-600">{l}</span><div className="h-3 flex-1 rounded bg-gray-100"><div className={"h-3 rounded "+c} style={{width:w+"%"}} /></div><span className="w-20 text-right font-mono text-gray-700">{v}원</span></div>
+            ))}
+          </div>
+        </Card>
+        <Card title="요금제별 구독 분포">
+          <Table min="360px" cols={[{t:"요금제"},{t:"회원사",c:1},{t:"월 반복 매출",r:1}]} rows={[{p:"Starter",n:34,m:"306,000"},{p:"Basic",n:61,m:"1,830,000"},{p:"Pro",n:33,m:"1,290,000"}]} render={r=>(<><Td cls="font-medium text-gray-800">{r.p}</Td><Td c={1} cls="text-gray-600">{r.n}</Td><Td r={1} cls="font-mono">{r.m}원</Td></>)} />
+        </Card>
+      </div>
+    </div>
+  );
+}
+function OperatorAccounts({ flash }){
+  const [modal,setModal]=useState(false);
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-ADM-01" title="운영자 계정" pri="P0" path="통계·운영 > 운영자·권한" desc="운영자(백오피스 사용자)를 초대·역할부여·잠금/해제·비밀번호 초기화·2FA 강제합니다." />
+      <div className="mb-3 flex justify-end"><Btn onClick={()=>setModal(true)}>+ 운영자 초대</Btn></div>
+      <Card pad={false}>
+        <Table min="760px" cols={[{t:"이름"},{t:"이메일"},{t:"역할",c:1},{t:"상태",c:1},{t:"최근 접속"},{t:""}]}
+          rows={OPERATORS} render={o=>(<>
+            <Td cls="font-medium text-gray-800">{o.name}</Td><Td cls="text-gray-600">{o.email}</Td>
+            <Td c={1}><Badge tone="blue">{o.role}</Badge></Td>
+            <Td c={1}>{o.stat==="활성"?<Badge tone="emerald">활성</Badge>:<Badge tone="red">잠금</Badge>}</Td>
+            <Td cls="text-gray-500">{o.last}</Td>
+            <Td c={1}><div className="flex justify-center gap-2">
+              <button onClick={()=>flash(o.name+" 비밀번호 초기화 링크를 발송했습니다.")} className="text-xs font-medium text-gray-500 hover:underline">초기화</button>
+              <button onClick={()=>flash(o.name+" 계정을 "+(o.stat==="활성"?"잠금":"해제")+"했습니다.")} className="text-xs font-medium text-blue-600 hover:underline">{o.stat==="활성"?"잠금":"해제"}</button>
+            </div></Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">퇴사 시 계정 비활성·2FA 강제·조치는 감사 로그(BO-ADM-03)에 기록됩니다.</div>
+      {modal && <Modal title="운영자 초대" badge="BO-ADM-01-M1" onClose={()=>setModal(false)}
+        footer={<><Btn tone="ghost" onClick={()=>setModal(false)}>취소</Btn><Btn onClick={()=>{setModal(false);flash("초대 메일을 발송했습니다.");}}>초대 발송</Btn></>}>
+        <Field label="이메일" req><input placeholder="name@paydream.io" className={INP+" w-full"} /></Field>
+        <Field label="역할" req><select className={INP+" w-full bg-white"}>{["운영관리자","빌링담당","CS","분석","슈퍼관리자"].map(o=><option key={o}>{o}</option>)}</select></Field>
+        <label className="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300" />2FA(2차 인증) 강제</label>
+      </Modal>}
+    </div>
+  );
+}
+function RolePermissions({ flash }){
+  const [role,setRole]=useState("CS");
+  const roles=["슈퍼관리자","운영관리자","빌링담당","CS","분석"];
+  const rows=[
+    ["회원 관리","R/W","R/W","R","R","R"],
+    ["구독·결제","R/W/실행","R/W","R/W/실행","R","R"],
+    ["결제증빙발급","R/W/실행","R/W","R/W/실행","–","–"],
+    ["CS·공지","R/W","R/W","R","R/W/실행","R"],
+    ["통계","R","R","R","R","R/W"],
+    ["운영자·권한","R/W/실행","R","–","–","–"],
+    ["민감기능(대리접속·환불·파기)","승인","요청","요청","요청","–"],
+  ];
+  const idx=roles.indexOf(role);
+  const cell=(v)=> v==="–"?<span className="text-gray-300">–</span> : <span className={"rounded px-1.5 py-0.5 text-xs font-medium "+(v.includes("실행")||v==="승인"?"bg-emerald-50 text-emerald-700":v.includes("W")||v==="요청"?"bg-blue-50 text-blue-700":"bg-slate-100 text-slate-600")}>{v}</span>;
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-ADM-02" title="역할·권한(RBAC)" pri="P0" path="통계·운영 > 운영자·권한" desc="역할별 메뉴·기능 권한(R/W/실행)·데이터 범위를 매트릭스로 설정. 민감기능은 별도 승인." />
+      <div className="mb-4 flex flex-wrap gap-2">
+        {roles.map(r=><button key={r} onClick={()=>setRole(r)} className={"rounded-md border px-3 py-1.5 text-sm font-medium "+(role===r?"border-blue-600 bg-blue-600 text-white":"border-gray-300 bg-white text-gray-600 hover:bg-gray-50")}>{r}</button>)}
+      </div>
+      <Card title={role+" · 메뉴 권한 매트릭스"} right={<Btn onClick={()=>flash(role+" 권한을 저장했습니다(즉시 적용).")}>저장</Btn>}>
+        <Table min="420px" cols={[{t:"메뉴/기능"},{t:"권한",c:1}]} rows={rows} render={r=>(<><Td cls="font-medium text-gray-700">{r[0]}</Td><Td c={1}>{cell(r[idx+1])}</Td></>)} />
+        <p className="mt-3 text-xs text-gray-400">R 열람 · W 편집 · 실행 확정/처리 · 승인/요청 민감기능 · 데이터 범위(전체/담당)는 역할 속성으로 관리. 변경은 감사 로그 기록.</p>
+      </Card>
+    </div>
+  );
+}
+function AuditLog(){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-ADM-03" title="감사 로그" pri="P0" path="통계·운영 > 운영자·권한" desc="운영자 행위·민감정보 조회·상태변경·대리접속을 전수 기록합니다. 위변조 방지·보존기간." />
+      <Card pad={false}>
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+          <select className={INP+" bg-white"}><option>운영자: 전체</option>{OPERATORS.map(o=><option key={o.name}>{o.name}</option>)}</select>
+          <select className={INP+" bg-white"}><option>행위: 전체</option><option>대리 접속</option><option>환불 처리</option><option>상태 전환</option><option>민감정보 조회</option></select>
+          <input type="date" className={INP} />
+          <Btn tone="ghost"><span className="inline-flex items-center gap-1"><Ic cls="h-4 w-4 text-gray-400" d={ICN.excel} />내보내기</span></Btn>
+        </div>
+        <Table min="880px" cols={[{t:"일시"},{t:"운영자"},{t:"행위"},{t:"대상"},{t:"IP"},{t:"결과",c:1}]}
+          rows={AUDIT} render={r=>(<>
+            <Td cls="text-gray-500">{r.at}</Td><Td cls="font-medium text-gray-800">{r.op}</Td>
+            <Td cls="text-gray-700">{r.act}</Td><Td cls="text-gray-600">{r.target}</Td>
+            <Td cls="font-mono text-gray-500">{r.ip}</Td>
+            <Td c={1}><StatusBadge s={r.res} /></Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">로그는 append-only(위변조 방지)로 보존되며, 민감정보 조회도 기록 대상입니다. 보존기간 경과분만 아카이브됩니다.</div>
+    </div>
+  );
+}
+
+// ─── 구독·결제: 환불 / 정산 / PG ───
+const REFUNDS = [
+  { date:"2026-08-28", name:"미래에듀", pay:"INV-2608-0024", type:"환불(전액)", amt:"56,200", reason:"중복 결제", stat:"대기" },
+  { date:"2026-08-20", name:"블루오션물류", pay:"INV-2607-0018", type:"환불(부분)", amt:"18,000", reason:"장애 보상", stat:"완료" },
+  { date:"2026-08-12", name:"소상공회계", pay:"INV-2606-0009", type:"환불(전액)", amt:"9,000", reason:"해지 잔여기간", stat:"반려" },
+];
+function Refunds({ flash, open }){
+  const [modal,setModal]=useState(null);
+  const [method,setMethod]=useState("원결제 취소");
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-09" title="환불 관리" pri="P0" path="구독·결제 > 정산·세무" desc="환불(전액/부분)을 심사·처리합니다. 사유·승인선·회계 반영. ※ 환불 정책 확정 후 자동 산정과 연동됩니다." />
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <Stat n="1" l="승인 대기" tone="text-amber-600" />
+        <Stat n="18,000원" l="이번 달 환불액" tone="text-red-500" />
+        <Stat n="1" l="이번 달 환불 건" tone="text-gray-800" />
+      </div>
+      <div className="mb-3 flex justify-end"><Btn onClick={()=>{setMethod("원결제 취소");setModal({mode:"add"});}}>+ 환불 요청</Btn></div>
+      <Card pad={false}>
+        <Table min="900px" cols={[{t:"요청일"},{t:"회원사"},{t:"결제 건"},{t:"유형",c:1},{t:"금액",r:1},{t:"사유"},{t:"상태",c:1},{t:""}]}
+          rows={REFUNDS} render={r=>(<>
+            <Td cls="text-gray-500">{r.date}</Td>
+            <Td><button onClick={()=>open(r.name)} className="font-medium text-blue-700 hover:underline">{r.name}</button></Td>
+            <Td cls="font-mono text-gray-600">{r.pay}</Td>
+            <Td c={1}><Badge tone="slate">{r.type}</Badge></Td>
+            <Td r={1} cls="font-mono text-red-500">{r.amt}원</Td>
+            <Td cls="text-gray-600">{r.reason}</Td>
+            <Td c={1}><StatusBadge s={r.stat} /></Td>
+            <Td c={1}><button onClick={()=>{setMethod("원결제 취소");setModal(r);}} className="text-xs font-medium text-blue-600 hover:underline">{r.stat==="대기"?"처리":"상세"}</button></Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-700"><b>환불 정책 추후 결정</b> — 잔여기간 환불 산정 기준은 미정입니다. 금액 구간별 승인선·회계 전표 키와 연동 예정.</div>
+      {modal && <Modal title={modal.mode==="add"?"환불 요청":"환불 처리"} badge="BO-BILL-09-M1" onClose={()=>setModal(null)} wide
+        footer={modal.mode==="add"?<><Btn tone="ghost" onClick={()=>setModal(null)}>취소</Btn><Btn onClick={()=>{setModal(null);flash("환불 요청을 등록했습니다(승인 대기).");}}>요청 등록</Btn></>
+          :<><Btn tone="ghost" onClick={()=>{setModal(null);flash("반려 처리했습니다.");}}>반려</Btn><Btn onClick={()=>{setModal(null);flash("승인·처리했습니다(회계 반영).");}}>승인·처리</Btn></>}>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="대상 회원사" req>
+            <div className="relative"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} />
+              <input list="refund-tenants" defaultValue={modal.name||""} placeholder="회사명·사업자번호 검색" className={INP+" w-full pl-8"} />
+              <datalist id="refund-tenants">{TENANTS.map(t=><option key={t.name} value={t.name}>{t.biz}</option>)}</datalist>
+            </div>
+          </Field>
+          <Field label="대상 결제 건" req><input defaultValue={modal.pay||""} placeholder="INV-… (회원사 선택 시 자동 조회)" className={INP+" w-full font-mono"} /></Field>
+          <Field label="처리 유형" req><select defaultValue={modal.type||"환불(전액)"} className={INP+" w-full bg-white"}><option>환불(전액)</option><option>환불(부분)</option></select></Field>
+          <Field label="금액" req><div className="flex items-center gap-1"><input defaultValue={modal.amt||""} className={INP+" w-full text-right"} /><span className="text-sm text-gray-500">원</span></div></Field>
+          <Field label="환불 수단" req><select value={method} onChange={e=>setMethod(e.target.value)} className={INP+" w-full bg-white"}>
+            {["원결제 취소(카드/간편결제)","신용카드 승인취소","계좌 입금(무통장)"].map(o=><option key={o}>{o}</option>)}
+          </select></Field>
+          {method.includes("입금") ? (
+            <Field label="입금 계좌" req><input placeholder="은행 · 계좌번호 · 예금주" className={INP+" w-full"} /></Field>
+          ) : <Field label="처리 예정일"><input type="date" className={INP+" w-full"} /></Field>}
+        </div>
+        <Field label="사유" req><input defaultValue={modal.reason||""} placeholder="중복 결제·장애 보상·해지 잔여 등" className={INP+" w-full"} /></Field>
+        <div className="rounded-md border-l-4 border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-gray-600">
+          카드 결제는 원결제 승인취소가 기본이며, 원결제 취소가 불가한 경우에만 계좌 입금으로 처리합니다. 금액 구간별 승인선이 적용되고 처리 시 PG 취소·회계 전표에 반영됩니다.
+        </div>
+      </Modal>}
+    </div>
+  );
+}
+const SETTLE = [
+  { m:"2026-08", co:44, cnt:46, sales:"6,412,000", paid:"6,319,800", refund:"74,200", refCo:2, due:"92,200", dueCo:2 },
+  { m:"2026-07", co:42, cnt:43, sales:"6,180,000", paid:"6,180,000", refund:"18,000", refCo:1, due:"0", dueCo:0 },
+  { m:"2026-06", co:40, cnt:41, sales:"5,940,000", paid:"5,931,000", refund:"9,000", refCo:1, due:"0", dueCo:0 },
+];
+function Settlement(){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-11" title="정산·세무 리포트" pri="P0" path="구독·결제 > 정산·세무" desc="확정 결제 기준으로 수납·환불·미수를 정산하고 PG 대사·회계 전표를 내보냅니다. 매출 추세·구독 지표 분석은 매출·구독 지표(BO-STAT-02)를 이용하세요." />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5"><input type="month" defaultValue="2026-06" className={INP} /><span className="text-gray-400">~</span><input type="month" defaultValue="2026-08" className={INP} /></div>
+        <button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">조회</button>
+        <Btn tone="ghost"><span className="inline-flex items-center gap-1"><Ic cls="h-4 w-4 text-gray-400" d={ICN.excel} />전표 내보내기</span></Btn>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat n="18,532,000원" l="확정 매출(3개월)" tone="text-gray-800" />
+        <Stat n="18,430,800원" l="수납" tone="text-emerald-600" />
+        <Stat n="101,200원" l="환불" tone="text-red-500" />
+        <Stat n="92,200원" l="미수(미납)" tone="text-amber-600" />
+      </div>
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat n="44개사" l="정산 대상 회원사" tone="text-gray-800" />
+        <Stat n="130건" l="결제 건수(3개월)" tone="text-blue-600" />
+        <Stat n="2개사" l="환불 회원사" tone="text-red-500" />
+        <Stat n="2개사" l="미수 회원사" tone="text-amber-600" />
+      </div>
+      <Card title="월별 정산" right={<span className="text-xs text-gray-400">PG 정산 대사 기준 · 금액/회원사 병기</span>} pad={false}>
+        <Table min="900px" cols={[{t:"월"},{t:"결제 회원사",c:1},{t:"결제 건수",c:1},{t:"매출",r:1},{t:"수납",r:1},{t:"환불(회원사)",r:1},{t:"미수(회원사)",r:1},{t:"대사",c:1}]}
+          rows={SETTLE} render={r=>(<>
+            <Td cls="font-medium text-gray-800">{r.m}</Td>
+            <Td c={1} cls="text-gray-700">{r.co}개사</Td>
+            <Td c={1} cls="text-gray-500">{r.cnt}건</Td>
+            <Td r={1} cls="font-mono">{r.sales}원</Td>
+            <Td r={1} cls="font-mono text-emerald-600">{r.paid}원</Td>
+            <Td r={1} cls="font-mono text-red-500">{r.refund}원 <span className="text-xs text-gray-400">· {r.refCo}개사</span></Td>
+            <Td r={1} cls="font-mono text-amber-600">{r.due}원 <span className="text-xs text-gray-400">· {r.dueCo}개사</span></Td>
+            <Td c={1}>{r.due==="0"?<Badge tone="emerald">일치</Badge>:<Badge tone="amber">차이</Badge>}</Td>
+          </>)} />
+      </Card>
+      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600"><b className="text-blue-700">대사</b> — PG 정산액과 내부 결제·환불을 대조해 차이를 표시합니다. 차이 항목은 결제 내역(BO-BILL-07)·환불 관리(BO-BILL-09)에서 원인 확인 후 조정합니다. <span className="text-gray-500">※ 이 화면은 정산·세무 실무 전용이며, 매출 추세·MRR/ARR·ARPU 등 지표 분석은 매출·구독 지표(BO-STAT-02)에서 확인합니다.</span></div>
+    </div>
+  );
+}
+function PGConfig({ flash }){
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-BILL-12" title="PG·결제 연동 설정" pri="P0" path="구독·결제 > 설정" desc="PG사·정기결제(빌링키) 연동 키와 웹훅을 설정합니다. 테스트/운영 분리. MVP 결제 수단은 카드(빌링키)이며 계좌 자동이체·가상계좌는 P1." />
+      <div className="mx-auto max-w-2xl space-y-4">
+        <Card title="PG 연동" right={<Badge tone="emerald">연결됨</Badge>}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="PG사" req><select className={INP+" w-full bg-white"}><option>토스페이먼츠</option><option>나이스페이</option><option>KG이니시스</option></select></Field>
+              <Field label="환경" req><select className={INP+" w-full bg-white"}><option>운영(Live)</option><option>테스트(Sandbox)</option></select></Field>
+              <Field label="가맹점 ID(MID)" req><input defaultValue="paydream_live" className={INP+" w-full font-mono"} /></Field>
+              <Field label="시크릿 키" req><input type="password" defaultValue="sk_live_****************" className={INP+" w-full font-mono"} /></Field>
+            </div>
+            <Field label="결제 수단" req><div className="flex flex-wrap gap-3 text-sm text-gray-700">{[["카드(정기결제·빌링키)",true],["계좌 자동이체(CMS) · P1",false],["가상계좌 · P1",false]].map(([o,on])=><label key={o} className={"flex items-center gap-1.5"+(on?"":" text-gray-400")}><input type="checkbox" defaultChecked={on} disabled={!on} className="h-4 w-4 rounded border-gray-300" />{o}</label>)}</div></Field>
+          </div>
+        </Card>
+        <Card title="웹훅">
+          <div className="space-y-3">
+            <Field label="웹훅 URL" req><input defaultValue="https://api.paydream.io/webhook/pg" className={INP+" w-full font-mono"} /></Field>
+            <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2 text-sm"><span className="text-gray-600">최근 수신</span><span className="text-gray-500">2026-08-30 03:10 · <span className="text-emerald-600">성공</span></span></div>
+            <div className="flex justify-end gap-2"><Btn tone="ghost" onClick={()=>flash("실패 웹훅을 재발송했습니다.")}>웹훅 재발송</Btn></div>
+          </div>
+        </Card>
+        <div className="flex justify-end gap-2">
+          <Btn tone="ghost" onClick={()=>flash("PG 연결 테스트 성공.")}>연결 테스트</Btn>
+          <Btn onClick={()=>flash("PG 연동 설정을 저장했습니다(암호화).")}>저장</Btn>
+        </div>
+        <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-3 text-xs text-amber-700"><b>보안</b> — 시크릿 키는 암호화 저장·마스킹되며 운영/테스트 환경을 분리합니다. 키 변경·연동 수정은 감사 로그(BO-ADM-03)에 기록됩니다.</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── 네비게이션 ───
+const NAV = [
+  { key:"dash", icon:ICN.dash, label:"대시보드", items:[["BO-DSH-01","운영 대시보드"]] },
+  { key:"cust", icon:ICN.cust, label:"회원 관리", items:[["BO-CMP-01","회원 리스트"],["BO-CMP-08","해지·탈퇴"]] },
+  { key:"bill", icon:ICN.bill, label:"구독·결제", items:[["BO-BILL-01","요금제 관리"],["BO-BILL-04","구독 목록"],["BO-BILL-06","결제증빙발급"],["BO-BILL-07","결제 내역"],["BO-BILL-08","미납·연체"],["BO-BILL-09","환불 관리"],["BO-BILL-11","정산·세무 리포트"],["BO-BILL-12","PG 연동 설정"]] },
+  { key:"cs", icon:ICN.cs, label:"CS·공지", items:[["BO-SUP-01","1:1 문의함"],["BO-SUP-04","공지사항"]] },
+  { key:"stat", icon:ICN.stat, label:"통계·운영", items:[["BO-STAT-02","매출·구독 지표"],["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"]] },
+];
+const TITLES = {}; NAV.forEach(g=>g.items.forEach(([id,nm])=>TITLES[id]=nm));
+const PATHS = {}; NAV.forEach(g=>g.items.forEach(([id])=>PATHS[id]=g.label));
+const PRIS = { "BO-DSH-01":"P0","BO-CMP-01":"P0","BO-CMP-02":"P0","BO-CMP-08":"P0","BO-BILL-01":"P0","BO-BILL-04":"P0","BO-BILL-06":"P0","BO-BILL-07":"P0","BO-BILL-08":"P0","BO-BILL-09":"P0","BO-BILL-11":"P0","BO-BILL-12":"P0","BO-SUP-01":"P0","BO-SUP-04":"P0","BO-STAT-02":"P0","BO-ADM-01":"P0","BO-ADM-02":"P0","BO-ADM-03":"P0","BO-SET-03":"P1","BO-SET-04":"P1" };
+
+function App(){
+  const [cur,setCur]=useState("BO-DSH-01");
+  const [sel,setSel]=useState(null);
+  const [toast,setToast]=useState("");
+  const [open,setOpen]=useState({dash:true,cust:true,bill:true,cs:true,stat:true});
+  const flash=m=>{ setToast(m); setTimeout(()=>setToast(""),2200); };
+  const go=id=>{ setCur(id); };
+  const openTenant=name=>{ const t=TENANTS.find(x=>x.name===name)||{name}; setSel(t); setCur("BO-CMP-02"); };
+  const P0IMPL={ "BO-DSH-01":<Dashboard go={go} open={openTenant}/>, "BO-CMP-01":<TenantList go={go} setSel={setSel}/>, "BO-CMP-02":<TenantDetail sel={sel} go={go} flash={flash}/>,
+    "BO-CMP-08":<Terminate flash={flash}/>, "BO-BILL-01":<PlansScreen flash={flash}/>,
+    "BO-BILL-04":<SubList go={go} flash={flash} open={openTenant}/>, "BO-BILL-06":<Invoices flash={flash} open={openTenant}/>, "BO-BILL-07":<Payments open={openTenant}/>, "BO-BILL-08":<Overdue flash={flash} open={openTenant}/>,
+    "BO-BILL-09":<Refunds flash={flash} open={openTenant}/>, "BO-BILL-11":<Settlement/>, "BO-BILL-12":<PGConfig flash={flash}/>,
+    "BO-SUP-01":<SupportInbox flash={flash} open={openTenant}/>, "BO-SUP-04":<Notices flash={flash}/>,
+    "BO-STAT-02":<RevenueStats/>, "BO-ADM-01":<OperatorAccounts flash={flash}/>, "BO-ADM-02":<RolePermissions flash={flash}/>, "BO-ADM-03":<AuditLog/> };
+  const content = P0IMPL[cur] || <Placeholder id={cur} title={TITLES[cur]||cur} pri={PRIS[cur]||"P1"} path={(PATHS[cur]||"")+" > "+(TITLES[cur]||"")} />;
+  return (
+    <div className="flex h-screen flex-col">
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4">
+        <span className="text-lg font-extrabold tracking-tight text-blue-600">payDream</span>
+        <span className="rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-bold text-white">운영 콘솔</span>
+        <div className="relative ml-2 hidden sm:block"><Ic cls="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" d={ICN.search} /><input placeholder="회원사·인보이스 검색" className="w-64 rounded-full border border-gray-300 py-1.5 pl-8 pr-4 text-sm focus:border-blue-500 focus:outline-none" /></div>
+        <div className="flex-1" />
+        <span className="hidden text-sm text-gray-400 sm:inline">운영관리자</span>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">운</div>
+      </header>
+      <div className="flex min-h-0 flex-1">
+        <nav className="w-56 shrink-0 overflow-y-auto border-r border-gray-200 bg-white py-2">
+          {NAV.map(g=>(
+            <div key={g.key} className="px-2">
+              <button onClick={()=>setOpen(o=>({...o,[g.key]:!o[g.key]}))} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                <Ic cls="h-4 w-4 text-gray-400" d={g.icon} />{g.label}<span className="ml-auto text-xs text-gray-300">{open[g.key]?"▾":"▸"}</span>
+              </button>
+              {open[g.key] && <div className="mb-1 ml-4 border-l border-gray-100 pl-2">
+                {g.items.map(([id,nm])=>(
+                  <button key={id} onClick={()=>go(id)} className={"flex w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-left text-sm "+(cur===id?"bg-blue-50 font-medium text-blue-700":"text-gray-600 hover:bg-gray-50")}>
+                    {nm}{PRIS[id]==="P0" && cur!==id && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+                  </button>
+                ))}
+              </div>}
+            </div>
+          ))}
+        </nav>
+        <main className="min-w-0 flex-1 overflow-y-auto">{content}</main>
+      </div>
+      <Toast msg={toast} />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
