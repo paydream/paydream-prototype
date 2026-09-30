@@ -7067,34 +7067,44 @@ function WorkOTScreen() {
 // ═══════════════════════════════════════════════════════════════
 // 개인 근무유형 관리 (TA-03-01)
 // ═══════════════════════════════════════════════════════════════
-const WTYPES = [
-  { name: "표준 통상근무", cat: "고정" }, { name: "시차출퇴근", cat: "고정" }, { name: "탄력근무(3개월)", cat: "탄력적" },
-  { name: "선택근로제(재택)", cat: "선택적" }, { name: "3교대", cat: "교대" }, { name: "재택근무(단시간)", cat: "고정" },
-];
+// 근무유형 원천 = 근무 유형 관리(TA-02-02) 공유 저장소(REF.workTypes)의 '사용' ON 목록
+const wtCat = (sys) => (sys && sys.indexOf("고정") === 0 ? "고정" : sys);
+function wtList() { return REF.workTypes.filter(r => r.use !== false).map(r => ({ name: r.name, cat: wtCat(r.sys) })); }
 function wtBadge(cat) {
   const c = cat === "고정" ? "bg-slate-100 text-slate-600" : cat === "탄력적" ? "bg-amber-50 text-amber-700" : cat === "선택적" ? "bg-indigo-50 text-indigo-700" : cat === "교대" ? "bg-purple-50 text-purple-700" : "bg-gray-100 text-gray-400";
   return <span className={"rounded px-1.5 py-0.5 text-[11px] font-medium " + c}>{cat}</span>;
 }
 function EmpWorkTypeScreen() {
-  const rows = [
+  useRefSync();
+  const WTYPES = wtList();
+  const [rows, setRows] = useState([
     { ini: "김", name: "김예스", no: "2024-001", dept: "경영지원본부 · 인사팀", cat: "고정", tname: "표준 통상근무", date: "2024-03-01" },
-    { ini: "이", name: "이하늘", no: "2021-007", dept: "개발본부 · 플랫폼팀", cat: "선택적", tname: "선택근로제(재택)", date: "2025-07-01" },
-    { ini: "박", name: "박서준", no: "2022-014", dept: "개발본부 · 서비스팀", cat: "탄력적", tname: "탄력근무(3개월)", date: "2025-01-01" },
+    { ini: "이", name: "이하늘", no: "2021-007", dept: "개발본부 · 플랫폼팀", cat: "선택적", tname: "선택근무 (1개월)", date: "2025-07-01" },
+    { ini: "박", name: "박서준", no: "2022-014", dept: "개발본부 · 서비스팀", cat: "탄력적", tname: "탄력근무 (3개월)", date: "2025-01-01" },
     { ini: "최", name: "최유나", no: "2023-009", dept: "경영지원본부 · 재무팀", cat: "고정", tname: "표준 통상근무", date: "2024-09-01" },
     { ini: "정", name: "정민호", no: "2025-002", dept: "개발본부 · 플랫폼팀", cat: "미배정", tname: "—", date: "—" },
     { ini: "한", name: "한지민", no: "2020-011", dept: "경영지원본부 · 인사팀", cat: "고정", tname: "표준 통상근무", date: "2025-04-01" },
-  ];
+  ]);
   const [sel, setSel] = useState([1, 2, 3]);
+  const [applyDate, setApplyDate] = useState("2026-09-01");
+  const [toast, setToast] = useState("");
+  // 배정 = 이전 배정 종료 + 신규 배정 시작(emp_work_type 이력) → 현재 근무유형 갱신
+  const assign = () => {
+    const t = WTYPES.find(w => w.name === chg); if (!t) return;
+    const idx = modal.mode === "bulk" ? sel : [rows.indexOf(modal.row)];
+    setRows(p => p.map((r, i) => idx.includes(i) ? { ...r, cat: t.cat, tname: t.name, date: applyDate } : r));
+    setModal(null); setToast(idx.length + "명에게 '" + t.name + "'을(를) " + applyDate + "부터 배정했습니다(이력 기록)."); setTimeout(() => setToast(""), 2400);
+  };
   const [modal, setModal] = useState(null);
   const [chg, setChg] = useState("3교대");
   const [upload, setUpload] = useState(false);
   const fileRef = React.useRef(null);
   const vrows = [
-    { row: 2, no: "2021-007", wt: "선택근로제", date: "2026-09-01", ok: 1 },
+    { row: 2, no: "2021-007", wt: "선택근무 (1개월)", date: "2026-09-01", ok: 1 },
     { row: 5, no: "2022-014", wt: "3교대", date: "2026-09-01", ok: 1 },
-    { row: 7, no: "2099-999", wt: "표준 주40시간", date: "2026-09-01", ok: 0, why: "사번 없음" },
+    { row: 7, no: "2099-999", wt: "표준 통상근무", date: "2026-09-01", ok: 0, why: "사번 없음" },
     { row: 12, no: "2023-009", wt: "야근제", date: "2026-09-01", ok: 0, why: "근무유형 미존재" },
-    { row: 20, no: "2020-011", wt: "탄력근로제", date: "2026-13-01", ok: 0, why: "적용일 형식" },
+    { row: 20, no: "2020-011", wt: "탄력근무 (3개월)", date: "2026-13-01", ok: 0, why: "적용일 형식" },
   ];
   const toggle = (i) => setSel(s => s.includes(i) ? s.filter(x => x !== i) : [...s, i]);
   const allOn = sel.length === rows.length;
@@ -7140,7 +7150,7 @@ function EmpWorkTypeScreen() {
       <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
         <span className="font-medium text-blue-700">배정 기준</span> — 근무유형은 근무 유형 관리(TA-02-02) 사용중 목록에서 배정하고, 적용일 기준으로 이력이 남습니다(이전 배정 종료·신규 시작). 미배정 직원은 회사 기본 근무유형이 적용되며, 일자별 교대·시간대 편성은 개인 근무스케줄 관리(TA-03-02)에서 이어집니다.
       </div>
-      {modal && <TreeModal title="근무유형 배정" badge="TA-03-01" submit="배정" onClose={() => setModal(null)}>
+      {modal && <TreeModal title="근무유형 배정" badge="TA-03-01-M1" submit="배정" onClose={() => setModal(null)} onSubmit={assign}>
         <div><label className="mb-1 block font-medium text-gray-700">대상 직원</label><input readOnly value={modal.mode === "bulk" ? sel.length + "명 선택" : modal.row.name + " (" + modal.row.no + ") · " + modal.row.dept.split(" · ")[1]} className={INP + " w-full bg-gray-50"} /></div>
         <div><label className="mb-1 block font-medium text-gray-700">현재 → 변경</label>
           <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -7149,11 +7159,12 @@ function EmpWorkTypeScreen() {
             <span className="flex items-center gap-1.5">{wtBadge(chgCat)}<span className="font-medium text-gray-800">{chg}</span></span>
           </div>
         </div>
-        <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>근무유형</label><select value={chg} onChange={e => setChg(e.target.value)} className={INP + " w-full bg-white"}>{WTYPES.map(w => <option key={w.name}>{w.name}</option>)}</select><Hint>근무 유형 관리(TA-02-02) 목록에서 선택</Hint></div>
-        <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>적용일</label><input type="date" defaultValue="2026-09-01" className={INP + " w-full"} /><Hint>적용일 기준으로 이력이 기록됩니다</Hint></div>
+        <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>근무유형</label><select value={chg} onChange={e => setChg(e.target.value)} className={INP + " w-full bg-white"}>{WTYPES.map(w => <option key={w.name}>{w.name}</option>)}</select><Hint>근무 유형 관리(TA-02-02)의 '사용' ON 목록 — 그 화면이나 직원 등록의 ⚙설정에서 추가하면 여기에도 나옵니다</Hint></div>
+        <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>적용일</label><input type="date" value={applyDate} onChange={e => setApplyDate(e.target.value)} className={INP + " w-full"} /><Hint>적용일 기준으로 이력이 기록됩니다(이전 배정은 적용일 전날로 종료)</Hint></div>
         <div><label className="mb-1 block font-medium text-gray-700">변경 사유</label><input placeholder="예: 생산팀 전배" className={INP + " w-full"} /></div>
       </TreeModal>}
 
+      {toast && <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
       {upload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
