@@ -417,7 +417,7 @@ function Terminate({ flash }){
   const [step,setStep]=useState(false);
   return (
     <div className="p-5">
-      <ScrHead id="BO-CMP-08" title="해지·탈퇴 처리" pri="P0" path="회원 관리 > 회원사" desc="회원사가 제출한 서비스 해지 신청(SET-05)을 운영자가 확인·처리. 상세 사유·데이터 처리 선택 확인, 데이터 보존기간은 시스템모드와 동일 기준. 환불 정책은 추후 결정. 파기 실행은 2인 승인·이력." />
+      <ScrHead id="BO-CMP-08" title="해지·탈퇴 처리" pri="P0" path="회원 관리 > 회원사" desc="회원사가 제출한 서비스 해지 신청(SET-05)을 운영자가 확인·처리. 상세 사유·데이터 처리 선택 확인, 데이터 보존기간은 관리자모드와 동일 기준. 환불 정책은 추후 결정. 파기 실행은 2인 승인·이력." />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="해지 신청 내용 (회원사 제출)">
           <div className="space-y-4">
@@ -429,7 +429,7 @@ function Terminate({ flash }){
             <Field label="상세 사유 (회원사 기입)">
               <div className="min-h-[68px] whitespace-pre-line rounded-md border border-gray-200 bg-slate-50/60 px-3 py-2 text-sm text-gray-700">직원 수가 줄어 상시 구독 유지 비용이 부담됩니다. 성수기에만 쓰다 보니 요금제가 맞지 않아요. 재계약은 추후 검토하겠습니다.</div>
             </Field>
-            <Field label="데이터 처리 (회원사 선택)" hint="시스템모드 서비스 해지 신청(SET-05)에서 회원사가 선택한 값">
+            <Field label="데이터 처리 (회원사 선택)" hint="관리자모드 서비스 해지 신청(SET-05)에서 회원사가 선택한 값">
               <div className="space-y-1 rounded-md border border-gray-200 bg-slate-50/50 p-3 text-sm text-gray-700">
                 <p>· 처리 방식: <b>보존 후 파기</b></p>
                 <p>· 보존기간: <b>90일(기본)</b> <span className="text-xs text-gray-400">— 경과 후 자동 파기</span></p>
