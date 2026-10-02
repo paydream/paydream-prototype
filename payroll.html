@@ -1001,8 +1001,11 @@ function ReportScheduleScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>법정 마스터 · 연도별 관리</b> — '법정 기본 세트'는 시스템(PAYON)이 유지·배포하는 <b>법정 신고 일정 마스터(연도별·버전)</b>입니다(요율 테이블 PAY-01-04과 동일 원리, 하드코딩 금지). [불러오기]는 ① 연도 마스터 로드 → ② 회사 급여지급일·사업장 조건(반기납부·소규모 특례)으로 <b>D-day 계산</b> → ③ 추가/갱신 대상 미리보기 후 확정입니다. <b>병합 규칙</b>: 신규 항목만 추가, 동일 항목은 건너뛰기/갱신, 커스텀 일정은 덮어쓰지 않음. 새 버전이 있으면 배지로 알림·재불러오기로 갱신합니다. 산출된 일정은 <b>대시보드(DSH-01)</b> 법정 일정 소스가 되고 발송은 <b>알림 설정(SET-02)</b>과 연동됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>법정 마스터 · 연도별 관리</b> — '법정 기본 세트'는 시스템(PAYON)이 유지·배포하는 <b>법정 신고 일정 마스터(연도별·버전)</b>입니다(요율 테이블 PAY-01-04과 동일 원리, 하드코딩 금지). [불러오기]는 ① 연도 마스터 로드 → ② 회사 급여지급일·사업장 조건(반기납부·소규모 특례)으로 <b>D-day 계산</b> → ③ 추가/갱신 대상 미리보기 후 확정입니다. <b>병합 규칙</b>: 신규 항목만 추가, 동일 항목은 건너뛰기/갱신, 커스텀 일정은 덮어쓰지 않음. 새 버전이 있으면 배지로 알림·재불러오기로 갱신합니다. 산출된 일정은 <b>대시보드(DSH-01)</b> 법정 일정 소스가 되고 발송은 <b>알림 설정(SET-02)</b>과 연동됩니다.
+        </div>
       </div>
 
       {imp && (
@@ -1117,7 +1120,7 @@ function EmpDashScreen({ ctx }) {
         <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-gray-700"><span>⚡</span>바로가기</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{SHORT.map(s => <button key={s[1]} onClick={() => go(s[1])} className="rounded-md border border-gray-200 px-3 py-2.5 text-sm text-gray-700 hover:border-blue-300 hover:bg-blue-50/40">{s[0]}</button>)}</div>
       </div>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>내 홈</b> — 본인 데이터만 표시됩니다. 출퇴근은 조회(원천=관리자 근태 일괄 업로드 TA-03-04)입니다. 급여 요약은 확정(PAY-03-02) 회차만 노출되고 미확정은 '지급 예정'입니다. 상세·처리는 각 화면(내 출퇴근·연차·명세서·신청 현황)에서 수행합니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>내 홈</b> — 본인 데이터만 표시됩니다. 출퇴근은 조회(원천=관리자 근태 일괄 업로드 TA-03-04)입니다. 급여 요약은 확정(PAY-03-02) 회차만 노출되고 미확정은 '지급 예정'입니다. 상세·처리는 각 화면(내 출퇴근·연차·명세서·신청 현황)에서 수행합니다.</div></div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
   );
@@ -1155,7 +1158,7 @@ function EmpClockScreen({ ctx }) {
         <div className="border-b border-gray-100 px-5 py-3"><span className="text-sm font-semibold text-gray-700">이번 달 출퇴근 기록</span></div>
         <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead><tr className="border-b border-gray-200 text-xs font-semibold text-slate-500"><th className="px-5 py-2.5">일자</th><th className="px-3 py-2.5 text-center">출근</th><th className="px-3 py-2.5 text-center">퇴근</th><th className="px-3 py-2.5 text-center">근무</th><th className="px-3 py-2.5 text-center">연장</th><th className="px-3 py-2.5 text-center">야간</th><th className="px-3 py-2.5 text-center">휴일</th><th className="px-3 py-2.5 text-center">상태</th></tr></thead><tbody>{REC.map((r, i) => <tr key={i} className="border-b border-gray-100"><td className="px-5 py-2.5 text-gray-600">{r[0]}</td><td className="px-3 py-2.5 text-center text-gray-700">{r[1]}</td><td className="px-3 py-2.5 text-center text-gray-700">{r[2]}</td><td className="px-3 py-2.5 text-center text-gray-700">{r[3]}</td><td className={"px-3 py-2.5 text-center font-medium " + (r[4] !== "–" ? "text-orange-600" : "text-gray-300")}>{r[4]}</td><td className={"px-3 py-2.5 text-center font-medium " + (r[5] !== "–" ? "text-purple-600" : "text-gray-300")}>{r[5]}</td><td className={"px-3 py-2.5 text-center font-medium " + (r[6] !== "–" ? "text-rose-600" : "text-gray-300")}>{r[6]}</td><td className="px-3 py-2.5 text-center"><span className={"rounded px-2 py-0.5 text-xs font-medium " + stColor(r[7])}>{r[7]}</span></td></tr>)}</tbody></table></div>
       </div>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>본인 뷰 · 조회 전용</b> — 출퇴근 원천은 관리자 근태 일괄 업로드(TA-03-04, 엑셀)이며 본 화면은 본인 기록만 조회합니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>본인 뷰 · 조회 전용</b> — 출퇴근 원천은 관리자 근태 일괄 업로드(TA-03-04, 엑셀)이며 본 화면은 본인 기록만 조회합니다.</div></div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
   );
@@ -1190,7 +1193,7 @@ function EmpLeaveScreen({ ctx }) {
           <div className="space-y-3 p-5">{HIS.map((h, i) => <div key={i} className="flex gap-3"><span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-500" /><div><p className="text-xs text-gray-400">{h[0]}</p><p className="text-sm text-gray-700">{h[1]}</p></div></div>)}</div>
         </div>
       </div>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>본인 뷰</b> — 본인 현황만 조회합니다. 발생·소멸 기준은 <b>연차 발생 기준(TA-04-01)</b>을 따르고, 휴가 신청은 근태 신청(TA-05-01)에서 제출합니다. 연차 사용촉진(근로기준법 §61) 계획안은 이 화면에서 제출하며, 관리자 연차촉진 관리(TA-04-04)로 전달됩니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>본인 뷰</b> — 본인 현황만 조회합니다. 발생·소멸 기준은 <b>연차 발생 기준(TA-04-01)</b>을 따르고, 휴가 신청은 근태 신청(TA-05-01)에서 제출합니다. 연차 사용촉진(근로기준법 §61) 계획안은 이 화면에서 제출하며, 관리자 연차촉진 관리(TA-04-04)로 전달됩니다.</div></div>
       {promo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setPromo(false)}>
           <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-lg bg-white shadow-xl">
@@ -1242,7 +1245,7 @@ function EmpPayslipScreen() {
           </div>
         </div>
       </div>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>본인 명세서</b> — 확정(PAY-03-02)·발행된 본인 명세서만 열람합니다. 발행 원천은 <b>급여명세서(PAY-03-03)</b>이고, <b>이메일·카카오 알림톡</b>으로 받은 열람 링크를 클릭하면 이 화면으로 연결됩니다(로그인·본인확인 후 열람). PDF는 개인정보 보호를 위해 비밀번호(생년월일) 옵션이 적용됩니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>본인 명세서</b> — 확정(PAY-03-02)·발행된 본인 명세서만 열람합니다. 발행 원천은 <b>급여명세서(PAY-03-03)</b>이고, <b>이메일·카카오 알림톡</b>으로 받은 열람 링크를 클릭하면 이 화면으로 연결됩니다(로그인·본인확인 후 열람). PDF는 개인정보 보호를 위해 비밀번호(생년월일) 옵션이 적용됩니다.</div></div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
   );
@@ -1388,7 +1391,7 @@ function MyProfileScreen({ ctx }) {
           <p className="border-t border-gray-100 px-4 py-2 text-[11px] text-gray-400">포상·징계 이력은 본인 열람 전용이며, 등록·변경은 상벌 관리(HR-04-09)에서 관리자가 처리합니다.</p>
         </Sec>
       )}
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>본인 뷰</b> — 직원 정보(HR-04-05)의 본인 데이터 버전으로, 탭 구성(기본정보·발령이력·급여정보·근태·연차·인사정보·상벌)을 관리자 화면과 동일하게 맞췄습니다. 문서(근로계약서·동의서 등)는 기본정보 탭에서 <b>열람·다운로드</b>만 하며(전자서명 없음), 상벌은 <b>열람 전용</b>(등록은 HR-04-09)입니다. 급여·근태·상벌 등은 본인 데이터만 노출되고, 민감정보(주민번호·계좌) 열람은 감사 로그에 기록됩니다. 정보 변경은 서식 신청(FRM-04)으로 반영됩니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>본인 뷰</b> — 직원 정보(HR-04-05)의 본인 데이터 버전으로, 탭 구성(기본정보·발령이력·급여정보·근태·연차·인사정보·상벌)을 관리자 화면과 동일하게 맞췄습니다. 문서(근로계약서·동의서 등)는 기본정보 탭에서 <b>열람·다운로드</b>만 하며(전자서명 없음), 상벌은 <b>열람 전용</b>(등록은 HR-04-09)입니다. 급여·근태·상벌 등은 본인 데이터만 노출되고, 민감정보(주민번호·계좌) 열람은 감사 로그에 기록됩니다. 정보 변경은 서식 신청(FRM-04)으로 반영됩니다.</div></div>
       {photo && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/40 p-4" onClick={() => setPhoto(false)}>
           <div onClick={e => e.stopPropagation()} className="mt-10 w-full max-w-2xl rounded-lg bg-white shadow-xl">
@@ -1432,7 +1435,7 @@ function MyAccountEmpScreen() {
           </div>
         </div>
       </div>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600"><span className="mr-1">💡</span><b>본인 계정 설정</b> — 로그인 계정(HR-06-01)과 연결된 본인 전용 설정입니다. 비밀번호는 영문·숫자·특수문자 조합 10자 이상으로 변경할 수 있습니다. 역할·권한·소속 정보는 인사/발령(관리자)에서 관리되어 여기서는 표시하지 않습니다.</div>
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>본인 계정 설정</b> — 로그인 계정(HR-06-01)과 연결된 본인 전용 설정입니다. 비밀번호는 영문·숫자·특수문자 조합 10자 이상으로 변경할 수 있습니다. 역할·권한·소속 정보는 인사/발령(관리자)에서 관리되어 여기서는 표시하지 않습니다.</div></div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
   );
@@ -1516,8 +1519,11 @@ function AdminDashScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">📎</span><b>드릴다운 대시보드</b> — 각 위젯은 요약만 보여주고 클릭 시 상세 화면으로 이동합니다(급여계산 PAY-03·근태집계 TA-06·신청현황 APV-02·인사 HR-04·인건비 통계 RPT-01). 결재 대기 위젯은 신청현황(APV-02)으로 이동합니다. 급여 요약은 확정(PAY-03-02) 기준이며 미확정 회차는 '계산중/미마감'으로 표기됩니다. <b>할 일·알림</b>은 업무 상태에서 파생합니다 — ① 급여 회차 미확정(확정 전 · 지급일 7일 이내) ② 근태 미마감 ③ 결재 대기(1건 이상) ④ 이체 계좌 미등록(1명 이상). 조건을 만족한 종류만 뜨고, 상단 인사말의 '처리할 일 N건'은 떠 있는 종류 수입니다. 각 항목을 누르면 처리 화면으로 이동합니다. 역할별로 위젯 노출이 조정되고(급여 담당자=급여·인건비, 인사담당=인원·근태·결재), 위젯 커스터마이즈는 P1입니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>드릴다운 대시보드</b> — 각 위젯은 요약만 보여주고 클릭 시 상세 화면으로 이동합니다(급여계산 PAY-03·근태집계 TA-06·신청현황 APV-02·인사 HR-04·인건비 통계 RPT-01). 결재 대기 위젯은 신청현황(APV-02)으로 이동합니다. 급여 요약은 확정(PAY-03-02) 기준이며 미확정 회차는 '계산중/미마감'으로 표기됩니다. <b>할 일·알림</b>은 업무 상태에서 파생합니다 — ① 급여 회차 미확정(확정 전 · 지급일 7일 이내) ② 근태 미마감 ③ 결재 대기(1건 이상) ④ 이체 계좌 미등록(1명 이상). 조건을 만족한 종류만 뜨고, 상단 인사말의 '처리할 일 N건'은 떠 있는 종류 수입니다. 각 항목을 누르면 처리 화면으로 이동합니다. 역할별로 위젯 노출이 조정되고(급여 담당자=급여·인건비, 인사담당=인원·근태·결재), 위젯 커스터마이즈는 P1입니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -1665,8 +1671,11 @@ function LaborCostScreen() {
         </div>
         <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-[11px] text-gray-500">※ 산재보험은 전액 사업주 부담이며, 국민·건강·장기요양·고용보험은 근로자와 사업주가 분담합니다(위 금액은 사업주 부담분). 요율은 공제 요율 설정(PAY-01-04) 기준입니다.</p>
       </RptCard>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>집계 기준</b> — <b>확정(PAY-03-02) 급여</b>만 집계합니다. <b>인건비 = 지급총액 + 사업주 부담 4대보험</b>(국민연금·건강·장기요양·고용·산재)이며 근로자 공제분과 구분됩니다. 회사 부담금은 <b>항목별로 세분화</b>해 요율·부담액·비중을 함께 제공합니다(산재=전액 사업주 부담). 부서 기준은 조직(HR-02) 발령 현황을 반영하고, 원천은 급여대장(PAY-03-05)·공제 요율(PAY-01-04)과 정합합니다(리포트는 분석·시각화 관점).
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>집계 기준</b> — <b>확정(PAY-03-02) 급여</b>만 집계합니다. <b>인건비 = 지급총액 + 사업주 부담 4대보험</b>(국민연금·건강·장기요양·고용·산재)이며 근로자 공제분과 구분됩니다. 회사 부담금은 <b>항목별로 세분화</b>해 요율·부담액·비중을 함께 제공합니다(산재=전액 사업주 부담). 부서 기준은 조직(HR-02) 발령 현황을 반영하고, 원천은 급여대장(PAY-03-05)·공제 요율(PAY-01-04)과 정합합니다(리포트는 분석·시각화 관점).
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -1713,8 +1722,11 @@ function AttStatScreen() {
           </table>
         </div>
       </RptCard>
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>역할 구분</b> — <b>확정 근태 집계(TA-06-02)</b>가 마감·원천 집계라면, 근태 통계(RPT-02)는 경영·인사 분석용 시각화입니다(미마감 월 제외). 연장·야간 <b>과다 근로(주 52시간 등) 모니터링</b> 지표를 제공하고, 부서 기준은 조직(HR-02)을 반영합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>역할 구분</b> — <b>확정 근태 집계(TA-06-02)</b>가 마감·원천 집계라면, 근태 통계(RPT-02)는 경영·인사 분석용 시각화입니다(미마감 월 제외). 연장·야간 <b>과다 근로(주 52시간 등) 모니터링</b> 지표를 제공하고, 부서 기준은 조직(HR-02)을 반영합니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -1856,8 +1868,11 @@ function ApprovalInboxScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>단일 승인</b> — MVP는 관리자(최고관리자 또는 승인 권한이 있는 급여 담당자)의 단일 승인으로 운영합니다(다단계 결재선 APV-01은 P1). 반려 시 처리 의견(사유)이 필수이며 신청자에게 알림이 갑니다. 승인 결과는 원 신청 화면(근태신청 TA-05·휴가내역·증명서 발급형 서식 FRM-04)에 상태로 반영되고, 처리 완료 건은 이력으로 보관됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>단일 승인</b> — MVP는 관리자(최고관리자 또는 승인 권한이 있는 급여 담당자)의 단일 승인으로 운영합니다(다단계 결재선 APV-01은 P1). 반려 시 처리 의견(사유)이 필수이며 신청자에게 알림이 갑니다. 승인 결과는 원 신청 화면(근태신청 TA-05·휴가내역·증명서 발급형 서식 FRM-04)에 상태로 반영되고, 처리 완료 건은 이력으로 보관됩니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -1939,8 +1954,11 @@ function MyRequestScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>조회·회수 중심</b> — <b>대기(미결) 상태만 회수</b> 가능하고, 승인·반려 후에는 회수할 수 없습니다. 반려 건은 사유 확인 후 원 신청 화면(근태신청 TA-05·휴가·증명서 발급형 서식 FRM-04)에서 수정·재신청합니다. 본인 신청만 조회되며, 신청 생성은 각 업무 화면에서 수행합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>조회·회수 중심</b> — <b>대기(미결) 상태만 회수</b> 가능하고, 승인·반려 후에는 회수할 수 없습니다. 반려 건은 사유 확인 후 원 신청 화면(근태신청 TA-05·휴가·증명서 발급형 서식 FRM-04)에서 수정·재신청합니다. 본인 신청만 조회되며, 신청 생성은 각 업무 화면에서 수행합니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -2075,8 +2093,11 @@ function PayRegisterScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>집계 기준</b> — <b>확정(PAY-03-02) 급여</b>만 집계하며, <b>고용형태(정규직·계약직(기간제)·일용직)별 섹션</b>으로 나누어 형태별 소계와 전체 합계를 함께 제공합니다. 일용직은 통상 국민연금·건강보험 적용 제외로 해당 공제열이 0(–)으로 표기됩니다. 지급·공제 항목은 급여항목(PAY-01-01) 구성에 따라 열이 구성되고, 고용형태별 시트로 엑셀 내보낼 수 있습니다. 구 리포트(RPT-03)에서 급여관리로 이관된 화면입니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>집계 기준</b> — <b>확정(PAY-03-02) 급여</b>만 집계하며, <b>고용형태(정규직·계약직(기간제)·일용직)별 섹션</b>으로 나누어 형태별 소계와 전체 합계를 함께 제공합니다. 일용직은 통상 국민연금·건강보험 적용 제외로 해당 공제열이 0(–)으로 표기됩니다. 지급·공제 항목은 급여항목(PAY-01-01) 구성에 따라 열이 구성되고, 고용형태별 시트로 엑셀 내보낼 수 있습니다. 구 리포트(RPT-03)에서 급여관리로 이관된 화면입니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -2378,8 +2399,11 @@ function PayJournalScreen() {
         <p className="px-5 py-3 text-xs text-gray-400">※ 차변(급여·상여금·복리후생비·세금과공과) / 대변(예수금·보통예금·미지급금)으로 매핑합니다. 계정과목·코드는 회사 계정체계에 맞게 조정하며, 상여 회차는 상여금, 비과세(식대·자가운전)의 복리후생비 분리는 회사 방침에 따릅니다.</p>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>분개 로직</b> — <b>확정(PAY-03-02)·급여대장(PAY-03-05)</b>을 원천으로, 차변=급여(비용)·복리후생비(사업주부담), 대변=예수금(4대보험 근로자부담+소득·지방세)·보통예금(실지급)·미지급금(사업주부담)으로 분개합니다. <b>차대 합계 일치</b>를 검증하고 <b>분개 전표 내보내기</b>로 CSV를 내려받습니다(회계프로그램·세무사 전달 공용). 사업주 부담분 포함 여부는 상단 토글로 조정합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>분개 로직</b> — <b>확정(PAY-03-02)·급여대장(PAY-03-05)</b>을 원천으로, 차변=급여(비용)·복리후생비(사업주부담), 대변=예수금(4대보험 근로자부담+소득·지방세)·보통예금(실지급)·미지급금(사업주부담)으로 분개합니다. <b>차대 합계 일치</b>를 검증하고 <b>분개 전표 내보내기</b>로 CSV를 내려받습니다(회계프로그램·세무사 전달 공용). 사업주 부담분 포함 여부는 상단 토글로 조정합니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -2494,8 +2518,11 @@ function TransferFileScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>포맷 원칙</b> — 확정(PAY-03-02) 급여·검증된 계좌만 포함하고, 계좌 오류·미등록은 자동 제외·경고합니다. 이체 총액은 확정 실지급 총액(제외분 차감)과 일치해야 생성됩니다. 이체파일은 엑셀이 아닌 은행 지정 포맷이 기본으로, <b>국민은행은 CMS 고정폭 텍스트(.txt)로 직접 연동(P0)</b>, 그 외 은행은 범용 대량이체 엑셀/CSV로 받아 각 은행 인터넷뱅킹에 업로드합니다. 은행별 전용 템플릿·추가 펌뱅킹 연동은 P1입니다. <b>[설계]</b> 범용 대량이체 파일은 실서비스에서 <b>엑셀(.xlsx)</b> 형식으로 다운로드되도록 설계하며(항목·서식·합계 행 포함), 국민은행 CMS는 은행 규격상 고정폭 텍스트(.txt)를 유지합니다. 타 은행 전용 펌뱅킹 연동은 시스템 준비 중입니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>포맷 원칙</b> — 확정(PAY-03-02) 급여·검증된 계좌만 포함하고, 계좌 오류·미등록은 자동 제외·경고합니다. 이체 총액은 확정 실지급 총액(제외분 차감)과 일치해야 생성됩니다. 이체파일은 엑셀이 아닌 은행 지정 포맷이 기본으로, <b>국민은행은 CMS 고정폭 텍스트(.txt)로 직접 연동(P0)</b>, 그 외 은행은 범용 대량이체 엑셀/CSV로 받아 각 은행 인터넷뱅킹에 업로드합니다. 은행별 전용 템플릿·추가 펌뱅킹 연동은 P1입니다. <b>[설계]</b> 범용 대량이체 파일은 실서비스에서 <b>엑셀(.xlsx)</b> 형식으로 다운로드되도록 설계하며(항목·서식·합계 행 포함), 국민은행 CMS는 은행 규격상 고정폭 텍스트(.txt)를 유지합니다. 타 은행 전용 펌뱅킹 연동은 시스템 준비 중입니다.
+        </div>
       </div>
       {guide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setGuide(false)}>
@@ -2721,8 +2748,11 @@ function PayslipMgmtScreen() {
       </div>
       </>)}
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>발행 규칙</b> — <b>확정(PAY-03-02) 급여만</b> 명세서를 생성·배포할 수 있습니다. 근로기준법 필수 기재(성명·지급일·항목별 금액·계산방법·공제내역)를 포함하며, 배포는 <b>이메일·카카오 알림톡·PDF 다운로드</b>를 지원합니다(사내 포털 미지원). <b>이메일·알림톡</b>으로는 명세서 열람 <b>링크</b>가 발송되고, 직원이 클릭하면 <b>직원모드(내 급여명세서 EMP-04)</b>로 연결됩니다(로그인·본인확인 후 열람, 알림톡 실패 시 SMS 대체). 직원은 본인 명세서만 조회하고(제증명은 직원모드 서식 신청 FRM-04·발급형 서식 연계), 관리자는 전 직원 명세서를 관리합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>발행 규칙</b> — <b>확정(PAY-03-02) 급여만</b> 명세서를 생성·배포할 수 있습니다. 근로기준법 필수 기재(성명·지급일·항목별 금액·계산방법·공제내역)를 포함하며, 배포는 <b>이메일·카카오 알림톡·PDF 다운로드</b>를 지원합니다(사내 포털 미지원). <b>이메일·알림톡</b>으로는 명세서 열람 <b>링크</b>가 발송되고, 직원이 클릭하면 <b>직원모드(내 급여명세서 EMP-04)</b>로 연결됩니다(로그인·본인확인 후 열람, 알림톡 실패 시 SMS 대체). 직원은 본인 명세서만 조회하고(제증명은 직원모드 서식 신청 FRM-04·발급형 서식 연계), 관리자는 전 직원 명세서를 관리합니다.
+        </div>
       </div>
 
       {/* M1 일괄 배포 */}
@@ -2906,8 +2936,11 @@ function PayCloseScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">🔒</span><b>확정 = 소스 잠금</b> — 확정하면 이 회차가 <b>명세서(PAY-03-03)·이체파일(PAY-03-04)·급여대장(PAY-03-05)</b>의 소스로 잠깁니다. 이후 급여 수정은 권한자가 사유를 남겨 확정 해제해야만 가능합니다. 오류·경고가 하나라도 남으면 확정 버튼이 비활성 상태로 유지됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>확정 = 소스 잠금</b> — 확정하면 이 회차가 <b>명세서(PAY-03-03)·이체파일(PAY-03-04)·급여대장(PAY-03-05)</b>의 소스로 잠깁니다. 이후 급여 수정은 권한자가 사유를 남겨 확정 해제해야만 가능합니다. 오류·경고가 하나라도 남으면 확정 버튼이 비활성 상태로 유지됩니다.
+        </div>
       </div>
 
       {modal && (
@@ -3070,8 +3103,11 @@ function PayWorkbenchScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>산출 로직</b> — 확정된 <b>근태 집계(TA-06-02)</b>를 근무·연장·야간·휴일·연차 인풋으로, 급여기준(PAY-01)·개인급여(PAY-02)를 적용합니다. <b>급여코드(PAY-01-03)의 과세방식·산정단위가 직원별로 계산식에 반영</b>됩니다 — 상용(월급여·주급)=간이세액+4대보험, 상여=지급대상기간, 일용=6% 분리과세, <b>주급</b>=간이세액+4대보험(산정단위만 주급), <b>프리랜서(외주)</b>=사업소득 3.3% 또는 기타소득 8.8%(4대보험 없음). 직원의 고용형태는 등록(HR-04-01)에서, 급여코드·산정단위·과세방식은 <b>개인별 연봉정보(PAY-02-04)</b>에서 배정되어 이 화면 급여 계산에 <b>함께 반영</b>됩니다(고용형태 프리랜서는 소득구분 배지로 구분). <b>이전 급여 불러오기</b>로 원하는 회차(전월이 아니어도 됨)를 골라 그대로 불러와(매월 반복 작업 최소화) 수정할 수 있고, 불러온 목록에서 불필요한 직원은 <b>✕로 삭제(제외)</b>·전체 복원할 수 있습니다. <b>직원명(✎)을 클릭</b>하면 이 회차 한정 <b>수기 수정</b>(수습 비율·지급 항목·단수 처리)이 열리고, 공제는 지급액 기준으로 자동 재계산됩니다(수정됨 배지·초기화 가능). <b>최저임금 미달·계좌 미등록·근태 미마감</b> 시 경고하며, 검토가 끝나면 <b>급여 확정/마감(PAY-03-02)</b>으로 넘깁니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>산출 로직</b> — 확정된 <b>근태 집계(TA-06-02)</b>를 근무·연장·야간·휴일·연차 인풋으로, 급여기준(PAY-01)·개인급여(PAY-02)를 적용합니다. <b>급여코드(PAY-01-03)의 과세방식·산정단위가 직원별로 계산식에 반영</b>됩니다 — 상용(월급여·주급)=간이세액+4대보험, 상여=지급대상기간, 일용=6% 분리과세, <b>주급</b>=간이세액+4대보험(산정단위만 주급), <b>프리랜서(외주)</b>=사업소득 3.3% 또는 기타소득 8.8%(4대보험 없음). 직원의 고용형태는 등록(HR-04-01)에서, 급여코드·산정단위·과세방식은 <b>개인별 연봉정보(PAY-02-04)</b>에서 배정되어 이 화면 급여 계산에 <b>함께 반영</b>됩니다(고용형태 프리랜서는 소득구분 배지로 구분). <b>이전 급여 불러오기</b>로 원하는 회차(전월이 아니어도 됨)를 골라 그대로 불러와(매월 반복 작업 최소화) 수정할 수 있고, 불러온 목록에서 불필요한 직원은 <b>✕로 삭제(제외)</b>·전체 복원할 수 있습니다. <b>직원명(✎)을 클릭</b>하면 이 회차 한정 <b>수기 수정</b>(수습 비율·지급 항목·단수 처리)이 열리고, 공제는 지급액 기준으로 자동 재계산됩니다(수정됨 배지·초기화 가능). <b>최저임금 미달·계좌 미등록·근태 미마감</b> 시 경고하며, 검토가 끝나면 <b>급여 확정/마감(PAY-03-02)</b>으로 넘깁니다.
+        </div>
       </div>
       {edit != null && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4" onClick={() => setEdit(null)}>
@@ -3211,8 +3247,11 @@ function PayAnnualScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>기준값</b> — 연봉·급여구성은 급여 계산(PAY-03-01)의 개인 기준값입니다. <b>통상시급</b>은 통상임금 포함 항목(PAY-01-01)÷209로 자동 산출되고, 급여구성 합계가 <b>최저임금</b>(월 환산 또는 시급) 미달이면 경고합니다. 적용기간 기준으로 인상 이력을 관리하며, 시간제·일용은 산정 단위(시급/일급)로 급여코드(PAY-01-03)와 정합을 맞춥니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>기준값</b> — 연봉·급여구성은 급여 계산(PAY-03-01)의 개인 기준값입니다. <b>통상시급</b>은 통상임금 포함 항목(PAY-01-01)÷209로 자동 산출되고, 급여구성 합계가 <b>최저임금</b>(월 환산 또는 시급) 미달이면 경고합니다. 적용기간 기준으로 인상 이력을 관리하며, 시간제·일용은 산정 단위(시급/일급)로 급여코드(PAY-01-03)와 정합을 맞춥니다.
+        </div>
       </div>
 
       {modal && (
@@ -3338,8 +3377,11 @@ function InsuranceScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>산정 기준</b> — <b>건강·고용·산재는 보수월액</b>(과세소득, 비과세 제외), <b>국민연금은 기준소득월액</b>(보수월액을 천원 단위 절사, 상한 6,370,000 / 하한 400,000 적용)을 기초로 합니다. 그래서 고소득·저소득 구간에서 두 값이 달라질 수 있으며(<span className="rounded bg-amber-50 px-1 py-0.5 text-[10px] font-medium text-amber-600">상한</span>/<span className="rounded bg-amber-50 px-1 py-0.5 text-[10px] font-medium text-amber-600">하한</span> 배지), 요율(PAY-01-04)을 각 기초에 적용해 개인 보험료를 산정합니다. <b>국민연금은 만 60세 도달 시 가입이 자동 종료</b>(사업장가입자 자격상실)되어 <span className="rounded bg-slate-200 px-1 py-0.5 text-[10px] font-medium text-slate-600">종료</span>로 표시되고 이후 연금보험료 공제가 중단됩니다(건강·고용·산재는 계속 유지, 노령연금 수급·계속가입 신청 시 예외). 4대보험은 <b>사업장(HR-01-02) 단위</b>로 관리·신고하고, <b>일용·단시간</b>은 취득 특례(월 8일·60시간)로 국민·건강 가입을 판정합니다(고용·산재는 근로일 기준). 산재보험은 사업주 전액 부담입니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>산정 기준</b> — <b>건강·고용·산재는 보수월액</b>(과세소득, 비과세 제외), <b>국민연금은 기준소득월액</b>(보수월액을 천원 단위 절사, 상한 6,370,000 / 하한 400,000 적용)을 기초로 합니다. 그래서 고소득·저소득 구간에서 두 값이 달라질 수 있으며(<span className="rounded bg-amber-50 px-1 py-0.5 text-[10px] font-medium text-amber-600">상한</span>/<span className="rounded bg-amber-50 px-1 py-0.5 text-[10px] font-medium text-amber-600">하한</span> 배지), 요율(PAY-01-04)을 각 기초에 적용해 개인 보험료를 산정합니다. <b>국민연금은 만 60세 도달 시 가입이 자동 종료</b>(사업장가입자 자격상실)되어 <span className="rounded bg-slate-200 px-1 py-0.5 text-[10px] font-medium text-slate-600">종료</span>로 표시되고 이후 연금보험료 공제가 중단됩니다(건강·고용·산재는 계속 유지, 노령연금 수급·계속가입 신청 시 예외). 4대보험은 <b>사업장(HR-01-02) 단위</b>로 관리·신고하고, <b>일용·단시간</b>은 취득 특례(월 8일·60시간)로 국민·건강 가입을 판정합니다(고용·산재는 근로일 기준). 산재보험은 사업주 전액 부담입니다.
+        </div>
       </div>
 
       {modal && (
@@ -3487,8 +3529,11 @@ function DependentScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>연동</b> — 공제대상 가족 수·20세 이하 자녀 수가 간이세액표(PAY-01-04)에 반영되어 매월 소득세를 산출합니다. 기본공제(본인·배우자·부양가족)는 P0, <b>추가공제(경로우대·장애인·부녀자·한부모)·증빙은 P2</b>(연말정산용)입니다. 이 정보는 연말정산(PAY-04-02) 기초자료로 이어집니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>연동</b> — 공제대상 가족 수·20세 이하 자녀 수가 간이세액표(PAY-01-04)에 반영되어 매월 소득세를 산출합니다. 기본공제(본인·배우자·부양가족)는 P0, <b>추가공제(경로우대·장애인·부녀자·한부모)·증빙은 P2</b>(연말정산용)입니다. 이 정보는 연말정산(PAY-04-02) 기초자료로 이어집니다.
+        </div>
       </div>
 
       {modal && (
@@ -3603,8 +3648,11 @@ function BankAccountScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>연동</b> — 이체파일 생성(PAY-03-04) 시 <b>검증 완료된 계좌만</b> 포함됩니다. 미검증·미등록 계좌는 <b>급여 확정(PAY-03-02)</b> 단계에서 경고로 표시됩니다. 직원 본인 등록 + 관리자 실명 검증(예금주·계좌 일치)을 병행합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>연동</b> — 이체파일 생성(PAY-03-04) 시 <b>검증 완료된 계좌만</b> 포함됩니다. 미검증·미등록 계좌는 <b>급여 확정(PAY-03-02)</b> 단계에서 경고로 표시됩니다. 직원 본인 등록 + 관리자 실명 검증(예금주·계좌 일치)을 병행합니다.
+        </div>
       </div>
 
       {modal && (
@@ -3769,8 +3817,11 @@ function TaxRateScreen() {
 
       <div className="flex justify-end gap-2"><button onClick={() => flash(year + "년 요율·세액표를 갱신했습니다.")} className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">요율 갱신</button><button onClick={() => flash("적용기간 검증 후 저장했습니다.")} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">저장</button></div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>연도별 관리</b> — 4대보험 요율·간이세액표는 하드코딩 금지, 연도별 적용기간 테이블로 관리해 매년 변동을 반영합니다. <b>간이세액표는 버전·적용기간으로 관리</b>(국세청 별표 갱신 시 새 버전 업로드·적용기간 검증)하고, 80/100/120%는 근로자 선택, <b>지방소득세=소득세 10% 자동</b>, 국민연금 상·하한은 매년 7월 갱신입니다. <b>일용근로</b>는 일 15만 공제·6%·세액공제 55%·소액부징수로 상용과 별도 처리하고, 상시 5인 미만 사업장은 가산·일부 항목이 제외됩니다. 이 요율은 급여항목(PAY-01-01)·4대보험(PAY-02-03)·급여 계산(PAY-03-01)에 연동됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>연도별 관리</b> — 4대보험 요율·간이세액표는 하드코딩 금지, 연도별 적용기간 테이블로 관리해 매년 변동을 반영합니다. <b>간이세액표는 버전·적용기간으로 관리</b>(국세청 별표 갱신 시 새 버전 업로드·적용기간 검증)하고, 80/100/120%는 근로자 선택, <b>지방소득세=소득세 10% 자동</b>, 국민연금 상·하한은 매년 7월 갱신입니다. <b>일용근로</b>는 일 15만 공제·6%·세액공제 55%·소액부징수로 상용과 별도 처리하고, 상시 5인 미만 사업장은 가산·일부 항목이 제외됩니다. 이 요율은 급여항목(PAY-01-01)·4대보험(PAY-02-03)·급여 계산(PAY-03-01)에 연동됩니다.
+        </div>
       </div>
       {taxTable && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setTaxTable(false)}>
@@ -3896,8 +3947,11 @@ function PayCodeScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>종류별 분기</b> — 월급여=간이세액표(PAY-01-04)·4대보험 정규, <b>상여</b>=지급대상기간 방식 별도 회차, <b>일용급여</b>=일용근로소득 <b>6% 분리과세</b>(일 15만 공제·세액공제 55%·소액부징수)·4대보험 취득 특례(월 8일·60시간). <b>사업/기타소득</b>=고용관계 없는 외주·프리랜서로 <b>사업소득 3.3%</b>(반복·계속) 또는 <b>기타소득 8.8%</b>(일시)로 원천징수하고 4대보험 대상 아님·지급명세서 제출. 시간제(단시간)는 <b>월급여 · 산정 단위 시급</b>, 주급제는 <b>산정 단위 주급</b>으로 처리합니다. 종류·과세방식·산정 단위별로 급여 계산(PAY-03-01)·명세서 서식이 분기됩니다.<br /><b>※ 연동 검증</b> — 현재 프로토타입 급여 계산은 상용 간이세액 기준 단일 로직 위주이며, <b>사업소득 3.3%·기타소득 8.8%·주급 산정</b>은 계산식 반영이 P1 보완 대상입니다(코드값은 정의됨).
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>종류별 분기</b> — 월급여=간이세액표(PAY-01-04)·4대보험 정규, <b>상여</b>=지급대상기간 방식 별도 회차, <b>일용급여</b>=일용근로소득 <b>6% 분리과세</b>(일 15만 공제·세액공제 55%·소액부징수)·4대보험 취득 특례(월 8일·60시간). <b>사업/기타소득</b>=고용관계 없는 외주·프리랜서로 <b>사업소득 3.3%</b>(반복·계속) 또는 <b>기타소득 8.8%</b>(일시)로 원천징수하고 4대보험 대상 아님·지급명세서 제출. 시간제(단시간)는 <b>월급여 · 산정 단위 시급</b>, 주급제는 <b>산정 단위 주급</b>으로 처리합니다. 종류·과세방식·산정 단위별로 급여 계산(PAY-03-01)·명세서 서식이 분기됩니다.<br /><b>※ 연동 검증</b> — 현재 프로토타입 급여 계산은 상용 간이세액 기준 단일 로직 위주이며, <b>사업소득 3.3%·기타소득 8.8%·주급 산정</b>은 계산식 반영이 P1 보완 대상입니다(코드값은 정의됨).
+        </div>
       </div>
 
       {modal && (
@@ -4059,8 +4113,11 @@ function PayRateScreen() {
 
       <div className="flex justify-end gap-2"><button className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">취소</button><button onClick={() => flash("공제 방식·시간공제 설정을 저장했습니다.")} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">저장</button></div>
 
-      <div className="rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>P0 범위</b> — 이 화면의 P0는 일할 계산 기준 + 근태상태별 지급율입니다. 급여 계산(PAY-03-01)에서 결근·무급 부재를 만나면 일할 자동 공제, 유급휴가(연차)는 공제 없이 지급됩니다. 발령유형별 지급율(휴직·정직 등)은 발령유형 관리(HR-03-01)가 P1로 들어올 때 확장합니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>P0 범위</b> — 이 화면의 P0는 일할 계산 기준 + 근태상태별 지급율입니다. 급여 계산(PAY-03-01)에서 결근·무급 부재를 만나면 일할 자동 공제, 유급휴가(연차)는 공제 없이 지급됩니다. 발령유형별 지급율(휴직·정직 등)은 발령유형 관리(HR-03-01)가 P1로 들어올 때 확장합니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -4154,8 +4211,11 @@ function PayItemScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>공제 구성</b> — 법정 공제 <b>6종</b>(국민연금·건강보험·장기요양·고용보험·소득세·지방소득세)은 시스템 기본 제공으로 <b>삭제 불가·요율/사용여부만 조정</b>합니다. 장기요양=건보료×요율, 지방소득세=소득세×10%는 <b>종속 자동(읽기전용)</b>이고, 산재보험은 사업주 전액 부담이라 근로자 공제가 아니어서 명세서에 없고 <b>4대보험 관리(PAY-02-03)</b>에만 존재합니다. 가불·상조회비·노조비 등 <b>사용자정의 공제</b>만 추가/편집합니다. 통상임금 포함(2024.12 판례)·비과세 한도(월 20만)·법정 요율은 세액표(PAY-01-04)와 연동됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>공제 구성</b> — 법정 공제 <b>6종</b>(국민연금·건강보험·장기요양·고용보험·소득세·지방소득세)은 시스템 기본 제공으로 <b>삭제 불가·요율/사용여부만 조정</b>합니다. 장기요양=건보료×요율, 지방소득세=소득세×10%는 <b>종속 자동(읽기전용)</b>이고, 산재보험은 사업주 전액 부담이라 근로자 공제가 아니어서 명세서에 없고 <b>4대보험 관리(PAY-02-03)</b>에만 존재합니다. 가불·상조회비·노조비 등 <b>사용자정의 공제</b>만 추가/편집합니다. 통상임금 포함(2024.12 판례)·비과세 한도(월 20만)·법정 요율은 세액표(PAY-01-04)와 연동됩니다.
+        </div>
       </div>
 
       {modal && (
@@ -4767,6 +4827,7 @@ function OrgCodeScreen({ ctx }) {
   const [collapsed, setCollapsed] = useState({});
   const [showOff, setShowOff] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [purge, setPurge] = useState(null); // 기본 부서 전체 삭제 확인 { ok }
   const flash = (t, bad) => { setMsg({ t, bad }); setTimeout(() => setMsg(null), 3200); };
   const emps = (typeof HR !== "undefined" ? HR.emps : []).filter(e => ORG_ACTIVE.indexOf(e.stat) >= 0);
   const headIn = id => { const s = orgSub(id); return emps.filter(e => s.has(e.orgId)); };
@@ -4806,7 +4867,7 @@ function OrgCodeScreen({ ctx }) {
         <div role="treeitem" aria-level={dep} aria-expanded={kids.length ? !isCol : undefined} className={"flex flex-wrap items-center gap-2 border-b border-gray-100 py-2 pr-3 hover:bg-slate-50 " + (off ? "opacity-60" : "")} style={{ paddingLeft: ((dep - 1) * 24 + 12) + "px" }}>
           <button aria-label={(isCol ? "펼치기 " : "접기 ") + n.name} onClick={() => setCollapsed(c => ({ ...c, [n.id]: !c[n.id] }))} className={"w-4 shrink-0 text-gray-400 " + (kids.length ? "" : "invisible")}>{isCol ? "▸" : "▾"}</button>
           <span className="text-sm font-medium text-gray-800">{n.name}</span>
-          <span className="text-xs text-gray-400">{n.code}</span>
+          <span className="text-xs text-gray-400">{n.code}</span>{n.def && <span title="시스템이 처음 넣어 둔 기본 부서" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">기본</span>}
           <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600">{cnt}명{kids.length > 0 && own(n.id) !== cnt ? " (직속 " + own(n.id) + ")" : ""}</span>
           {mgr && <span className="text-[11px] text-gray-400">조직장 {mgr}</span>}
           {n.payUsed && <span title="확정된 급여에 쓰인 부서 — 부서코드 잠금" className="text-[11px] text-gray-400">🔒코드</span>}
@@ -4834,6 +4895,7 @@ function OrgCodeScreen({ ctx }) {
           <span className="text-sm font-semibold text-gray-700">부서 트리 <span className="ml-1 text-xs font-normal text-gray-400">최대 3단계 · 재직·휴직·정직·퇴직예정 인원</span></span>
           <div className="flex flex-wrap items-center gap-2">
             <label className="flex items-center gap-1.5 text-xs text-gray-500"><input type="checkbox" checked={showOff} onChange={e => setShowOff(e.target.checked)} className="h-3.5 w-3.5 rounded border-gray-300" />미사용 부서 보기</label>
+            {canEdit && REF.orgs.some(n => n.def) && <button onClick={() => setPurge({ ok: false })} className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50">기본 부서 전체 삭제</button>}
             {canEdit && <button onClick={() => openAdd(0)} className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">+ 최상위 부서</button>}
           </div>
         </div>
@@ -4841,8 +4903,8 @@ function OrgCodeScreen({ ctx }) {
         <div role="tree" aria-label="부서 트리" className="py-1">{childrenOf(0).length ? renderTree(0) : <p className="px-5 py-6 text-center text-sm text-gray-400">등록된 부서가 없습니다. ‘+ 최상위 부서’로 추가하세요.</p>}</div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-5 py-4 text-sm text-gray-600">
-        <p className="mb-2 font-semibold text-blue-700">부서관리 사용 안내</p>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
           <li><b>구조</b> — 본부 › 팀 › 파트 최대 3단계입니다. 3단계 부서에는 ‘+ 하위 부서’가 나오지 않습니다. 직원은 어느 단계에나 소속될 수 있습니다(본부 직속 가능). 같은 단계에서는 부서코드 순으로 정렬됩니다.</li>
           <li><b>인원</b> — 부서 옆 숫자는 하위 부서까지 포함한 인원(재직·휴직·정직·퇴직예정)이며, 괄호 안은 그 부서 직속 인원입니다. 소속은 직원 등록·인사 발령에서 정합니다.</li>
@@ -4851,6 +4913,7 @@ function OrgCodeScreen({ ctx }) {
           <li><b>조직장</b> — 표시용 정보입니다. 권한이나 결재선과는 관계없습니다(결재는 관리자 단일 승인).</li>
           <li><b>삭제</b> — 소속 직원(재직·휴직·정직·퇴직예정)이 있으면 삭제할 수 없으니 인사 발령으로 먼저 옮기세요. 발령·급여 이력이 있는 부서는 삭제 대신 <b>미사용</b>으로 바뀌어 이력은 남고 선택 목록에서만 숨겨집니다. 기록이 전혀 없는 부서만 완전히 삭제되며, 하위 부서도 함께 처리됩니다. ‘미사용 부서 보기’에서 [다시 사용]으로 되돌릴 수 있습니다.</li>
           <li><b>부서 목록 내보내기</b> — 부서별 인원·조직장·코드를 엑셀로 받는 기능은 조직 종합관리(HR-02-03)에서 제공합니다.</li>
+          <li><b>기본 부서 전체 삭제</b> — ‘기본’ 표시는 처음 제공된 샘플 부서입니다. [기본 부서 전체 삭제]로 한 번에 정리할 수 있고, 실행 전에 삭제·미사용·남김 목록을 보여 줍니다. 직원이 소속된 부서는 남고, 확정 급여·발령 이력이 있는 부서는 미사용으로 바뀝니다. 회사가 추가한 부서는 지우지 않습니다.</li>
         </ul>
       </div>
 
@@ -4878,10 +4941,21 @@ function OrgCodeScreen({ ctx }) {
             : <p className="text-sm text-gray-600">소속 직원과 이력이 없는 부서라 완전히 삭제합니다{modal.kids > 0 ? "(하위 부서 포함)" : ""}. 되돌릴 수 없습니다.</p>}
         </TreeModal>
       )}
+      {purge && (() => { const p = orgDefPlan(); const L = (arr, cls) => arr.map(x => <li key={x.n.id} className={cls}>{orgPath(x.n)}{x.why ? <span className="text-gray-400"> · {x.why}</span> : ""}</li>);
+        return <TreeModal title="기본 부서 전체 삭제" badge="HR-02-01" submit={"실행 (삭제 " + p.del.length + " · 미사용 " + p.off.length + ")"} danger submitDisabled={!purge.ok || !(p.del.length + p.off.length)} onClose={() => setPurge(null)} onSubmit={() => { const r = orgDefPurge(); setPurge(null); flash("기본 부서 " + r.del.length + "개를 삭제하고 " + r.off.length + "개를 미사용 처리했습니다." + (r.keep.length ? " 남긴 부서 " + r.keep.length + "개는 직원을 옮긴 뒤 지우세요." : "")); }}>
+          <p className="text-gray-600">처음 제공된 <b>기본 부서</b>(‘기본’ 표시)를 한 번에 정리합니다. 회사에서 추가한 부서는 건드리지 않습니다. 규칙은 부서를 하나씩 지울 때와 같습니다.</p>
+          <div className="space-y-2 rounded-md border border-gray-200 p-3 text-xs">
+            <p className="font-semibold text-red-600">삭제 {p.del.length}개</p><ul className="list-disc pl-5 text-gray-700">{p.del.length ? L(p.del) : <li className="text-gray-400">없음</li>}</ul>
+            <p className="font-semibold text-amber-600">미사용 처리 {p.off.length}개 <span className="font-normal text-gray-400">(이력 보존 · 선택 목록에서 숨김)</span></p><ul className="list-disc pl-5 text-gray-700">{p.off.length ? L(p.off) : <li className="text-gray-400">없음</li>}</ul>
+            <p className="font-semibold text-gray-600">남김 {p.keep.length}개</p><ul className="list-disc pl-5 text-gray-700">{p.keep.length ? L(p.keep) : <li className="text-gray-400">없음</li>}</ul>
+          </div>
+          {p.keep.length > 0 && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">직원이 소속된 부서는 지울 수 없습니다. 인사 발령(HR-04-02)으로 직원을 새 부서로 옮긴 뒤 다시 실행하세요.</p>}
+          <label className="flex items-start gap-2 text-xs text-gray-700"><input type="checkbox" checked={purge.ok} onChange={e => setPurge({ ok: e.target.checked })} className="mt-0.5 h-4 w-4 rounded border-gray-300" />삭제한 부서는 되돌릴 수 없음을 확인했습니다(필요하면 ‘+ 최상위 부서’로 다시 만듭니다).</label>
+        </TreeModal>; })()}
     </div>
   );
 }
-function TreeModal({ title, badge, submit, danger, onClose, onSubmit, children }) {
+function TreeModal({ title, badge, submit, danger, onClose, onSubmit, children, submitDisabled }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white shadow-xl">
@@ -4892,7 +4966,7 @@ function TreeModal({ title, badge, submit, danger, onClose, onSubmit, children }
         <div className="space-y-3 p-5 text-sm">{children}</div>
         <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-3">
           <button onClick={onClose} className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50">취소</button>
-          <button onClick={onSubmit || onClose} className={"rounded-md px-4 py-1.5 text-sm font-medium text-white " + (danger ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700")}>{submit}</button>
+          <button disabled={!!submitDisabled} onClick={onSubmit || onClose} className={"rounded-md px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 " + (danger ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700")}>{submit}</button>
         </div>
       </div>
     </div>
@@ -4903,7 +4977,7 @@ function Hint({ children }) { return <p className="mt-1 text-xs text-gray-400">{
 // ═══════════════════════════════════════════════════════════════
 // 직원관리 개편 (HR-04-01 등록 / 04-04 목록 / 04-05 정보 / 04-02 발령)
 // ═══════════════════════════════════════════════════════════════
-const GUIDE = {"APV-01": {"user": "문서 종류별로 누가 어떤 순서로 결재할지 정하는 곳이에요. (도입 예정 기능)", "dev": ["[개요] 문서유형별 결재 경로(결재자 순서) 설정. MVP는 단일 승인(APV-02), 다단계·대결/전결은 P1 도입 시. LNB 비노출.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "APV-02": {"user": "직원들이 올린 신청(휴가·연장·증명서·서식 등)을 확인하고 승인하거나 반려하는 곳이에요.", "dev": ["[개요] 신청 접수 현황(대시보드)과 결재 대기 신청(근태·휴가·연장·제증명·서식 등)을 한 화면에서 조회·처리합니다. 상단은 접수·처리 요약, 하단은 단일 승인·반려 목록입니다(다단계 결재선 APV-01은 P1).", "[데이터] approval_request(list·filter·detail·selected_ids·comment)", "[흐름] F3 흐름: TA-05-01 → APV-02 → TA-04-02  ·  F4 흐름: FRM-04 → APV-02 → EMP-05  ·  F5 흐름: FRM-04 → APV-02 → FRM-05  ·  F6 흐름: FRM-02 → APV-02 → (끝)", "우선순위 P0"]}, "APV-03": {"user": "내가 올린 신청의 진행 상태를 확인하고, 대기 중인 건을 회수하거나 반려된 건을 다시 신청하는 곳이에요.", "dev": ["[개요] 본인이 올린 신청(근태·휴가·연장·제증명 등)의 결재 진행 상태를 조회하고, 대기 중인 건을 회수하거나 반려 건을 재신청합니다. 신청 생성은 각 업무 화면에서 하고, 이 화면은 조회·회수 중심입니다.", "[데이터] approval_request(list·filter·detail)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "DSH-01": {"user": "로그인하면 가장 먼저 보이는 홈이에요. 이번 달 급여 요약, 처리할 일, 다가오는 신고 일정, 근태 이상을 한눈에 확인합니다.", "dev": ["[개요] 관리자 홈·서비스 최초 진입(랜딩). 이번 달 급여 요약·할 일·법정 신고 일정(SET-04)·근태 이상 위젯. 직원 홈(DSH-02)은 EMP-00 재사용.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "DSH-02": {"user": "직원이 로그인했을 때 보는 홈이에요. 내 근무·급여·신청 현황을 요약해서 보여줍니다.", "dev": ["[개요] 직원 셀프 홈. 직원모드 내 대시보드(EMP-00)와 동일 화면 재사용 — 별도 정의 없음.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "EMP-00": {"user": "직원 모드의 첫 화면이에요. 오늘 할 일과 알림, 내 근태·급여 요약을 확인합니다.", "dev": ["[개요] 직원모드 랜딩. 할 일·알림·내 근태/급여 요약. DSH-02가 이 화면을 재사용.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F7 흐름: (시작) → EMP-00 → EMP-01", "우선순위 P0"]}, "EMP-01": {"user": "내 출퇴근 기록을 확인하는 곳이에요. 기록은 회사가 올린 근태 자료를 바탕으로 보여지며 여기서는 조회만 합니다.", "dev": ["[개요] 본인 출퇴근 기록을 조회합니다. 출퇴근 원천은 관리자 근태 일괄 업로드(TA-03-04, 엑셀)이며 이 화면은 조회 전용입니다.", "[데이터] attendance_record(clock)", "[흐름] F7 흐름: EMP-00 → EMP-01 → EMP-03", "우선순위 P0"]}, "EMP-02": {"user": "내 근무 일정(교대·시간표)을 달력으로 확인하는 곳이에요.", "dev": ["[개요] 본인 교대·시간표를 캘린더로 조회한다. 개인 근무스케줄 관리(TA-03-02)의 본인 뷰. 교대제 운영 시 유용하며 P1로 도입한다.", "[데이터] work_schedule(work_type/start_time)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "EMP-03": {"user": "내 연차가 얼마나 생기고 얼마나 남았는지, 휴가 사용 내역을 확인하는 곳이에요. 휴가 신청은 신청 화면에서 합니다.", "dev": ["[개요] 본인 연차 발생·사용·잔여와 휴가 사용 내역을 조회합니다. 연차/휴가(TA-04)의 본인 뷰이며, 휴가 신청은 근태 신청(TA-05-01)으로 연결합니다.", "[데이터] leave_use", "[흐름] F7 흐름: EMP-01 → EMP-03 → TA-05-01", "우선순위 P0"]}, "EMP-04": {"user": "내 급여명세서를 월별로 열어보고 PDF로 내려받는 곳이에요.", "dev": ["[개요] 본인의 확정 급여명세서를 월별로 열람하고 PDF로 내려받습니다. 관리자 발행(PAY-03-03)과 상호 연동되며, 본인 확정 명세서만 조회합니다.", "[데이터] payslip(list·doc)", "[흐름] F7 흐름: EMP-05 → EMP-04 → (끝)  ·  F8 흐름: PAY-04-01 → EMP-04 → (끝)", "우선순위 P0"]}, "EMP-05": {"user": "내가 올린 신청이 지금 어디까지 처리됐는지 확인하는 곳이에요. 대기 중인 건은 회수할 수 있어요.", "dev": ["[개요] 본인 신청 결재 진행상태 조회·회수. 내 신청함(APV-03)과 동일 기능의 직원모드 명칭.", "[데이터] approval_request(list·filter·detail)", "[흐름] F4 흐름: APV-02 → EMP-05 → (끝)  ·  F7 흐름: FRM-04 → EMP-05 → EMP-04", "우선순위 P0"]}, "FRM-01": {"user": "직원이 신청할 수 있는 서식 목록을 만들고 관리하는 곳이에요. 분류·사용 여부를 정하고 새 서식을 추가합니다.", "dev": ["[개요] 직원이 신청할 수 있는 서식을 카탈로그로 등록·관리한다. 서식 신청은 기록 용도로만 사용하며 후처리는 소명·보관만 유효하다(데이터 자동 반영 없음). 분류(근태/급여/인사/복지)·활성 여부·결재선·버전을 한눈에 보고, 하드코딩 없이 서식을 추가·수정한다.", "[데이터] form_template(template_id·category·form_type·active_yn)", "[ENUM] FORM_CATEGORY: 근태 / 급여 / 인사 / 복지 / FORM_TYPE: 기록형(소명·보관) / 발급형(제증명 A4)  ※반영형·계약·서명형 폐지", "[흐름] F1 흐름: PAY-02-04 → FRM-01 → (끝)  ·  F6 흐름: (시작) → FRM-01 → FRM-02", "우선순위 P0"]}, "FRM-02": {"user": "서식에 들어갈 입력 항목과 필요한 증빙, 출력용 A4 양식을 구성하는 곳이에요.", "dev": ["[개요] 동적 신청 폼(입력 필드·필수 증빙·결재선) + 표준 A4 양식(doc_layout) placeholder 매핑. {{필드코드}}↔form_field.field_code 1:1. 후처리 자동반영 폐지(서식=기록/발급용).", "[데이터] form_field(field_id·field_code) / form_template(doc_layout)", "[흐름] F6 흐름: FRM-01 → FRM-02 → APV-02", "우선순위 P0"]}, "FRM-04": {"user": "필요한 서식을 골라 내용을 작성하고 증빙을 첨부해 제출하는 곳이에요.", "dev": ["[개요] 분류 탭에서 서식을 고르면 해당 서식의 필드가 동적으로 렌더링됩니다. 필수 증빙을 첨부하고 신청 미리보기로 확인한 뒤 상신하면 서식의 결재선(→APV-02)으로 제출됩니다. 서식은 기록 용도로, 승인 내역은 소명·보관되며 데이터에 자동 반영되지 않습니다(제증명은 A4 발급). 근로계약서는 직원 정보(HR-04-05) 문서 업로드로 관리합니다.", "[데이터] form_request(form_values·attachments·status)", "[ENUM] FORM_STATUS: 작성중 / 대기 / 승인 / 반려 / 회수", "[흐름] F4 흐름: (시작) → FRM-04 → APV-02  ·  F5 흐름: (시작) → FRM-04 → APV-02  ·  F7 흐름: TA-05-01 → FRM-04 → EMP-05", "우선순위 P0"]}, "FRM-05": {"user": "승인된 신청을 표준 A4 문서로 열어보고 인쇄하거나 PDF로 발급받는 곳이에요.", "dev": ["[개요] 신청·발급 서식을 표준 A4 양식에 채워 열람·인쇄·PDF 발급(직인·발급번호 진위확인). 별도 LNB 없음 — FRM-04(발급형) 승인 후 자동 진입하는 뷰어형.", "[데이터] form_template(doc_layout) / form_request(cert_type·issue_no·show_rrn)", "[흐름] F5 흐름: APV-02 → FRM-05 → (끝)", "우선순위 P0"]}, "HR-01-01": {"user": "회사의 기본 정보(사업자번호·대표자·주소 등)를 등록하는 곳이에요. 여기 정보가 급여명세서와 신고 서류에 쓰입니다.", "dev": ["[개요] 급여·명세서 발행의 최상위 기준이 되는 법인 정보를 등록·수정한다. 최초 도입 세팅 1단계 화면으로, 법인은 1건만 존재한다.", "[데이터] company(name·ceo_name·biz_no·corp_no·founded_date·address·biz_type·tel)", "[흐름] F1 흐름: (시작) → HR-01-01 → SET-01", "우선순위 P0"]}, "HR-01-02": {"user": "급여·4대보험 신고의 기준이 되는 사업장을 등록하는 곳이에요. 본사·공장처럼 관할이 다르면 나눠서 등록합니다.", "dev": ["[개요] 급여·4대보험 산정 및 신고의 기준 단위인 사업장을 등록한다. 본사·공장 등 관할이 다른 단위별로 분리 등록한다.", "[데이터] site(site_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-01-03": {"user": "출퇴근 위치 확인의 기준이 되는 근무지를 등록하는 곳이에요.", "dev": ["[개요] 위치기반(GPS/와이파이) 출퇴근 판정의 기준이 되는 근무지(Location)를 등록한다.", "[데이터] location(code·name·site_id·geo·radius·wifi·use_yn)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-02-01": {"user": "부서를 본부 › 팀 › 파트 최대 3단계 트리로 추가·수정·삭제하며 관리하는 곳이에요.", "dev": ["[개요] 부서 3단계 트리(본부›팀›파트). 편집=최고관리자, 급여 담당자=조회. 직원은 어느 단계에나 소속 가능.", "[검사] 부서명 필수·30자·같은 상위 아래 중복 불가 / 부서코드 숫자 4자리·회사 내 유일(@@unique company_id+code) / 이동은 자기·하위 아래 불가 + 이동 후 깊이 ≤3", "[삭제] 소속 직원(재직·휴직·정직·퇴직예정) 있으면 차단(직원 목록+인사 발령 이동) → 발령·급여 이력 있으면 use_yn=N(미사용, 다시 사용 가능) → 그 외만 물리 삭제. FK는 onDelete Restrict", "[코드] 확정 급여·전표에 쓰인 부서는 코드 잠금, 그 외 변경 시 경고. 급여 명세는 org_id·코드·경로 스냅샷 저장", "[데이터] org(org_id·parent_org_id·code·name·manager_emp_id(표시용)·use_yn) · 인원=employee.org_id 집계", "[흐름] 직원 등록(HR-04-01 빠른 설정은 M1 규칙 재사용)·인사 발령·직원 목록 부서 필터(하위 포함)의 기준", "[내보내기] 부서관리에는 엑셀 다운로드 없음 — 부서 목록 내보내기는 조직 종합관리(HR-02-03)", "우선순위 P0"]}, "HR-02-03": {"user": "부서별 인원·조직장·코드를 한눈에 보고 엑셀로 내려받는 곳이에요.", "dev": ["[개요] 조직별 인원·조직장·코드정보를 한눈에 조회하고 엑셀로 내보낸다.", "[데이터] org(base_date)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-03-01": {"user": "인사 발령에서 고를 수 있는 발령 종류와 사유를 미리 만들어 두는 곳이에요.", "dev": ["[개요] 입사·부서이동·승진·휴직·복직·퇴직 등 발령 유형과 사유 세트를 목록으로 관리한다. 인사 발령(HR-04-02)의 발령유형·사유 선택지가 여기서 정의된다.", "[데이터] appt_type(type)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-03-02": {"user": "입사 등록 때 사번을 자동으로 만들어 주는 규칙을 정하는 곳이에요.", "dev": ["[개요] 입사 등록 시 사번을 자동 채번하는 규칙을 설정한다.", "[데이터] emp_no_rule(method·pattern·year_prefix·seq·pad_len)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-01": {"user": "새 직원을 등록하는 곳이에요. 기본 인적사항, 소속, 발령 내용을 등록하고 직원을 초대할 수 있어요.", "dev": ["[개요] 입력한 부서·직위로 최초 발령과 급여 소속이 자동 생성됩니다. 직원·최초발령·계정을 하나의 트랜잭션으로 처리하며(실패 시 롤백), 필요 시 직원계정 초대를 함께 발송합니다. (사업장 지정은 P1)", "[데이터] employee(name·rrn·email·join_date·site_id·job_rank·emp_type·emp_no)", "[ENUM] EMP_TYPE: 정규직 / 계약직(기간제) / 일용직 / 단시간(파트타임) / 파견 / 프리랜서(외주)", "[흐름] F1 흐름: PAY-01-04 → HR-04-01 → HR-06-03  ·  F9 흐름: (시작) → HR-04-01 → HR-06-02", "우선순위 P0"]}, "HR-04-02": {"user": "재직 중인 직원의 부서 이동·승진·전보·휴직·복직을 처리하고 이력을 남기는 곳이에요. 퇴직은 별도 화면에서 합니다.", "dev": ["[개요] 재직·휴직·정직 직원의 승진·부서이동(전보)·고용형태 변경·휴직·복직을 등록하고 이력을 누적합니다. 등록 즉시 현재 직위·부서·고용형태·재직상태가 갱신되고 발령번호가 붙습니다. 퇴직은 HR-04-08, 강등은 HR-04-09.", "[데이터] appointment(emp_id·appt_no·appt_type·appt_date·before/after_org_id·before/after_position_cd·before/after_emp_type·leave_type·return_due_date·reason·memo·attachments·status·cancel_reason·created_by)", "[ENUM] APPT_TYPE: 입사 / 승진 / 전보(부서이동) / 고용형태변경 / 휴직 / 복직 / 강등 / 퇴직 · ABSENCE_TYPE · APPT_STATUS", "[규칙] 재직은 승진·이동·고용형태·휴직, 휴직은 복직만 · 미래 일자 불가 · 승진은 상위 직위만 · 법정 휴직기간 검증 · 최신 발령만 취소", "[흐름] 직원 정보(HR-04-05) → 인사 발령 → 확인(M2) → 직원 정보 발령이력 / 퇴직 처리(HR-04-08)", "우선순위 P0"]}, "HR-04-03": {"user": "여러 명의 발령을 엑셀로 한 번에 등록하는 곳이에요.", "dev": ["[개요] 발령 내역을 엑셀로 대량 등록한다. [일괄 업로드] 클릭 시 파일 탐색창이 즉시 열리고, 파일을 선택하면 같은 화면에 검증 결과가 표시된다(중간 단계 없음). 정상 행만 반영하고 오류 행은 사유와 함께 제외한다. 양식은 [양식 다운로드]에서 받는다. 근태 일괄 업로드(TA-03-04)·개인 근무유형 일괄 업로드(TA-03-01-M2)와 동일한 업로드 UX 패턴이다.", "[데이터] appointment(effective_date·appt_type_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-04": {"user": "전체 직원을 보여주는 곳이에요. 검색필터에서 찾을 수 있으며 이름을 클릭하면 해당 직원의 상세 정보를 확인할 수 있어요.", "dev": ["[개요] 직원관리의 기본 진입점입니다. 조건으로 검색·필터한 뒤, 직원 셀(이름)을 클릭하면 해당 직원의 직원 정보(HR-04-05) 상세로 이동합니다.", "[데이터] employee(columns·sort_order)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "HR-04-05": {"user": "직원 한 명의 인사·발령·급여·근태·문서를 탭으로 모아 보는 상세 화면이에요.", "dev": ["[개요] 직원 1인의 인사·발령·급여·근태·문서를 탭으로 통합 조회하는 마스터 상세화면.", "[데이터] employee(name·name_en·rrn_enc·phone·email·join_date·org_id·position_cd·emp_type·work_type_id) / employee_document / employee_profile(가족·학력·경력·자격·병역) / personnel_order / salary_contract / insurance / bank_account / award_discipline / account", "[ENUM] EMP_TYPE: 정규직 / 계약직(기간제) / 일용직 / 단시간(파트타임) / 파견 / 프리랜서(외주) · EMP_DOC_TYPE: 근로계약서 / 동의서 / 서약서 / 증빙 / 기타", "[규칙] 소속·직위·고용형태·입사일은 인사 발령(HR-04-02)에서만 변경 · 주민번호 전체 열람은 최고관리자만(감사 로그) · 급여 탭은 급여 권한자만 · 근로계약서 3년 보존", "[흐름] 직원 목록(HR-04-04) → 직원 정보 → 인사 발령(HR-04-02)·퇴직 처리(HR-04-08)·계정 관리(HR-06-01)", "우선순위 P0"]}, "HR-04-06": {"user": "내 인사·급여·근태·문서를 한곳에서 확인하는 곳이에요. 프로필 사진을 바꾸거나 정보 변경을 신청할 수 있어요.", "dev": ["[개요] 인사기록카드(HR-04-05)의 본인 뷰입니다. 본인 인사·발령·급여·근태·문서를 6개 탭으로 통합 조회하며 본인 데이터만 노출됩니다(권한별 탭 축소). 프로필 사진 업로드/변경(HR-04-07)을 지원하고, 정보 변경은 서식 신청(FRM-04)으로 반영됩니다.", "[데이터] employee_profile(family·education·career·license·military)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-07": {"user": "직원 증명사진을 올리는 곳이에요. 한 명씩 또는 여러 명을 한 번에 올릴 수 있고, 올린 사진은 목록·조직도에 표시됩니다.", "dev": ["[개요] 증명사진을 개별(미리보기·크롭 후 저장) 또는 일괄(zip·파일명=사번)로 업로드합니다. 등록한 사진은 직원 목록·정보·조직도의 아바타로 표시됩니다.", "[데이터] employee(employee_id·photo·mapping)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "HR-04-08": {"user": "직원의 퇴직을 처리하는 곳이에요. 퇴직 유형과 날짜를 입력해 확정하면 계정·급여가 정리되고 퇴직금 정산으로 이어집니다.", "dev": ["[개요] 재직·휴직·정직 직원의 퇴직을 등록하고 퇴직자를 조회합니다. 퇴직일=마지막 근무일, 상실일=다음날. 미래 날짜는 예약, 확정 시 계정 비활성(요금 제외)·최종 급여(일할+연차수당)·퇴직금 정산·4대보험 상실신고 대기가 생성됩니다.", "[데이터] resignation(emp_id·resign_type·reason·last_work_date·loss_date·loss_reason_cd·notice_date·ins_report·attachments·status·cancel_reason) / severance(resign_id·status·pay_due·pay_date) / account(status=비활성)", "[ENUM] RESIGN_TYPE · RESIGN_STATUS · EI_LOSS_REASON · SEV_STATUS", "[규칙] 본인·마지막 최고관리자 불가 · 퇴직금 대상(1년·주15시간)·14일 지급기한 · 육아휴직·산재 요양 중 해고 불가 · 지급·신고 전까지 취소 가능", "[흐름] F8: 직원 정보(HR-04-05)·상벌(HR-04-09) → 퇴직 처리 → 확인(M1) → 퇴직금 정산(PAY-04-01)", "우선순위 P0"]}, "HR-04-09": {"user": "직원의 포상과 징계를 기록하고 이력을 남기는 곳이에요.", "dev": ["[개요] 포상·징계를 등록하고 이력을 누적합니다. 감봉은 근로기준법 §95 한도를 계산해 막고 징계 절차(근거·의결·소명·통지)를 기록합니다. 포상금·감봉·정직은 급여 반영 대기, 특별휴가는 약정휴가 202 부여, 강등은 발령이력, 해임·파면은 퇴직 처리로 이어집니다.", "[데이터] award_discipline(employee_id·category·type·event_date·amount·pay_month·pay_status·leave_days·period_from/to·basis_rule·decision_body/date·hearing_given/date·notice_date·reason·effect·attachments·status·cancel_reason)", "[ENUM] AWARD_TYPE · DISCIPLINE_TYPE · PAY_LINK_STATUS · AWARD_STATUS", "[흐름] 상벌 관리 → 확인(M2) → 직원 정보(HR-04-05) 상벌 탭 / 급여 반영 대기 / 휴가(TA-04-02) / 인사 발령 이력 / 퇴직 처리(HR-04-08)", "우선순위 P1"]}, "HR-06-01": {"user": "직원 로그인 계정을 관리하는 곳이에요. 역할 변경·잠금·비밀번호 초기화를 하고, 계정이 없는 직원에게 초대를 보낼 수 있어요.", "dev": ["[개요] 발급된 직원 계정(로그인 주체)을 목록으로 관리합니다. 연결 직원·역할·상태·최근 로그인을 확인하고, 초대 재발송·역할 변경·잠금/해제·비밀번호 초기화·비활성화를 수행합니다. 최초 초대 발송은 직원 등록(HR-04-01)에서 시작됩니다.", "[데이터] account(status·role_id·last_login_at) · audit_log(역할·상태 변경 이력)", "[ENUM] ACCT_STATUS: 활성 / 초대중(인증 전) / 잠금 / 비활성", "[규칙] 최고관리자 최소 1명 유지 · 본인 잠금·역할 변경 불가 · 퇴직 시 자동 비활성", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "HR-06-02": {"user": "가입 때 받은 이메일 링크로 계정을 활성화하는 화면이에요.", "dev": ["[개요] 계정 생성 시 본인 이메일로 인증 링크/코드를 보내 계정을 활성화한다(OTP·2차 인증 대체).", "[데이터] account(email·password·password_confirm·agreement·status)", "[ENUM] ACCT_STATUS: 활성 / 대기(인증전) / 잠금 / 비활성", "[흐름] F0 흐름: (시작) → HR-06-02 → SET-06  ·  F9 흐름: HR-04-01 → HR-06-02 → PAY-02-02", "우선순위 P0"]}, "HR-06-03": {"user": "관리자(최고관리자·급여 담당자)가 메뉴마다 조회·편집·확정·승인 중 무엇을 할 수 있는지 정하는 곳이에요.", "dev": ["[개요] 관리자 역할별로 메뉴마다 조회·편집·확정·승인 권한을 정합니다. 계정·권한, 구독·결제·서비스 해지는 최고관리자 전용입니다. 권한 변경은 저장 즉시 적용되며 감사 로그에 기록됩니다.", "[데이터] role(role_id·name·permissions) · audit_log(권한 변경 이력)", "[흐름] F1 흐름: HR-04-01 → HR-06-03(관리자 역할별 권한 설정) → PAY-02-04", "우선순위 P0"]}, "HR-06-04": {"user": "직원이 직접 가입한 경우 승인하고 기존 직원 정보와 연결하는 곳이에요. (도입 예정)", "dev": ["[개요] 직원 직접가입(self-signup) 시 발생하는 승인 대기 계정을 검토하여 기존 직원 레코드에 매칭하거나 신규 직원으로 생성해 연결한다. 초대 전용 MVP에서는 미사용이며, self-signup(P1) 도입 시 활성화된다.", "[데이터] account(status·emp_id)", "[ENUM] ACCT_STATUS: 활성 / 대기(인증전) / 잠금 / 비활성", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-06-05": {"user": "내 프로필 사진과 비밀번호를 바꾸는 곳이에요.", "dev": ["[개요] 본인 계정의 프로필 사진·비밀번호를 설정합니다. 로그인 계정(HR-06-01)과 연결된 본인 전용 설정입니다.", "[데이터] account(photo·name·email·password·role_id·target)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "PAY-01-01": {"user": "급여에 들어갈 지급·공제·비과세 항목을 만들고 계산 방식을 정하는 곳이에요.", "dev": ["[개요] 지급·공제·비과세 항목을 관리하고 항목별 계산식(수식빌더)과 통상임금 포함 여부를 설정합니다. 공제는 법정 6종(시스템 제공)과 사용자정의로 나뉩니다. 급여 계산(PAY-03-01)의 기준이 되며, 구 명칭은 '수당/공제 항목 구성'입니다.", "[데이터] pay_item(item_type·name·calc_type·formula·ordinary_flag·tax_free_limit·taxable·use_yn)", "[ENUM] CALC_TYPE: 정액 / 정률 / 수식(빌더) / 근태연동", "[흐름] F1 흐름: TA-06-01 → PAY-01-01 → PAY-01-02", "우선순위 P0"]}, "PAY-01-02": {"user": "급여 지급일, 근태를 어느 달 급여에 반영할지, 일할 계산·무급 공제 방식을 정하는 곳이에요.", "dev": ["[개요] 일할 계산 기준을 설정하고, 근태코드(TA-01-02)의 유급/무급을 상속해 급여 공제를 결정합니다. 사용중 근태코드를 다시 설정하지 않고, 조정 여지가 있는 무급 코드 공제 방식·지각/외출 시간공제만 편집합니다. 발령유형별 지급율은 HR-03-01(P1) 도입 시 확장합니다.", "[급여일] pay_policy.pay_day = 매월 1~28일/말일(§43② 매월 1회 이상 일정한 날) · 토·일·휴일(TA-01-01)이면 직전 근무일 지급 → payroll_run.pay_date에 회차별 실제 지급일 저장", "[정산 월] pay_policy.var_pay_month = 당월/전월(후불) · 기본급은 항상 그달분, 연장·야간·휴일·주휴수당과 결근·지각 공제만 payroll_run.att_period_ym(당월=같은 달, 전월=직전 달) 근태로 계산 · 당월+이른 지급일(28일 전)은 경고 · 근태 마감 기간 자체 변경(예: 21일~20일)은 P1", "[지각 공제] 지각·외출 시간공제 설정은 여기 한 곳(pay_policy.late_deduct_yn) — 집계기준(TA-06-01)은 표시만", "[데이터] pay_code(pay_rate) / pay_item(rate_pct)", "[흐름] F1 흐름: PAY-01-01 → PAY-01-02 → PAY-01-03", "우선순위 P0"]}, "PAY-01-03": {"user": "급여 종류(월급·일용·상여 등)와 세금 계산 방식·산정 단위를 정하는 곳이에요.", "dev": ["[개요] 급여 종류(월급여·일용급여·상여·기타수당)의 코드와 과세 방식·산정 단위를 정의합니다. 상용(월급여)과 일용의 세액계산·4대보험·명세서 로직이 갈리는 기준점이며, 시간제는 월급여 종류에 산정 단위(시급)로 처리합니다.", "[데이터] pay_code(code·name·pay_kind·tax_method·calc_unit)", "[ENUM] PAY_KIND: 월급여 / 일용급여 / 상여 / 기타수당 / TAX_METHOD: 일반(간이세액) / 상여 세액계산 / 일용근로(6%) / 사업소득(3.3%) / 기타소득(8.8%) / CALC_UNIT: 월급 / 주급 / 일급 / 시급 / 건별", "[흐름] F1 흐름: PAY-01-02 → PAY-01-03 → PAY-01-04", "우선순위 P0"]}, "PAY-01-04": {"user": "소득세 간이세액표와 4대보험 요율을 관리하는 곳이에요. 매년 바뀌는 요율을 연도별로 넣어 둡니다.", "dev": ["[개요] 근로소득 간이세액표(80/100/120% 선택)와 4대보험 연도별 요율을 관리합니다. 요율은 연도별 적용기간으로 관리해 매년 변동을 반영하며, 하드코딩하지 않습니다. (구 명칭: 원천세·세액표 설정)", "[데이터] deduction_rate(rate·local_tax·ins_rate·cap·hi_upper·hi_lower)", "[흐름] F1 흐름: PAY-01-03 → PAY-01-04 → HR-04-01", "우선순위 P0"]}, "PAY-02-01": {"user": "급여를 이체할 계좌를 등록·확인하는 곳이에요.", "dev": ["[개요] 급여 이체 계좌를 등록·검증합니다. 이체파일 생성(PAY-03-04)의 계좌 정보 원천이며, 직원 본인 등록 + 관리자 검증을 병행합니다.", "[데이터] bank_account(bank·holder)", "[흐름] F9 흐름: PAY-02-03 → PAY-02-01 → TA-03-01", "우선순위 P0"]}, "PAY-02-02": {"user": "직원의 부양가족 정보를 관리하는 곳이에요. 소득세 계산과 연말정산에 쓰입니다.", "dev": ["[개요] 직원별 부양가족·인적공제 정보를 관리합니다. 간이세액표의 공제대상 가족 수·20세 이하 자녀 수 산정에 쓰이며, 연말정산 기초자료로 연계됩니다.", "[데이터] dependent(dependent)", "[흐름] F9 흐름: HR-06-02 → PAY-02-02 → PAY-02-03", "우선순위 P0"]}, "PAY-02-03": {"user": "직원별 4대보험 취득·상실과 보험료 산정 기준을 관리하는 곳이에요.", "dev": ["[개요] 직원별 4대보험 취득/상실과 산정기초(보수월액·기준소득월액)를 관리합니다. 건강·고용·산재는 보수월액, 국민연금은 기준소득월액(천원 절사·상하한)을 적용하며, 두 값이 다르면 배지로 표시됩니다. 사업장(HR-01-02) 단위로 신고되고 요율(PAY-01-04)로 개인 보험료를 산정합니다.", "[데이터] insurance_enroll(base_wage·std_monthly·enroll_status·income_tax_rate·tax_reduction)", "[ENUM] TAX_REDUCTION_TYPE: 중소기업청년(90%) / 중소기업(60세이상·장애인 70%) / 경력단절여성 / 외국인기술자 / 없음", "[흐름] F9 흐름: PAY-02-02 → PAY-02-03 → PAY-02-01", "우선순위 P0"]}, "PAY-02-04": {"user": "직원별 연봉과 급여 구성(항목별 금액)을 등록하는 곳이에요. 급여 계산의 개인 기준값이 됩니다.", "dev": ["[개요] 직원별 연봉·급여구성(항목별 금액)과 적용기간을 관리합니다. 급여 계산(PAY-03-01)의 개인 기준값이며, 적용기간 기준으로 연봉 인상 이력이 관리됩니다.", "[데이터] salary_contract(annual_amount·apply_start/apply_end) / pay_code(tax_method) / salary_comp_line(comp_id)", "[ENUM] TAX_METHOD: 일반(간이세액) / 상여 세액계산 / 일용근로(6%) / 사업소득(3.3%) / 기타소득(8.8%)", "[흐름] F1 흐름: HR-06-03 → PAY-02-04 → FRM-01", "우선순위 P0"]}, "PAY-03-01": {"user": "대상 월과 직원을 골라 급여를 계산하는 곳이에요. 지급·공제·실수령액을 산출하고 오류를 점검합니다.", "dev": ["[개요] 대상 월·대상자에 급여항목 계산식과 근태 집계·개인 공제정보를 적용해 급여를 산출하는 워크벤치입니다. 지급·공제·실수령액을 계산하고 오류를 점검합니다.", "[데이터] payroll_run(month·target_ids·list·errors)", "[흐름] F2 흐름: TA-06-02 → PAY-03-01 → PAY-03-02", "우선순위 P0"]}, "PAY-03-02": {"user": "계산한 급여를 확인하고 확정(잠금)하는 곳이에요. 확정해야 명세서·이체·대장을 만들 수 있어요.", "dev": ["[개요] 계산된 급여를 검토하고 회차를 확정(잠금)합니다. 확정 시 명세서·이체파일·급여대장의 소스가 되며, 이후 수정은 해제 후에만 가능합니다.", "[데이터] payroll_run(status)", "[흐름] F2 흐름: PAY-03-01 → PAY-03-02 → PAY-03-03", "우선순위 P0"]}, "PAY-03-03": {"user": "확정된 급여로 명세서를 만들어 직원에게 배포하고, 발행 이력을 관리하는 곳이에요.", "dev": ["[개요] 확정된 급여로 명세서를 생성·배포하고 직원이 본인 명세서를 조회합니다. 근로기준법상 필수 기재사항을 포함하며, [발행 이력·대장] 탭에서 직원×월 누적 발행·교부 이력(임금명세서 대장)을 통합 관리합니다.", "[데이터] payslip(payslip_id·delivery_channel) / payslip_line(amount)", "[흐름] F2 흐름: PAY-03-02 → PAY-03-03 → PAY-03-04", "우선순위 P0"]}, "PAY-03-04": {"user": "확정된 급여를 은행에 올릴 이체파일로 만드는 곳이에요.", "dev": ["[개요] 확정된 급여의 실지급액과 계좌로 은행 이체파일을 생성합니다. 국민은행은 CMS 펌뱅킹 포맷(고정폭 텍스트)으로 직접 연동되고, 그 외 은행은 범용 대량이체 엑셀/CSV로 내보내 각 은행 인터넷뱅킹에 업로드합니다.", "[데이터] transfer_file(bank·transfer·format)", "[흐름] F2 흐름: PAY-03-03 → PAY-03-04 → PAY-03-05", "우선순위 P0"]}, "PAY-03-05": {"user": "월 급여대장을 고용형태별로 나눠 직원별·항목별로 모아 보는 곳이에요.", "dev": ["[개요] 월 급여대장을 고용형태(정규직·계약직(기간제)·일용직)별 섹션으로 나누어 직원별·항목별로 집계 조회합니다. 확정 급여 기준으로 지급·공제·실지급을 집계하며, 리포트(구 RPT-03)에서 급여관리로 이관된 화면입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F2 흐름: PAY-03-04 → PAY-03-05 → PAY-03-06", "우선순위 P0"]}, "PAY-03-06": {"user": "확정된 급여를 회계 전표(차변·대변)로 바꿔 회계프로그램으로 넘기는 곳이에요.", "dev": ["[개요] 확정 급여를 회계 분개(차변·대변)로 변환해 회계프로그램으로 전달합니다. 급여대장(PAY-03-05)을 원천으로 지급 비용·예수금·실지급액을 분개하고, 사업주 부담분(4대보험·산재)까지 포함해 전표를 생성·내보냅니다.", "[데이터] journal_voucher(dc_type/amount) / account_map(account_code/account_name)", "[흐름] F2 흐름: PAY-03-05 → PAY-03-06 → RPT-01", "우선순위 P1"]}, "PAY-04-01": {"user": "퇴직금을 계산하고 퇴직소득세를 뗀 실수령액을 산출하는 곳이에요. 원천징수영수증도 발급합니다.", "dev": ["[개요] 평균임금 기준 퇴직금을 계산하고 퇴직소득세·지방소득세를 원천징수해 실 수령액을 산출합니다. 급여·상여 지급총액 기반 산정, 중간정산·과세이연(DB/DC·IRP), 퇴직소득 원천징수영수증 발급을 지원합니다.", "[데이터] severance(avg_daily_wage·severance_pay·tax_base·income_tax·net_pay·payout_method)", "[ENUM] SEVER_PAYOUT: 본인 계좌 / IRP·퇴직연금 이전(과세이연)", "[흐름] F8 흐름: HR-04-08 → PAY-04-01 → EMP-04", "우선순위 P0 (퇴직금 계산·지급) · 원천징수영수증 발급은 P1(후속)"]}, "PAY-04-02": {"user": "연말정산 자료를 모으고 정산 세액을 계산하는 곳이에요.", "dev": ["[개요] 연말정산 자료를 수집하고 정산세액을 산출한다.", "[데이터] payslip(year_end_tax) / tax_reduction(reduction_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "RPT-01": {"user": "부서별·월별 인건비를 집계해 추이와 구성비를 차트로 보는 분석 화면이에요.", "dev": ["[개요] 확정 급여를 기준으로 부서별·월별 인건비(지급총액 + 사업주 부담 4대보험)를 집계·비교하는 경영 분석 리포트입니다. 추이·구성비를 차트로 제공합니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F2 흐름: PAY-03-06 → RPT-01 → (끝)", "우선순위 P0"]}, "RPT-02": {"user": "부서별·월별 근무·연장·야간·휴가 사용을 집계해 보는 분석 화면이에요.", "dev": ["[개요] 확정 근태 집계를 기준으로 부서별·월별 근무·연장·야간·휴가 사용을 집계·비교하는 분석 리포트입니다. 근태집계(TA-06-02)가 마감·원천이라면 이 화면은 경영·인사 분석용 시각화입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "SET-01": {"user": "직원 등록·발령에서 고르는 분류 코드(직급·고용형태 등)를 관리하는 곳이에요.", "dev": ["[개요] 직원 등록·발령의 드롭다운 선택지가 되는 공통 분류 코드를 코드그룹 → 코드값(마스터-디테일)으로 관리합니다. 인사분류 계층과 고용형태·호칭 등을 포함합니다.", "[데이터] code_master(group·value·code·name·manager_id·sort_order·use_yn)", "[흐름] F1 흐름: HR-01-01 → SET-01 → HR-02-01", "우선순위 P0"]}, "SET-02": {"user": "어떤 일이 생겼을 때 누구에게 어떤 방법(이메일·알림톡)으로 알릴지 정하는 곳이에요.", "dev": ["[개요] 이벤트별로 알림 채널(이메일·알림톡)과 수신 대상을 매트릭스로 설정합니다. 운영 이벤트(계정·급여) 중심의 MVP 범위입니다.", "[데이터] notification_setting(event·channel·target·send_time·template)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "SET-03": {"user": "회계·뱅킹 등 외부 시스템 연동을 관리하는 곳이에요.", "dev": ["[개요] 외부 시스템 연동을 목록으로 관리한다. SMB MVP는 회계·펌뱅킹의 CSV·표준 파일 연동을 기본으로 하며, API·SSO·출퇴근기기·ATS 등은 P2/문의형 애드온이다.", "[데이터] integration_config(type·method·credential·mapping·use_yn·open_api·device_integration)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "SET-04": {"user": "세무·4대보험 같은 법정 신고 일정을 연도별로 관리하는 곳이에요. 대시보드 할 일 알림의 원본이 됩니다.", "dev": ["[개요] 세무·4대보험 등 법정 신고 일정을 연도별로 관리합니다. 관리자 대시보드(DSH-01) 할 일·알림의 '법정 일정' 소스이며, 회사 급여지급일·사업장(HR-01-02)과 결합해 실제 마감 D-day를 산출합니다.", "[데이터] tax_calendar(list·report_type·schedule·alert_timing·owner_id·site_id·use_yn)", "[ENUM] REPORT_TYPE: 원천세 / 지방소득세 / 지급명세서 / 4대보험 보수총액 / 연말정산", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "SET-05": {"user": "payDream 이용 해지를 신청하는 곳이에요. 최고관리자만 신청할 수 있어요.", "dev": ["[개요] 회사(회원사)가 payDream 서비스 이용 해지를 신청합니다. 최고관리자만 신청할 수 있으며, 신청 시 운영자 접수 후 잔여기간 정산·데이터 보존/파기 절차가 진행됩니다.", "[데이터] cancel_request(reason_code·reason_text·effective_date·req_status·data_disposal·retention_days·backup_requested·purge_due_date·purged_at)", "[ENUM] CANCEL_STATUS: 신청 / 승인 / 철회 / 완료 · DATA_DISPOSAL: 보존 후 파기 / 즉시 파기", "[흐름] F0 흐름: SET-08 → SET-05 → (끝)", "우선순위 P0"]}, "SET-06": {"user": "지금 쓰는 요금제와 다음 결제일을 확인하고 요금제를 바꾸는 곳이에요.", "dev": ["[개요] 현재 이용 중인 요금제·구독 상태·다음 결제일을 확인하고 요금제를 변경(업/다운그레이드)합니다. ※ 요금은 가안(운영 콘솔 BO-BILL-01과 동일).", "[데이터] saas_subscription(plan_code·status·next_bill_date)", "[ENUM] SUB_STATUS: 체험 / 이용중 / 연체 / 정지 / 해지예정 / 해지", "[흐름] F0 흐름: HR-06-02 → SET-06 → SET-07", "우선순위 P0"]}, "SET-07": {"user": "자동결제에 쓸 카드를 등록·변경하는 곳이에요. 카드 정보는 결제사 화면에서 입력하며 저장되지 않아요.", "dev": ["[개요] 구독료 자동결제에 사용할 결제 수단(신용·체크카드)을 등록·변경합니다. 계좌 자동이체는 P1. 결제 실패 시 D+1·3·7 자동 재시도, D+14 서비스 정지, 미납 기간 상단 안내 배너(운영 콘솔 BO-BILL-08 연동). 카드 정보는 PG 결제창에서 직접 입력하며 본 서비스에 저장되지 않습니다.", "[데이터] saas_payment_method(method_type·billing_key_enc·is_default)", "[흐름] F0 흐름: SET-06 → SET-07 → SET-08", "우선순위 P0"]}, "SET-08": {"user": "결제 내역을 확인하고 세금계산서·현금영수증을 내려받는 곳이에요.", "dev": ["[개요] 구독료 결제 내역(공급가액·부가세·합계)을 조회하고 결제 증빙(세금계산서·현금영수증)을 확인·다운로드합니다. 증빙은 운영자가 결제 건 기준으로 발급(BO-BILL-06)하며, 유형 변경·재발급은 1:1 문의(SET-09)로 요청합니다. 사업자 정보는 회사 정보(HR-01-01)를 따릅니다.", "[데이터] saas_payment(paid_at·amount_supply·amount_vat·amount_total·status·evid_type·evid_status·receipt_url)", "[ENUM] PAY_STATUS: 결제완료 / 실패 / 취소 / 환불 · EVID_STATUS: 발급대기 / 발급완료 / 미발급", "[흐름] F0 흐름: SET-07 → SET-08 → SET-05", "우선순위 P0"]}, "SET-09": {"user": "payDream 운영팀에 궁금한 점이나 오류를 문의하고 답변을 확인하는 곳이에요.", "dev": ["[개요] 회원사 관리자(최고관리자·급여 담당자)가 payDream 운영팀에 1:1 문의를 등록하고 답변·이력을 확인합니다. 운영 콘솔 1:1 문의함(BO-SUP-01)·문의 상세(BO-SUP-02)와 같은 티켓을 공유합니다. 직원 모드에는 노출하지 않습니다(직원 문의는 회사 관리자 경유).", "[데이터] support_ticket(ticket_no·category·title·status·ref_screen_id·notify_email_yn·notify_kakao_yn) · support_message(author_type·body·attachment_url)", "[ENUM] TICKET_CATEGORY: 급여 / 근태 / 구독·결제 / 계정·권한 / 기타 · TICKET_STATUS: 대기 / 처리중 / 완료 / 보류", "[흐름] SET-09 → (운영 콘솔) BO-SUP-01 → BO-SUP-02 답변 → SET-09 알림·확인", "우선순위 P0"]}, "TA-01-01": {"user": "공휴일과 회사 지정 휴일을 연간 달력으로 관리하는 곳이에요. 휴일 근무 가산과 주휴 판정의 기준이 됩니다.", "dev": ["[개요] 법정공휴일·대체공휴일·회사 지정 휴일을 연간 캘린더로 관리합니다. 휴일 근무 가산과 주휴 판정의 기준이 됩니다.", "[데이터] holiday(holiday_id·holiday_type·date)", "[ENUM] HOLIDAY_TYPE: 주휴일 / 공휴일 / 대체공휴일 / 근로자의날 / 약정휴일", "[흐름] F1 흐름: HR-02-01 → TA-01-01 → TA-01-02", "우선순위 P0"]}, "TA-01-02": {"user": "지각·조퇴·휴가 같은 근태 종류를 관리하는 곳이에요.", "dev": ["[개요] 근태 종류는 시스템 기본 마스터 + 회사 추가 종류로 관리합니다. 기본 종류는 사용여부·코드번호·유급여부(약정)·색상만 설정하고, 회사는 약정휴가·근태상태에 한해 자체 종류를 추가·수정·삭제할 수 있습니다.", "[데이터] attendance_code(att_code_id·name)", "[흐름] F1 흐름: TA-01-01 → TA-01-02 → TA-02-01", "우선순위 P0"]}, "TA-01-03": {"user": "출장 유형·일당·근무 인정 기준을 정하는 곳이에요.", "dev": ["[개요] 출장 유형·일당·근태 처리(근무 인정 여부) 기준을 정의한다.", "[데이터] code_master(trip_standard)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-02-01": {"user": "출근·퇴근·휴게 시간표 템플릿을 만드는 곳이에요.", "dev": ["[개요] 근무 시간대(시작·종료·휴게) 템플릿을 관리합니다. 근무시간은 (종료−시작−휴게)로 자동 계산되며, 야간(22:00~06:00) 포함 시 야간 가산 대상으로 자동 표시됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F1 흐름: TA-01-02 → TA-02-01 → TA-02-02", "우선순위 P0"]}, "TA-02-02": {"user": "근로시간제(고정·탄력·선택·교대)와 소정근로시간을 정하고 시간표를 연결하는 곳이에요.", "dev": ["[개요] 근로시간제(고정/탄력적/선택적/교대)와 소정근로시간을 정의하고 시간표를 연결합니다. 근무제별로 연장 판정 로직이 다르며, 근무 장소(사무실/재택/원격/현장)는 근로시간제와 직교하는 속성입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F1 흐름: TA-02-01 → TA-02-02 → TA-02-03", "우선순위 P0"]}, "TA-02-03": {"user": "연장·야간·휴일 근무의 가산율과 보상휴가 전환 기준을 정하는 곳이에요.", "dev": ["[개요] 연장·야간·휴일 근무의 가산율과 보상휴가 전환·연장 상한을 정의합니다. 이 값은 근태 집계(TA-06)와 급여 산정(PAY)에 그대로 연동됩니다.", "[데이터] overtime_rule(rule_id)", "[흐름] F1 흐름: TA-02-02 → TA-02-03 → TA-04-01", "우선순위 P0"]}, "TA-03-01": {"user": "직원별로 근무유형을 배정하는 곳이에요.", "dev": ["[개요] 직원별 근무유형 배정·이력. 대상=재직·휴직·정직 근로자(프리랜서 제외, 퇴직예정·휴직은 배지). 편집=최고관리자·급여 담당자", "[검사] 근무유형=TA-02-02 사용 중 · 적용일 형식 · 근태 마감월 소급 불가 · 최신 배정 시작일 이후만(예정 있으면 먼저 취소) · 같은 유형 불가 · 퇴직 예정일 이후 불가 / 일괄·업로드는 위반 행만 제외", "[이력] 신규 배정 시 이전 배정 apply_end=적용일 전날 · 적용일>오늘이면 예정 → 적용일에 employee.work_type_id 갱신(일 배치) · UNIQUE(emp_id, apply_start)", "[데이터] emp_work_type(emp_id·work_type_id·apply_start·apply_end·reason·source=ASSIGN_SOURCE·created_by) · employee.work_type_id · work_type.is_default", "[흐름] 직원 등록(HR-04-01) 최초 배정(입사일·입사등록) → 본 화면 변경 → 개인 근무스케줄(TA-03-02)·출퇴근 판정·근태 집계(TA-06-02) / 직원 정보(HR-04-05) [배정 이력]에서 진입", "우선순위 P0"]}, "TA-03-02": {"user": "직원별 근무 일정(교대표·시간대)을 달력으로 배정하는 곳이에요.", "dev": ["[개요] 교대·탄력근무 직원의 일자별 시간표 배정(월 캘린더). 대상=그날 TA-03-01 배정이 교대·탄력인 근로자 · 입사 전·퇴직 예정일 이후·근무유형 변경 후 날짜 잠금", "[규칙] 근무유형에 연결된 시간표만(work_type_shift · 3교대=오전·오후·야간, 탄력=유연 제외 전체) + 휴무 · 근태 마감월 조회만 · 승인 연차 잠금, 반차 표시", "[점검] 경고만: 주 휴무 0일(§55) · 주 소정 52h 초과(§51②) · 야간 다음 날 오전 — 저장은 허용", "[저장] 변경 칸 표시·[저장]으로 확정 · 미저장 상태로 월 이동 시 저장/버리기 확인 · 교대 패턴=빈 칸만(기본)/덮어쓰기", "[P1] 양식 다운로드·일괄 업로드(M2, 칸 단위 검증)는 MVP 이후 — MVP는 칸 배정·교대 패턴으로 입력", "[데이터] work_schedule(emp_id·work_date UNIQUE·shift_id(NULL=휴무)·start/end_time 스냅샷·is_leave·note) · 휴일=holiday(TA-01-01) · 휴가=leave_use 승인분", "[흐름] TA-03-01 근무유형 → 본 화면 → 근무 이력(TA-03-03) 판정·근태 집계(TA-06-02) / 직원 본인 조회=EMP-02", "우선순위 P0"]}, "TA-03-03": {"user": "출퇴근 기록을 확인·보정하고 하루 근무를 확정하는 곳이에요. 확정한 근무가 집계와 급여의 기초가 됩니다.", "dev": ["[개요] 출퇴근(원자료)+일근무 확정(임시→확정→마감). 대상=근로자(프리랜서·휴직 기간 제외), 기본=이번 달, 지난달 미확정 알림", "[판정] 자동: 정상(시업 이전 출근)·지각(분)·결근(보정 시 지정)·미입력(기록 없음/한쪽만)·휴무(시간표 없음)·휴가(전일 휴가 코드) · 조기 퇴근은 분 표시(조퇴=휴가 209 신청)", "[계산] 기준 시간표=근무스케줄(교대·탄력) 또는 근무유형 기본 시간표 · 휴게=시간표 휴게(없으면 §54 최소) · 야간 22~06(휴게 제외) · 휴일=TA-01-01 휴일·휴무일 근무(8h 이내/초과) · 연장=고정·교대 일 8h 초과, 단시간 소정 초과, 탄력·선택 잠정(기간 정산 TA-06-02)", "[확정] 임시만 확정 · 미입력은 보정/휴가/결근 처리 후 · 확정 행 수정=확정 해제(→임시) 후 보정 · 마감월 조회만(해제는 TA-06-02) · 보정 사유 필수·이력(audit_log)", "[권한] 보정=HR-06-03 ‘편집’ · 확정·해제=‘확정·승인’ (최고관리자·급여 담당자) — ‘인사담당’ 역할 없음", "[데이터] attendance_record(UNIQUE emp_id+work_date · clock_in/out · shift_id · result=ATT_RESULT · late_min · early_min · work/ot/night/holiday/holiday_ot_min · att_code_id · status=ATT_STATUS · source=SOURCE(수기 포함) · confirmed_by/at)", "[흐름] TA-03-04 엑셀 업로드(P0 원자료) → 본 화면 판정·보정(✎)·확정 → TA-06-02 집계·마감 → 급여 / 승인 휴가(TA-04-02) 자동 코드 / EMP-01은 조회", "[P1] 엑셀 다운로드 · 직원 직접 출퇴근(EMP-01 버튼·위치 확인) · 다회 타각 원자기록 분리 / 출처 컬럼 없음 — 관리자 보정 행만 ✎", "우선순위 P0"]}, "TA-03-04": {"user": "출퇴근·휴가 자료를 엑셀로 한 번에 반영하는 곳이에요.", "dev": ["[개요] P0 출퇴근 원자료 유일 경로(직원 직접 출퇴근 P1). 파일 선택 즉시 같은 화면에서 행 단위 검증 → 즉시 반영(동기) → 근무 이력(TA-03-03) attendance_record ‘임시’", "[양식] 사번*·성명·일자*·출근·퇴근·근태코드(선택)·비고 · 근태코드=TA-01-02 근태상태 중 지각 제외(외출·이석·외근·출장·재택근무·교육훈련)+‘결근’ · 정상·지각은 자동 판정 · 휴가는 TA-04-02", "[오류·제외] 사번 없음·프리랜서·입사 전·퇴직 후·휴직 기간·미래 날짜·마감월·시각/코드 형식·결근+출퇴근·파일 안 사번+일자 중복", "[경고·반영] 출퇴근 한쪽만(→미입력)·휴무/휴일 근무(휴일근로)·승인 휴가일 출퇴근·성명 불일치(사번 기준)", "[충돌] 기존 임시=덮어쓰기 · 확정/마감=건너뜀(근무 이력에서 해제 후) · 관리자 보정(source=수기)=건너뜀", "[한도·권한] 5MB·5,000행 · 최고관리자·급여 담당자(HR-06-03 편집)", "[데이터] attendance_upload(파일·처리자·기간·반영/건너뜀/오류 건수) ↔ attendance_record.upload_id · source=엑셀업로드", "[P1] 업로드 1건 되돌리기", "우선순위 P0"]}, "TA-03-05": {"user": "출퇴근이 비었거나 결근한 직원을 찾아 사유를 확인·보정하는 곳이에요.", "dev": ["[개요] 미입력·결근 대상자를 조회하고 사유 확인·보정을 처리한다.", "[데이터] attendance_summary(absent_days)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "TA-04-01": {"user": "연차가 어떻게 생기는지(입사일·회계연도) 기준을 정하고 직원별 발생·사용·잔여를 관리하는 곳이에요.", "dev": ["[개요] 연차 정책(회사당 1건) + 직원별 자동 발생 현황. 발생은 입사 기념일(회계연도 기준은 시작일)·1년 미만 매월 개근일에 일 배치로 자동, [지금 다시 계산]은 확인용", "[규칙] 1년 미만=개근월 1일(최대 11, 입사 1년 소멸) · 1년 이상=기본(≥15)+3년차부터 2년마다 1일(상한 25+가산) · 직전 1년 출근율 80% 미만=개근월 1일(§60②) · 육아휴직·출산휴가·산재 휴업=출근 간주(§60⑥) · 단시간=연차×(주 소정÷40)×8 시간 단위, 주 15h 미만 제외 · 프리랜서 제외", "[회계연도] 첫 회계연도 비례(기본×근무월÷12, 0.5일 내림) + 1년 미만 월차 별도 · 퇴사 시 입사일 기준과 비교해 부족분 수당 정산(HR-04-08·PAY-04-01)", "[소멸] CARRY_OVER: 수당지급(기본·미사용 수당) / 촉진면제(P1·TA-04-04 §61 절차 시) / 이월(노사 합의·1년)", "[조정] M1 가산/차감(0.5일 단위)·사유 필수·잔여 초과 차감 불가 → leave_grant(grant_type=조정+/조정−) · 사용 차감은 TA-04-02 승인 시", "[데이터] leave_policy(accrual_basis·fiscal_start_md·base_days·carry_over) · leave_grant(grant_type·grant_days·grant_hours·grant_date·expire_date·reason·created_by) · 잔여=발생+조정−사용(HR-04-08 연차 정산과 동일 값)", "우선순위 P0"]}, "TA-04-02": {"user": "직원의 휴가 등록·차감·승인 내역을 관리하는 곳이에요.", "dev": ["[개요] 공용 휴가 저장소(leave_use) — 관리자 등록=즉시 승인(처리자 기록), 직원 신청(TA-05-01)=대기→승인/반려, 승인 전 직원 회수=회수, 승인 후 취소=취소(사유)", "[종류] att_code_id=TA-01-02 법정·약정휴가(보상휴가 105는 P1) · 연차 차감은 agg=연차차감(101·102)만 · 공가=206 공가(인정휴가)", "[단위] LEAVE_UNIT: 1일/반차/반반차(연차휴가만)/시간(조퇴 209=조퇴 시각) · 반차·반반차 시간대=그날 시간표 2·4등분 · 단시간 근로자 차감은 시간 환산", "[일수] 1일 단위=그날 시간표상 근무일만(TA-01-01 휴일·스케줄 휴무 제외) · 103·104는 역일", "[검사] 잔여 부족(선사용 P1)·마감월·겹침(대기·승인)·근무일 없음·휴직·퇴직 예정일 이후·조퇴 시각 범위 · 일괄 승인은 통과 건만", "[취소] 사유 필수 · 근무 이력 확정 날짜가 있으면 TA-03-03에서 확정 해제 후 · 마감월 불가 → 잔여 복원·근무 이력/스케줄 원복", "[연동] 승인분 → TA-04-01 사용(잔여) · TA-03-03 근태코드(전일=휴가 판정) · TA-03-02 ●/◐ · HR-04-08 연차 정산", "우선순위 P0"]}, "TA-04-03": {"user": "연차 사용 촉진을 위한 사용 계획을 등록·관리하는 곳이에요.", "dev": ["[개요] 연차 사용 촉진을 위한 사용계획을 등록·관리한다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-04-04": {"user": "미사용 연차를 쓰도록 법에 맞춰 촉구하고 사용 시기를 정하는 절차를 관리하는 곳이에요.", "dev": ["[개요] P1 · 근기법 §61 연차 사용촉진. 일정은 직원별 사용기간 만료일(TA-04-01 lvCalc expire) 기준 자동 계산", "[일정] 연차: 1차 촉구=만료 6개월 전~+10일 · 계획 제출=촉구+10일 · 2차 지정=만료 2개월 전까지(미사용 전부) / 1년 미만(§61②): 9일분 1차=1년 3개월 전~+10일·지정 1개월 전, 2일분 1차=1개월 전~+5일·지정 10일 전", "[단계] 미시작 → 1차 촉구(계획 제출 대기) → 계획안 수령(전부/일부) → 2차 대상 → 지정 완료 / 기간 놓치면 기한 경과(면제 불가) — 2차는 제출 기한 경과 후에만", "[연동] 수령 계획일·사용자 지정일 = 휴가 내역(TA-04-02) leave_use(source=촉진, promo_id) 연차 승인 → 근무 이력·스케줄·잔여 반영", "[면제] 기한 내 완료 + 지정일 출근 시 노무수령 거부 통지 기록 → 만료 후 면제 판정(exempt_yn·사유) → TA-04-01 소멸 정책 '촉진 시 면제'", "[서면] 이메일(전자문서·열람 확인)=서면 증빙, 알림톡=보조 · 발송일·열람일 기록", "우선순위 P1"]}, "TA-05-01": {"user": "직원이 휴가나 근태 정정을 직접 신청하고 내 신청 현황을 보는 곳이에요.", "dev": ["[개요] [직원 모드] 직원이 본인의 휴가·근태 정정을 직접 신청하고 본인 신청 현황을 조회합니다. 유형별 유입: 휴가류(연차·반차·반반차·병가·조퇴)→휴가 내역 관리(TA-04-02), 근태정정→신청현황(APV-02)→승인 시 근무 이력(TA-03-03) 보정. 시스템(관리자) 모드 우선 완료 후 직원 모드 도입 시 제공됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F3 흐름: (시작) → TA-05-01 → APV-02  ·  F7 흐름: EMP-03 → TA-05-01 → FRM-04", "우선순위 P0"]}, "TA-05-03": {"user": "직원이 연장·야간·휴일 근무를 신청하고 내 현황을 보는 곳이에요.", "dev": ["[개요] [직원 모드] 직원이 연장(야간·휴일 포함) 근무를 사전 또는 사후에 신청하고 본인 현황을 조회합니다. 승인·반영은 관리자 화면(근무 이력/집계)에서 처리하며, '승인분만 수당 반영' 정책과 연장 상한(TA-02-03) 초과 경고를 지원합니다. 시스템(관리자) 모드 우선 완료 후 직원 모드 도입 시 제공됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "TA-05-06": {"user": "인사담당자가 여러 직원의 근태 신청을 한 번에 올리는 곳이에요.", "dev": ["[개요] 인사담당 근태 일괄 신청(다건 대리 신청). 직원 셀프 신청(TA-05-01/03)과 구분. LNB 비노출(의도).", "[데이터] form_request(request_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-06-01": {"user": "근태 집계 규칙(마감일·반올림·항목 매핑 등)을 정하는 곳이에요.", "dev": ["[개요] att_agg_rule 회사당 1건 · 적용 시작월(미마감 달) · 변경 이력(audit_log)", "[기간·단위] 마감 기간 P0=매월 1일~말일 고정(21~20·26~25일은 P1) · 시간 단위 1분 원칙, 10·30분은 올림만(버림·반올림 금지 — 임금 전액 지급 §43) · 주 시작요일은 여기서만(HR-01-01에서 이동)", "[항목] 근무=기본급 · 연장/야간/휴일 8h 이내·초과=가산(OT_RATES = TA-02-03 공유) · 주휴=소정근로일 개근 주 · 유급휴가=차감 없음 · 결근·무급=일할(PAY-01-02) · 지각·외출=정책 켤 때 시간 비례 · 상시 5인 미만이면 가산 미적용(§11)", "[정책] 확정분만 집계=고정 · 연장 승인분만(TA-05-03)=선택 — 미승인 연장은 TA-06-02 ‘마감 전 확인’에서 사후 승인/제외(사유) 필수 · 지각·외출 공제(무노동 무임금, 외출 시간 입력 P1)", "[연동] TA-06-02 마감 조건: 미확정 0건 + 미승인 연장 처리 완료", "우선순위 P0"]}, "TA-06-02": {"user": "직원별 한 달 근무·연장·휴일·주휴·지각·결근·휴가를 자동으로 모아 보고, 회사 전체를 월 단위로 마감하는 곳이에요. 마감하면 근태가 잠기고 급여 계산으로 넘어갑니다.", "dev": ["[개요] 근무 이력(TA-03-03) 확정 기록 + 승인 휴가(TA-04-02)를 집계기준(TA-06-01)대로 실시간 집계(별도 실행 없음) · 마감 시 attendance_summary 스냅샷 저장 + att_close 상태 변경", "[집계] 근무일·근무시간·연장(승인/사후 승인분만, 미승인은 별도 표시)·야간·휴일 8h 이내/초과·주휴(소정근로일 개근 주, 주 15h 이상, 주 마지막 날이 이 달인 주)·지각·조퇴(분, 시간 휴가 제외)·결근·유급/무급휴가(근태코드 유급 여부)·주 최대(주 시작요일, 월 경계 주 포함)", "[마감 조건] 회사 전체·월 단위(부서 선택은 조회용) · 직전 달까지 마감 + 달이 끝남 + 미확정 0건 + 미승인 연장 처리 완료 — 아니면 마감 버튼 비활성 + 사유 표시", "[잠금] 공용 마감월(att_close 최신 마감월) 기준으로 근무 이력·근무스케줄·휴가·발령 소급이 잠김 · 마감 시 기록 상태 확정→마감, 해제 시 마감→확정", "[해제] 가장 최근 마감월만 · 사유 필수 · 이 근태가 들어간 급여 월(PAY-01-02 정산 월 기준)이 확정(PAY-03-02)이면 차단 · 마감/해제 이력은 att_close + audit_log", "[연동] 상단에 반영 급여 월·지급일 표시(PAY-01-02) · 행 클릭 → 근무 이력(그 달·직원) · 상시 5인 미만이면 52h·가산 적용 제외 · 엑셀 다운로드 P1", "[흐름] F2 흐름: TA-03-03 → TA-06-02 → PAY-03-01  ·  F3 흐름: TA-04-02 → TA-06-02 → (끝)", "우선순위 P0"]}};
+const GUIDE = {"APV-01": {"user": "문서 종류별로 누가 어떤 순서로 결재할지 정하는 곳이에요. (도입 예정 기능)", "dev": ["[개요] 문서유형별 결재 경로(결재자 순서) 설정. MVP는 단일 승인(APV-02), 다단계·대결/전결은 P1 도입 시. LNB 비노출.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "APV-02": {"user": "직원들이 올린 신청(휴가·연장·증명서·서식 등)을 확인하고 승인하거나 반려하는 곳이에요.", "dev": ["[개요] 신청 접수 현황(대시보드)과 결재 대기 신청(근태·휴가·연장·제증명·서식 등)을 한 화면에서 조회·처리합니다. 상단은 접수·처리 요약, 하단은 단일 승인·반려 목록입니다(다단계 결재선 APV-01은 P1).", "[데이터] approval_request(list·filter·detail·selected_ids·comment)", "[흐름] F3 흐름: TA-05-01 → APV-02 → TA-04-02  ·  F4 흐름: FRM-04 → APV-02 → EMP-05  ·  F5 흐름: FRM-04 → APV-02 → FRM-05  ·  F6 흐름: FRM-02 → APV-02 → (끝)", "우선순위 P0"]}, "APV-03": {"user": "내가 올린 신청의 진행 상태를 확인하고, 대기 중인 건을 회수하거나 반려된 건을 다시 신청하는 곳이에요.", "dev": ["[개요] 본인이 올린 신청(근태·휴가·연장·제증명 등)의 결재 진행 상태를 조회하고, 대기 중인 건을 회수하거나 반려 건을 재신청합니다. 신청 생성은 각 업무 화면에서 하고, 이 화면은 조회·회수 중심입니다.", "[데이터] approval_request(list·filter·detail)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "DSH-01": {"user": "로그인하면 가장 먼저 보이는 홈이에요. 이번 달 급여 요약, 처리할 일, 다가오는 신고 일정, 근태 이상을 한눈에 확인합니다.", "dev": ["[개요] 관리자 홈·서비스 최초 진입(랜딩). 이번 달 급여 요약·할 일·법정 신고 일정(SET-04)·근태 이상 위젯. 직원 홈(DSH-02)은 EMP-00 재사용.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "DSH-02": {"user": "직원이 로그인했을 때 보는 홈이에요. 내 근무·급여·신청 현황을 요약해서 보여줍니다.", "dev": ["[개요] 직원 셀프 홈. 직원모드 내 대시보드(EMP-00)와 동일 화면 재사용 — 별도 정의 없음.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "EMP-00": {"user": "직원 모드의 첫 화면이에요. 오늘 할 일과 알림, 내 근태·급여 요약을 확인합니다.", "dev": ["[개요] 직원모드 랜딩. 할 일·알림·내 근태/급여 요약. DSH-02가 이 화면을 재사용.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F7 흐름: (시작) → EMP-00 → EMP-01", "우선순위 P0"]}, "EMP-01": {"user": "내 출퇴근 기록을 확인하는 곳이에요. 기록은 회사가 올린 근태 자료를 바탕으로 보여지며 여기서는 조회만 합니다.", "dev": ["[개요] 본인 출퇴근 기록을 조회합니다. 출퇴근 원천은 관리자 근태 일괄 업로드(TA-03-04, 엑셀)이며 이 화면은 조회 전용입니다.", "[데이터] attendance_record(clock)", "[흐름] F7 흐름: EMP-00 → EMP-01 → EMP-03", "우선순위 P0"]}, "EMP-02": {"user": "내 근무 일정(교대·시간표)을 달력으로 확인하는 곳이에요.", "dev": ["[개요] 본인 교대·시간표를 캘린더로 조회한다. 개인 근무스케줄 관리(TA-03-02)의 본인 뷰. 교대제 운영 시 유용하며 P1로 도입한다.", "[데이터] work_schedule(work_type/start_time)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "EMP-03": {"user": "내 연차가 얼마나 생기고 얼마나 남았는지, 휴가 사용 내역을 확인하는 곳이에요. 휴가 신청은 신청 화면에서 합니다.", "dev": ["[개요] 본인 연차 발생·사용·잔여와 휴가 사용 내역을 조회합니다. 연차/휴가(TA-04)의 본인 뷰이며, 휴가 신청은 근태 신청(TA-05-01)으로 연결합니다.", "[데이터] leave_use", "[흐름] F7 흐름: EMP-01 → EMP-03 → TA-05-01", "우선순위 P0"]}, "EMP-04": {"user": "내 급여명세서를 월별로 열어보고 PDF로 내려받는 곳이에요.", "dev": ["[개요] 본인의 확정 급여명세서를 월별로 열람하고 PDF로 내려받습니다. 관리자 발행(PAY-03-03)과 상호 연동되며, 본인 확정 명세서만 조회합니다.", "[데이터] payslip(list·doc)", "[흐름] F7 흐름: EMP-05 → EMP-04 → (끝)  ·  F8 흐름: PAY-04-01 → EMP-04 → (끝)", "우선순위 P0"]}, "EMP-05": {"user": "내가 올린 신청이 지금 어디까지 처리됐는지 확인하는 곳이에요. 대기 중인 건은 회수할 수 있어요.", "dev": ["[개요] 본인 신청 결재 진행상태 조회·회수. 내 신청함(APV-03)과 동일 기능의 직원모드 명칭.", "[데이터] approval_request(list·filter·detail)", "[흐름] F4 흐름: APV-02 → EMP-05 → (끝)  ·  F7 흐름: FRM-04 → EMP-05 → EMP-04", "우선순위 P0"]}, "FRM-01": {"user": "직원이 신청할 수 있는 서식 목록을 만들고 관리하는 곳이에요. 분류·사용 여부를 정하고 새 서식을 추가합니다.", "dev": ["[개요] 직원이 신청할 수 있는 서식을 카탈로그로 등록·관리한다. 서식 신청은 기록 용도로만 사용하며 후처리는 소명·보관만 유효하다(데이터 자동 반영 없음). 분류(근태/급여/인사/복지)·활성 여부·결재선·버전을 한눈에 보고, 하드코딩 없이 서식을 추가·수정한다.", "[데이터] form_template(template_id·category·form_type·active_yn)", "[ENUM] FORM_CATEGORY: 근태 / 급여 / 인사 / 복지 / FORM_TYPE: 기록형(소명·보관) / 발급형(제증명 A4)  ※반영형·계약·서명형 폐지", "[흐름] F1 흐름: PAY-02-04 → FRM-01 → (끝)  ·  F6 흐름: (시작) → FRM-01 → FRM-02", "우선순위 P0"]}, "FRM-02": {"user": "서식에 들어갈 입력 항목과 필요한 증빙, 출력용 A4 양식을 구성하는 곳이에요.", "dev": ["[개요] 동적 신청 폼(입력 필드·필수 증빙·결재선) + 표준 A4 양식(doc_layout) placeholder 매핑. {{필드코드}}↔form_field.field_code 1:1. 후처리 자동반영 폐지(서식=기록/발급용).", "[데이터] form_field(field_id·field_code) / form_template(doc_layout)", "[흐름] F6 흐름: FRM-01 → FRM-02 → APV-02", "우선순위 P0"]}, "FRM-04": {"user": "필요한 서식을 골라 내용을 작성하고 증빙을 첨부해 제출하는 곳이에요.", "dev": ["[개요] 분류 탭에서 서식을 고르면 해당 서식의 필드가 동적으로 렌더링됩니다. 필수 증빙을 첨부하고 신청 미리보기로 확인한 뒤 상신하면 서식의 결재선(→APV-02)으로 제출됩니다. 서식은 기록 용도로, 승인 내역은 소명·보관되며 데이터에 자동 반영되지 않습니다(제증명은 A4 발급). 근로계약서는 직원 정보(HR-04-05) 문서 업로드로 관리합니다.", "[데이터] form_request(form_values·attachments·status)", "[ENUM] FORM_STATUS: 작성중 / 대기 / 승인 / 반려 / 회수", "[흐름] F4 흐름: (시작) → FRM-04 → APV-02  ·  F5 흐름: (시작) → FRM-04 → APV-02  ·  F7 흐름: TA-05-01 → FRM-04 → EMP-05", "우선순위 P0"]}, "FRM-05": {"user": "승인된 신청을 표준 A4 문서로 열어보고 인쇄하거나 PDF로 발급받는 곳이에요.", "dev": ["[개요] 신청·발급 서식을 표준 A4 양식에 채워 열람·인쇄·PDF 발급(직인·발급번호 진위확인). 별도 LNB 없음 — FRM-04(발급형) 승인 후 자동 진입하는 뷰어형.", "[데이터] form_template(doc_layout) / form_request(cert_type·issue_no·show_rrn)", "[흐름] F5 흐름: APV-02 → FRM-05 → (끝)", "우선순위 P0"]}, "HR-01-01": {"user": "회사의 기본 정보(사업자번호·대표자·주소 등)를 등록하는 곳이에요. 여기 정보가 급여명세서와 신고 서류에 쓰입니다.", "dev": ["[개요] 급여·명세서 발행의 최상위 기준이 되는 법인 정보를 등록·수정한다. 최초 도입 세팅 1단계 화면으로, 법인은 1건만 존재한다.", "[데이터] company(name·ceo_name·biz_no·corp_no·founded_date·address·biz_type·tel)", "[흐름] F1 흐름: (시작) → HR-01-01 → SET-01", "우선순위 P0"]}, "HR-01-02": {"user": "급여·4대보험 신고의 기준이 되는 사업장을 등록하는 곳이에요. 본사·공장처럼 관할이 다르면 나눠서 등록합니다.", "dev": ["[개요] 급여·4대보험 산정 및 신고의 기준 단위인 사업장을 등록한다. 본사·공장 등 관할이 다른 단위별로 분리 등록한다.", "[데이터] site(site_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-01-03": {"user": "출퇴근 위치 확인의 기준이 되는 근무지를 등록하는 곳이에요.", "dev": ["[개요] 위치기반(GPS/와이파이) 출퇴근 판정의 기준이 되는 근무지(Location)를 등록한다.", "[데이터] location(code·name·site_id·geo·radius·wifi·use_yn)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-02-01": {"user": "부서를 본부 › 팀 › 파트 최대 3단계 트리로 추가·수정·삭제하며 관리하는 곳이에요.", "dev": ["[개요] 부서 3단계 트리(본부›팀›파트). 편집=최고관리자, 급여 담당자=조회. 직원은 어느 단계에나 소속 가능.", "[검사] 부서명 필수·30자·같은 상위 아래 중복 불가 / 부서코드 숫자 4자리·회사 내 유일(@@unique company_id+code) / 이동은 자기·하위 아래 불가 + 이동 후 깊이 ≤3", "[삭제] 소속 직원(재직·휴직·정직·퇴직예정) 있으면 차단(직원 목록+인사 발령 이동) → 발령·급여 이력 있으면 use_yn=N(미사용, 다시 사용 가능) → 그 외만 물리 삭제. FK는 onDelete Restrict", "[코드] 확정 급여·전표에 쓰인 부서는 코드 잠금, 그 외 변경 시 경고. 급여 명세는 org_id·코드·경로 스냅샷 저장", "[데이터] org(org_id·parent_org_id·code·name·manager_emp_id(표시용)·use_yn) · 인원=employee.org_id 집계", "[흐름] 직원 등록(HR-04-01 빠른 설정은 M1 규칙 재사용)·인사 발령·직원 목록 부서 필터(하위 포함)의 기준", "[내보내기] 부서관리에는 엑셀 다운로드 없음 — 부서 목록 내보내기는 조직 종합관리(HR-02-03)", "우선순위 P0"]}, "HR-02-03": {"user": "부서별 인원·조직장·코드를 한눈에 보고 엑셀로 내려받는 곳이에요.", "dev": ["[개요] 조직별 인원·조직장·코드정보를 한눈에 조회하고 엑셀로 내보낸다.", "[데이터] org(base_date)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-03-01": {"user": "인사 발령에서 고를 수 있는 발령 종류와 사유를 미리 만들어 두는 곳이에요.", "dev": ["[개요] 입사·부서이동·승진·휴직·복직·퇴직 등 발령 유형과 사유 세트를 목록으로 관리한다. 인사 발령(HR-04-02)의 발령유형·사유 선택지가 여기서 정의된다.", "[데이터] appt_type(type)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-03-02": {"user": "입사 등록 때 사번을 자동으로 만들어 주는 규칙을 정하는 곳이에요.", "dev": ["[개요] 입사 등록 시 사번을 자동 채번하는 규칙을 설정한다.", "[데이터] emp_no_rule(method·pattern·year_prefix·seq·pad_len)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-01": {"user": "새 직원을 등록하는 곳이에요. 기본 인적사항, 소속, 발령 내용을 등록하고 직원을 초대할 수 있어요.", "dev": ["[개요] 입력한 부서·직위로 최초 발령과 급여 소속이 자동 생성됩니다. 직원·최초발령·계정을 하나의 트랜잭션으로 처리하며(실패 시 롤백), 필요 시 직원계정 초대를 함께 발송합니다. (사업장 지정은 P1)", "[데이터] employee(name·rrn·email·join_date·site_id·job_rank·emp_type·emp_no)", "[ENUM] EMP_TYPE: 정규직 / 계약직(기간제) / 일용직 / 단시간(파트타임) / 파견 / 프리랜서(외주)", "[흐름] F1 흐름: PAY-01-04 → HR-04-01 → HR-06-03  ·  F9 흐름: (시작) → HR-04-01 → HR-06-02", "우선순위 P0"]}, "HR-04-02": {"user": "재직 중인 직원의 부서 이동·승진·전보·휴직·복직을 처리하고 이력을 남기는 곳이에요. 퇴직은 별도 화면에서 합니다.", "dev": ["[개요] 재직·휴직·정직 직원의 승진·부서이동(전보)·고용형태 변경·휴직·복직을 등록하고 이력을 누적합니다. 등록 즉시 현재 직위·부서·고용형태·재직상태가 갱신되고 발령번호가 붙습니다. 퇴직은 HR-04-08, 강등은 HR-04-09.", "[데이터] appointment(emp_id·appt_no·appt_type·appt_date·before/after_org_id·before/after_position_cd·before/after_emp_type·leave_type·return_due_date·reason·memo·attachments·status·cancel_reason·created_by)", "[ENUM] APPT_TYPE: 입사 / 승진 / 전보(부서이동) / 고용형태변경 / 휴직 / 복직 / 강등 / 퇴직 · ABSENCE_TYPE · APPT_STATUS", "[규칙] 재직은 승진·이동·고용형태·휴직, 휴직은 복직만 · 미래 일자 불가 · 승진은 상위 직위만 · 법정 휴직기간 검증 · 최신 발령만 취소", "[흐름] 직원 정보(HR-04-05) → 인사 발령 → 확인(M2) → 직원 정보 발령이력 / 퇴직 처리(HR-04-08)", "우선순위 P0"]}, "HR-04-03": {"user": "여러 명의 발령을 엑셀로 한 번에 등록하는 곳이에요.", "dev": ["[개요] 발령 내역을 엑셀로 대량 등록한다. [일괄 업로드] 클릭 시 파일 탐색창이 즉시 열리고, 파일을 선택하면 같은 화면에 검증 결과가 표시된다(중간 단계 없음). 정상 행만 반영하고 오류 행은 사유와 함께 제외한다. 양식은 [양식 다운로드]에서 받는다. 근태 일괄 업로드(TA-03-04)·개인 근무유형 일괄 업로드(TA-03-01-M2)와 동일한 업로드 UX 패턴이다.", "[데이터] appointment(effective_date·appt_type_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-04": {"user": "전체 직원을 보여주는 곳이에요. 검색필터에서 찾을 수 있으며 이름을 클릭하면 해당 직원의 상세 정보를 확인할 수 있어요.", "dev": ["[개요] 직원관리의 기본 진입점입니다. 조건으로 검색·필터한 뒤, 직원 셀(이름)을 클릭하면 해당 직원의 직원 정보(HR-04-05) 상세로 이동합니다.", "[데이터] employee(columns·sort_order)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "[빈 상태] 직원 0명(회사 첫 사용)이면 검색·표 대신 EmpNoEmployee — [+ 첫 직원 등록하기]·[엑셀 일괄 등록 P1]·시작 단계(회사 정보→부서→직원 등록→계정 초대) · 필터 결과 0명은 기존 문구 유지", "우선순위 P0"]}, "HR-04-05": {"user": "직원 한 명의 인사·발령·급여·근태·문서를 탭으로 모아 보는 상세 화면이에요.", "dev": ["[개요] 직원 1인의 인사·발령·급여·근태·문서를 탭으로 통합 조회하는 마스터 상세화면.", "[데이터] employee(name·name_en·rrn_enc·phone·email·join_date·org_id·position_cd·emp_type·work_type_id) / employee_document / employee_profile(가족·학력·경력·자격·병역) / personnel_order / salary_contract / insurance / bank_account / award_discipline / account", "[ENUM] EMP_TYPE: 정규직 / 계약직(기간제) / 일용직 / 단시간(파트타임) / 파견 / 프리랜서(외주) · EMP_DOC_TYPE: 근로계약서 / 동의서 / 서약서 / 증빙 / 기타", "[규칙] 소속·직위·고용형태·입사일은 인사 발령(HR-04-02)에서만 변경 · 주민번호 전체 열람은 최고관리자만(감사 로그) · 급여 탭은 급여 권한자만 · 근로계약서 3년 보존", "[흐름] 직원 목록(HR-04-04) → 직원 정보 → 인사 발령(HR-04-02)·퇴직 처리(HR-04-08)·계정 관리(HR-06-01)", "[빈 상태] 인사정보 5개 섹션은 모두 선택 — 전부 비면 상단 안내, 섹션별 ‘등록된 ○○ 정보가 없습니다’+[+ 추가](빈 행 1개로 시작), 헤더 버튼 비면 [+ 등록]/있으면 [✎ 수정] · 저장 시 빈 행 버림·필수(가족 관계·성명/학력 학교/경력 회사/자격명) · 병역은 군필일 때만 세부 · 직원 0명이면 EmpNoEmployee(첫 직원 등록·시작 단계) · 시연 스위치(EMP_DEMO)는 프로토타입 전용", "우선순위 P0"]}, "HR-04-06": {"user": "내 인사·급여·근태·문서를 한곳에서 확인하는 곳이에요. 프로필 사진을 바꾸거나 정보 변경을 신청할 수 있어요.", "dev": ["[개요] 인사기록카드(HR-04-05)의 본인 뷰입니다. 본인 인사·발령·급여·근태·문서를 6개 탭으로 통합 조회하며 본인 데이터만 노출됩니다(권한별 탭 축소). 프로필 사진 업로드/변경(HR-04-07)을 지원하고, 정보 변경은 서식 신청(FRM-04)으로 반영됩니다.", "[데이터] employee_profile(family·education·career·license·military)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-04-07": {"user": "직원 증명사진을 올리는 곳이에요. 한 명씩 또는 여러 명을 한 번에 올릴 수 있고, 올린 사진은 목록·조직도에 표시됩니다.", "dev": ["[개요] 증명사진을 개별(미리보기·크롭 후 저장) 또는 일괄(zip·파일명=사번)로 업로드합니다. 등록한 사진은 직원 목록·정보·조직도의 아바타로 표시됩니다.", "[데이터] employee(employee_id·photo·mapping)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "HR-04-08": {"user": "직원의 퇴직을 처리하는 곳이에요. 퇴직 유형과 날짜를 입력해 확정하면 계정·급여가 정리되고 퇴직금 정산으로 이어집니다.", "dev": ["[개요] 재직·휴직·정직 직원의 퇴직을 등록하고 퇴직자를 조회합니다. 퇴직일=마지막 근무일, 상실일=다음날. 미래 날짜는 예약, 확정 시 계정 비활성(요금 제외)·최종 급여(일할+연차수당)·퇴직금 정산·4대보험 상실신고 대기가 생성됩니다.", "[데이터] resignation(emp_id·resign_type·reason·last_work_date·loss_date·loss_reason_cd·notice_date·ins_report·attachments·status·cancel_reason) / severance(resign_id·status·pay_due·pay_date) / account(status=비활성)", "[ENUM] RESIGN_TYPE · RESIGN_STATUS · EI_LOSS_REASON · SEV_STATUS", "[규칙] 본인·마지막 최고관리자 불가 · 퇴직금 대상(1년·주15시간)·14일 지급기한 · 육아휴직·산재 요양 중 해고 불가 · 지급·신고 전까지 취소 가능", "[흐름] F8: 직원 정보(HR-04-05)·상벌(HR-04-09) → 퇴직 처리 → 확인(M1) → 퇴직금 정산(PAY-04-01)", "우선순위 P0"]}, "HR-04-09": {"user": "직원의 포상과 징계를 기록하고 이력을 남기는 곳이에요.", "dev": ["[개요] 포상·징계를 등록하고 이력을 누적합니다. 감봉은 근로기준법 §95 한도를 계산해 막고 징계 절차(근거·의결·소명·통지)를 기록합니다. 포상금·감봉·정직은 급여 반영 대기, 특별휴가는 약정휴가 202 부여, 강등은 발령이력, 해임·파면은 퇴직 처리로 이어집니다.", "[데이터] award_discipline(employee_id·category·type·event_date·amount·pay_month·pay_status·leave_days·period_from/to·basis_rule·decision_body/date·hearing_given/date·notice_date·reason·effect·attachments·status·cancel_reason)", "[ENUM] AWARD_TYPE · DISCIPLINE_TYPE · PAY_LINK_STATUS · AWARD_STATUS", "[흐름] 상벌 관리 → 확인(M2) → 직원 정보(HR-04-05) 상벌 탭 / 급여 반영 대기 / 휴가(TA-04-02) / 인사 발령 이력 / 퇴직 처리(HR-04-08)", "우선순위 P1"]}, "HR-06-01": {"user": "직원 로그인 계정을 관리하는 곳이에요. 역할 변경·잠금·비밀번호 초기화를 하고, 계정이 없는 직원에게 초대를 보낼 수 있어요.", "dev": ["[개요] 발급된 직원 계정(로그인 주체)을 목록으로 관리합니다. 연결 직원·역할·상태·최근 로그인을 확인하고, 초대 재발송·역할 변경·잠금/해제·비밀번호 초기화·비활성화를 수행합니다. 최초 초대 발송은 직원 등록(HR-04-01)에서 시작됩니다.", "[데이터] account(status·role_id·last_login_at) · audit_log(역할·상태 변경 이력)", "[ENUM] ACCT_STATUS: 활성 / 초대중(인증 전) / 잠금 / 비활성", "[규칙] 최고관리자 최소 1명 유지 · 본인 잠금·역할 변경 불가 · 퇴직 시 자동 비활성", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "HR-06-02": {"user": "가입 때 받은 이메일 링크로 계정을 활성화하는 화면이에요.", "dev": ["[개요] 계정 생성 시 본인 이메일로 인증 링크/코드를 보내 계정을 활성화한다(OTP·2차 인증 대체).", "[데이터] account(email·password·password_confirm·agreement·status)", "[ENUM] ACCT_STATUS: 활성 / 대기(인증전) / 잠금 / 비활성", "[흐름] F0 흐름: (시작) → HR-06-02 → SET-06  ·  F9 흐름: HR-04-01 → HR-06-02 → PAY-02-02", "우선순위 P0"]}, "HR-06-03": {"user": "관리자(최고관리자·급여 담당자)가 메뉴마다 조회·편집·확정·승인 중 무엇을 할 수 있는지 정하는 곳이에요.", "dev": ["[개요] 관리자 역할별로 메뉴마다 조회·편집·확정·승인 권한을 정합니다. 계정·권한, 구독·결제·서비스 해지는 최고관리자 전용입니다. 권한 변경은 저장 즉시 적용되며 감사 로그에 기록됩니다.", "[데이터] role(role_id·name·permissions) · audit_log(권한 변경 이력)", "[흐름] F1 흐름: HR-04-01 → HR-06-03(관리자 역할별 권한 설정) → PAY-02-04", "우선순위 P0"]}, "HR-06-04": {"user": "직원이 직접 가입한 경우 승인하고 기존 직원 정보와 연결하는 곳이에요. (도입 예정)", "dev": ["[개요] 직원 직접가입(self-signup) 시 발생하는 승인 대기 계정을 검토하여 기존 직원 레코드에 매칭하거나 신규 직원으로 생성해 연결한다. 초대 전용 MVP에서는 미사용이며, self-signup(P1) 도입 시 활성화된다.", "[데이터] account(status·emp_id)", "[ENUM] ACCT_STATUS: 활성 / 대기(인증전) / 잠금 / 비활성", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "HR-06-05": {"user": "내 프로필 사진과 비밀번호를 바꾸는 곳이에요.", "dev": ["[개요] 본인 계정의 프로필 사진·비밀번호를 설정합니다. 로그인 계정(HR-06-01)과 연결된 본인 전용 설정입니다.", "[데이터] account(photo·name·email·password·role_id·target)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "PAY-01-01": {"user": "급여에 들어갈 지급·공제·비과세 항목을 만들고 계산 방식을 정하는 곳이에요.", "dev": ["[개요] 지급·공제·비과세 항목을 관리하고 항목별 계산식(수식빌더)과 통상임금 포함 여부를 설정합니다. 공제는 법정 6종(시스템 제공)과 사용자정의로 나뉩니다. 급여 계산(PAY-03-01)의 기준이 되며, 구 명칭은 '수당/공제 항목 구성'입니다.", "[데이터] pay_item(item_type·name·calc_type·formula·ordinary_flag·tax_free_limit·taxable·use_yn)", "[ENUM] CALC_TYPE: 정액 / 정률 / 수식(빌더) / 근태연동", "[흐름] F1 흐름: TA-06-01 → PAY-01-01 → PAY-01-02", "우선순위 P0"]}, "PAY-01-02": {"user": "급여 지급일, 근태를 어느 달 급여에 반영할지, 일할 계산·무급 공제 방식을 정하는 곳이에요.", "dev": ["[개요] 일할 계산 기준을 설정하고, 근태코드(TA-01-02)의 유급/무급을 상속해 급여 공제를 결정합니다. 사용중 근태코드를 다시 설정하지 않고, 조정 여지가 있는 무급 코드 공제 방식·지각/외출 시간공제만 편집합니다. 발령유형별 지급율은 HR-03-01(P1) 도입 시 확장합니다.", "[급여일] pay_policy.pay_day = 매월 1~28일/말일(§43② 매월 1회 이상 일정한 날) · 토·일·휴일(TA-01-01)이면 직전 근무일 지급 → payroll_run.pay_date에 회차별 실제 지급일 저장", "[정산 월] pay_policy.var_pay_month = 당월/전월(후불) · 기본급은 항상 그달분, 연장·야간·휴일·주휴수당과 결근·지각 공제만 payroll_run.att_period_ym(당월=같은 달, 전월=직전 달) 근태로 계산 · 당월+이른 지급일(28일 전)은 경고 · 근태 마감 기간 자체 변경(예: 21일~20일)은 P1", "[지각 공제] 지각·외출 시간공제 설정은 여기 한 곳(pay_policy.late_deduct_yn) — 집계기준(TA-06-01)은 표시만", "[데이터] pay_code(pay_rate) / pay_item(rate_pct)", "[흐름] F1 흐름: PAY-01-01 → PAY-01-02 → PAY-01-03", "우선순위 P0"]}, "PAY-01-03": {"user": "급여 종류(월급·일용·상여 등)와 세금 계산 방식·산정 단위를 정하는 곳이에요.", "dev": ["[개요] 급여 종류(월급여·일용급여·상여·기타수당)의 코드와 과세 방식·산정 단위를 정의합니다. 상용(월급여)과 일용의 세액계산·4대보험·명세서 로직이 갈리는 기준점이며, 시간제는 월급여 종류에 산정 단위(시급)로 처리합니다.", "[데이터] pay_code(code·name·pay_kind·tax_method·calc_unit)", "[ENUM] PAY_KIND: 월급여 / 일용급여 / 상여 / 기타수당 / TAX_METHOD: 일반(간이세액) / 상여 세액계산 / 일용근로(6%) / 사업소득(3.3%) / 기타소득(8.8%) / CALC_UNIT: 월급 / 주급 / 일급 / 시급 / 건별", "[흐름] F1 흐름: PAY-01-02 → PAY-01-03 → PAY-01-04", "우선순위 P0"]}, "PAY-01-04": {"user": "소득세 간이세액표와 4대보험 요율을 관리하는 곳이에요. 매년 바뀌는 요율을 연도별로 넣어 둡니다.", "dev": ["[개요] 근로소득 간이세액표(80/100/120% 선택)와 4대보험 연도별 요율을 관리합니다. 요율은 연도별 적용기간으로 관리해 매년 변동을 반영하며, 하드코딩하지 않습니다. (구 명칭: 원천세·세액표 설정)", "[데이터] deduction_rate(rate·local_tax·ins_rate·cap·hi_upper·hi_lower)", "[흐름] F1 흐름: PAY-01-03 → PAY-01-04 → HR-04-01", "우선순위 P0"]}, "PAY-02-01": {"user": "급여를 이체할 계좌를 등록·확인하는 곳이에요.", "dev": ["[개요] 급여 이체 계좌를 등록·검증합니다. 이체파일 생성(PAY-03-04)의 계좌 정보 원천이며, 직원 본인 등록 + 관리자 검증을 병행합니다.", "[데이터] bank_account(bank·holder)", "[흐름] F9 흐름: PAY-02-03 → PAY-02-01 → TA-03-01", "우선순위 P0"]}, "PAY-02-02": {"user": "직원의 부양가족 정보를 관리하는 곳이에요. 소득세 계산과 연말정산에 쓰입니다.", "dev": ["[개요] 직원별 부양가족·인적공제 정보를 관리합니다. 간이세액표의 공제대상 가족 수·20세 이하 자녀 수 산정에 쓰이며, 연말정산 기초자료로 연계됩니다.", "[데이터] dependent(dependent)", "[흐름] F9 흐름: HR-06-02 → PAY-02-02 → PAY-02-03", "우선순위 P0"]}, "PAY-02-03": {"user": "직원별 4대보험 취득·상실과 보험료 산정 기준을 관리하는 곳이에요.", "dev": ["[개요] 직원별 4대보험 취득/상실과 산정기초(보수월액·기준소득월액)를 관리합니다. 건강·고용·산재는 보수월액, 국민연금은 기준소득월액(천원 절사·상하한)을 적용하며, 두 값이 다르면 배지로 표시됩니다. 사업장(HR-01-02) 단위로 신고되고 요율(PAY-01-04)로 개인 보험료를 산정합니다.", "[데이터] insurance_enroll(base_wage·std_monthly·enroll_status·income_tax_rate·tax_reduction)", "[ENUM] TAX_REDUCTION_TYPE: 중소기업청년(90%) / 중소기업(60세이상·장애인 70%) / 경력단절여성 / 외국인기술자 / 없음", "[흐름] F9 흐름: PAY-02-02 → PAY-02-03 → PAY-02-01", "우선순위 P0"]}, "PAY-02-04": {"user": "직원별 연봉과 급여 구성(항목별 금액)을 등록하는 곳이에요. 급여 계산의 개인 기준값이 됩니다.", "dev": ["[개요] 직원별 연봉·급여구성(항목별 금액)과 적용기간을 관리합니다. 급여 계산(PAY-03-01)의 개인 기준값이며, 적용기간 기준으로 연봉 인상 이력이 관리됩니다.", "[데이터] salary_contract(annual_amount·apply_start/apply_end) / pay_code(tax_method) / salary_comp_line(comp_id)", "[ENUM] TAX_METHOD: 일반(간이세액) / 상여 세액계산 / 일용근로(6%) / 사업소득(3.3%) / 기타소득(8.8%)", "[흐름] F1 흐름: HR-06-03 → PAY-02-04 → FRM-01", "우선순위 P0"]}, "PAY-03-01": {"user": "대상 월과 직원을 골라 급여를 계산하는 곳이에요. 지급·공제·실수령액을 산출하고 오류를 점검합니다.", "dev": ["[개요] 대상 월·대상자에 급여항목 계산식과 근태 집계·개인 공제정보를 적용해 급여를 산출하는 워크벤치입니다. 지급·공제·실수령액을 계산하고 오류를 점검합니다.", "[데이터] payroll_run(month·target_ids·list·errors)", "[흐름] F2 흐름: TA-06-02 → PAY-03-01 → PAY-03-02", "우선순위 P0"]}, "PAY-03-02": {"user": "계산한 급여를 확인하고 확정(잠금)하는 곳이에요. 확정해야 명세서·이체·대장을 만들 수 있어요.", "dev": ["[개요] 계산된 급여를 검토하고 회차를 확정(잠금)합니다. 확정 시 명세서·이체파일·급여대장의 소스가 되며, 이후 수정은 해제 후에만 가능합니다.", "[데이터] payroll_run(status)", "[흐름] F2 흐름: PAY-03-01 → PAY-03-02 → PAY-03-03", "우선순위 P0"]}, "PAY-03-03": {"user": "확정된 급여로 명세서를 만들어 직원에게 배포하고, 발행 이력을 관리하는 곳이에요.", "dev": ["[개요] 확정된 급여로 명세서를 생성·배포하고 직원이 본인 명세서를 조회합니다. 근로기준법상 필수 기재사항을 포함하며, [발행 이력·대장] 탭에서 직원×월 누적 발행·교부 이력(임금명세서 대장)을 통합 관리합니다.", "[데이터] payslip(payslip_id·delivery_channel) / payslip_line(amount)", "[흐름] F2 흐름: PAY-03-02 → PAY-03-03 → PAY-03-04", "우선순위 P0"]}, "PAY-03-04": {"user": "확정된 급여를 은행에 올릴 이체파일로 만드는 곳이에요.", "dev": ["[개요] 확정된 급여의 실지급액과 계좌로 은행 이체파일을 생성합니다. 국민은행은 CMS 펌뱅킹 포맷(고정폭 텍스트)으로 직접 연동되고, 그 외 은행은 범용 대량이체 엑셀/CSV로 내보내 각 은행 인터넷뱅킹에 업로드합니다.", "[데이터] transfer_file(bank·transfer·format)", "[흐름] F2 흐름: PAY-03-03 → PAY-03-04 → PAY-03-05", "우선순위 P0"]}, "PAY-03-05": {"user": "월 급여대장을 고용형태별로 나눠 직원별·항목별로 모아 보는 곳이에요.", "dev": ["[개요] 월 급여대장을 고용형태(정규직·계약직(기간제)·일용직)별 섹션으로 나누어 직원별·항목별로 집계 조회합니다. 확정 급여 기준으로 지급·공제·실지급을 집계하며, 리포트(구 RPT-03)에서 급여관리로 이관된 화면입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F2 흐름: PAY-03-04 → PAY-03-05 → PAY-03-06", "우선순위 P0"]}, "PAY-03-06": {"user": "확정된 급여를 회계 전표(차변·대변)로 바꿔 회계프로그램으로 넘기는 곳이에요.", "dev": ["[개요] 확정 급여를 회계 분개(차변·대변)로 변환해 회계프로그램으로 전달합니다. 급여대장(PAY-03-05)을 원천으로 지급 비용·예수금·실지급액을 분개하고, 사업주 부담분(4대보험·산재)까지 포함해 전표를 생성·내보냅니다.", "[데이터] journal_voucher(dc_type/amount) / account_map(account_code/account_name)", "[흐름] F2 흐름: PAY-03-05 → PAY-03-06 → RPT-01", "우선순위 P1"]}, "PAY-04-01": {"user": "퇴직금을 계산하고 퇴직소득세를 뗀 실수령액을 산출하는 곳이에요. 원천징수영수증도 발급합니다.", "dev": ["[개요] 평균임금 기준 퇴직금을 계산하고 퇴직소득세·지방소득세를 원천징수해 실 수령액을 산출합니다. 급여·상여 지급총액 기반 산정, 중간정산·과세이연(DB/DC·IRP), 퇴직소득 원천징수영수증 발급을 지원합니다.", "[데이터] severance(avg_daily_wage·severance_pay·tax_base·income_tax·net_pay·payout_method)", "[ENUM] SEVER_PAYOUT: 본인 계좌 / IRP·퇴직연금 이전(과세이연)", "[흐름] F8 흐름: HR-04-08 → PAY-04-01 → EMP-04", "우선순위 P0 (퇴직금 계산·지급) · 원천징수영수증 발급은 P1(후속)"]}, "PAY-04-02": {"user": "연말정산 자료를 모으고 정산 세액을 계산하는 곳이에요.", "dev": ["[개요] 연말정산 자료를 수집하고 정산세액을 산출한다.", "[데이터] payslip(year_end_tax) / tax_reduction(reduction_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "RPT-01": {"user": "부서별·월별 인건비를 집계해 추이와 구성비를 차트로 보는 분석 화면이에요.", "dev": ["[개요] 확정 급여를 기준으로 부서별·월별 인건비(지급총액 + 사업주 부담 4대보험)를 집계·비교하는 경영 분석 리포트입니다. 추이·구성비를 차트로 제공합니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F2 흐름: PAY-03-06 → RPT-01 → (끝)", "우선순위 P0"]}, "RPT-02": {"user": "부서별·월별 근무·연장·야간·휴가 사용을 집계해 보는 분석 화면이에요.", "dev": ["[개요] 확정 근태 집계를 기준으로 부서별·월별 근무·연장·야간·휴가 사용을 집계·비교하는 분석 리포트입니다. 근태집계(TA-06-02)가 마감·원천이라면 이 화면은 경영·인사 분석용 시각화입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "SET-01": {"user": "직원 등록·발령에서 고르는 분류 코드(직급·고용형태 등)를 관리하는 곳이에요.", "dev": ["[개요] 직원 등록·발령의 드롭다운 선택지가 되는 공통 분류 코드를 코드그룹 → 코드값(마스터-디테일)으로 관리합니다. 인사분류 계층과 고용형태·호칭 등을 포함합니다.", "[데이터] code_master(group·value·code·name·manager_id·sort_order·use_yn)", "[흐름] F1 흐름: HR-01-01 → SET-01 → HR-02-01", "우선순위 P0"]}, "SET-02": {"user": "어떤 일이 생겼을 때 누구에게 어떤 방법(이메일·알림톡)으로 알릴지 정하는 곳이에요.", "dev": ["[개요] 이벤트별로 알림 채널(이메일·알림톡)과 수신 대상을 매트릭스로 설정합니다. 운영 이벤트(계정·급여) 중심의 MVP 범위입니다.", "[데이터] notification_setting(event·channel·target·send_time·template)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "SET-03": {"user": "회계·뱅킹 등 외부 시스템 연동을 관리하는 곳이에요.", "dev": ["[개요] 외부 시스템 연동을 목록으로 관리한다. SMB MVP는 회계·펌뱅킹의 CSV·표준 파일 연동을 기본으로 하며, API·SSO·출퇴근기기·ATS 등은 P2/문의형 애드온이다.", "[데이터] integration_config(type·method·credential·mapping·use_yn·open_api·device_integration)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "SET-04": {"user": "세무·4대보험 같은 법정 신고 일정을 연도별로 관리하는 곳이에요. 대시보드 할 일 알림의 원본이 됩니다.", "dev": ["[개요] 세무·4대보험 등 법정 신고 일정을 연도별로 관리합니다. 관리자 대시보드(DSH-01) 할 일·알림의 '법정 일정' 소스이며, 회사 급여지급일·사업장(HR-01-02)과 결합해 실제 마감 D-day를 산출합니다.", "[데이터] tax_calendar(list·report_type·schedule·alert_timing·owner_id·site_id·use_yn)", "[ENUM] REPORT_TYPE: 원천세 / 지방소득세 / 지급명세서 / 4대보험 보수총액 / 연말정산", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "SET-05": {"user": "payDream 이용 해지를 신청하는 곳이에요. 최고관리자만 신청할 수 있어요.", "dev": ["[개요] 회사(회원사)가 payDream 서비스 이용 해지를 신청합니다. 최고관리자만 신청할 수 있으며, 신청 시 운영자 접수 후 잔여기간 정산·데이터 보존/파기 절차가 진행됩니다.", "[데이터] cancel_request(reason_code·reason_text·effective_date·req_status·data_disposal·retention_days·backup_requested·purge_due_date·purged_at)", "[ENUM] CANCEL_STATUS: 신청 / 승인 / 철회 / 완료 · DATA_DISPOSAL: 보존 후 파기 / 즉시 파기", "[흐름] F0 흐름: SET-08 → SET-05 → (끝)", "우선순위 P0"]}, "SET-06": {"user": "지금 쓰는 요금제와 다음 결제일을 확인하고 요금제를 바꾸는 곳이에요.", "dev": ["[개요] 현재 이용 중인 요금제·구독 상태·다음 결제일을 확인하고 요금제를 변경(업/다운그레이드)합니다. ※ 요금은 가안(운영 콘솔 BO-BILL-01과 동일).", "[데이터] saas_subscription(plan_code·status·next_bill_date)", "[ENUM] SUB_STATUS: 체험 / 이용중 / 연체 / 정지 / 해지예정 / 해지", "[흐름] F0 흐름: HR-06-02 → SET-06 → SET-07", "우선순위 P0"]}, "SET-07": {"user": "자동결제에 쓸 카드를 등록·변경하는 곳이에요. 카드 정보는 결제사 화면에서 입력하며 저장되지 않아요.", "dev": ["[개요] 구독료 자동결제에 사용할 결제 수단(신용·체크카드)을 등록·변경합니다. 계좌 자동이체는 P1. 결제 실패 시 D+1·3·7 자동 재시도, D+14 서비스 정지, 미납 기간 상단 안내 배너(운영 콘솔 BO-BILL-08 연동). 카드 정보는 PG 결제창에서 직접 입력하며 본 서비스에 저장되지 않습니다.", "[데이터] saas_payment_method(method_type·billing_key_enc·is_default)", "[흐름] F0 흐름: SET-06 → SET-07 → SET-08", "우선순위 P0"]}, "SET-08": {"user": "결제 내역을 확인하고 세금계산서·현금영수증을 내려받는 곳이에요.", "dev": ["[개요] 구독료 결제 내역(공급가액·부가세·합계)을 조회하고 결제 증빙(세금계산서·현금영수증)을 확인·다운로드합니다. 증빙은 운영자가 결제 건 기준으로 발급(BO-BILL-06)하며, 유형 변경·재발급은 1:1 문의(SET-09)로 요청합니다. 사업자 정보는 회사 정보(HR-01-01)를 따릅니다.", "[데이터] saas_payment(paid_at·amount_supply·amount_vat·amount_total·status·evid_type·evid_status·receipt_url)", "[ENUM] PAY_STATUS: 결제완료 / 실패 / 취소 / 환불 · EVID_STATUS: 발급대기 / 발급완료 / 미발급", "[흐름] F0 흐름: SET-07 → SET-08 → SET-05", "우선순위 P0"]}, "SET-09": {"user": "payDream 운영팀에 궁금한 점이나 오류를 문의하고 답변을 확인하는 곳이에요.", "dev": ["[개요] 회원사 관리자(최고관리자·급여 담당자)가 payDream 운영팀에 1:1 문의를 등록하고 답변·이력을 확인합니다. 운영 콘솔 1:1 문의함(BO-SUP-01)·문의 상세(BO-SUP-02)와 같은 티켓을 공유합니다. 직원 모드에는 노출하지 않습니다(직원 문의는 회사 관리자 경유).", "[데이터] support_ticket(ticket_no·category·title·status·ref_screen_id·notify_email_yn·notify_kakao_yn) · support_message(author_type·body·attachment_url)", "[ENUM] TICKET_CATEGORY: 급여 / 근태 / 구독·결제 / 계정·권한 / 기타 · TICKET_STATUS: 대기 / 처리중 / 완료 / 보류", "[흐름] SET-09 → (운영 콘솔) BO-SUP-01 → BO-SUP-02 답변 → SET-09 알림·확인", "우선순위 P0"]}, "TA-01-01": {"user": "공휴일과 회사 지정 휴일을 연간 달력으로 관리하는 곳이에요. 휴일 근무 가산과 주휴 판정의 기준이 됩니다.", "dev": ["[개요] 법정공휴일·대체공휴일·회사 지정 휴일을 연간 캘린더로 관리합니다. 휴일 근무 가산과 주휴 판정의 기준이 됩니다.", "[데이터] holiday(holiday_id·holiday_type·date)", "[ENUM] HOLIDAY_TYPE: 주휴일 / 공휴일 / 대체공휴일 / 근로자의날 / 약정휴일", "[흐름] F1 흐름: HR-02-01 → TA-01-01 → TA-01-02", "우선순위 P0"]}, "TA-01-02": {"user": "지각·조퇴·휴가 같은 근태 종류를 관리하는 곳이에요.", "dev": ["[개요] 근태 종류는 시스템 기본 마스터 + 회사 추가 종류로 관리합니다. 기본 종류는 사용여부·코드번호·유급여부(약정)·색상만 설정하고, 회사는 약정휴가·근태상태에 한해 자체 종류를 추가·수정·삭제할 수 있습니다.", "[데이터] attendance_code(att_code_id·name)", "[흐름] F1 흐름: TA-01-01 → TA-01-02 → TA-02-01", "우선순위 P0"]}, "TA-01-03": {"user": "출장 유형·일당·근무 인정 기준을 정하는 곳이에요.", "dev": ["[개요] 출장 유형·일당·근태 처리(근무 인정 여부) 기준을 정의한다.", "[데이터] code_master(trip_standard)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-02-01": {"user": "출근·퇴근·휴게 시간표 템플릿을 만드는 곳이에요.", "dev": ["[개요] 근무 시간대(시작·종료·휴게) 템플릿을 관리합니다. 근무시간은 (종료−시작−휴게)로 자동 계산되며, 야간(22:00~06:00) 포함 시 야간 가산 대상으로 자동 표시됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F1 흐름: TA-01-02 → TA-02-01 → TA-02-02", "우선순위 P0"]}, "TA-02-02": {"user": "근로시간제(고정·탄력·선택·교대)와 소정근로시간을 정하고 시간표를 연결하는 곳이에요.", "dev": ["[개요] 근로시간제(고정/탄력적/선택적/교대)와 소정근로시간을 정의하고 시간표를 연결합니다. 근무제별로 연장 판정 로직이 다르며, 근무 장소(사무실/재택/원격/현장)는 근로시간제와 직교하는 속성입니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F1 흐름: TA-02-01 → TA-02-02 → TA-02-03", "우선순위 P0"]}, "TA-02-03": {"user": "연장·야간·휴일 근무의 가산율과 보상휴가 전환 기준을 정하는 곳이에요.", "dev": ["[개요] 연장·야간·휴일 근무의 가산율과 보상휴가 전환·연장 상한을 정의합니다. 이 값은 근태 집계(TA-06)와 급여 산정(PAY)에 그대로 연동됩니다.", "[데이터] overtime_rule(rule_id)", "[흐름] F1 흐름: TA-02-02 → TA-02-03 → TA-04-01", "우선순위 P0"]}, "TA-03-01": {"user": "직원별로 근무유형을 배정하는 곳이에요.", "dev": ["[개요] 직원별 근무유형 배정·이력. 대상=재직·휴직·정직 근로자(프리랜서 제외, 퇴직예정·휴직은 배지). 편집=최고관리자·급여 담당자", "[검사] 근무유형=TA-02-02 사용 중 · 적용일 형식 · 근태 마감월 소급 불가 · 최신 배정 시작일 이후만(예정 있으면 먼저 취소) · 같은 유형 불가 · 퇴직 예정일 이후 불가 / 일괄·업로드는 위반 행만 제외", "[이력] 신규 배정 시 이전 배정 apply_end=적용일 전날 · 적용일>오늘이면 예정 → 적용일에 employee.work_type_id 갱신(일 배치) · UNIQUE(emp_id, apply_start)", "[데이터] emp_work_type(emp_id·work_type_id·apply_start·apply_end·reason·source=ASSIGN_SOURCE·created_by) · employee.work_type_id · work_type.is_default", "[흐름] 직원 등록(HR-04-01) 최초 배정(입사일·입사등록) → 본 화면 변경 → 개인 근무스케줄(TA-03-02)·출퇴근 판정·근태 집계(TA-06-02) / 직원 정보(HR-04-05) [배정 이력]에서 진입", "우선순위 P0"]}, "TA-03-02": {"user": "직원별 근무 일정(교대표·시간대)을 달력으로 배정하는 곳이에요.", "dev": ["[개요] 교대·탄력근무 직원의 일자별 시간표 배정(월 캘린더). 대상=그날 TA-03-01 배정이 교대·탄력인 근로자 · 입사 전·퇴직 예정일 이후·근무유형 변경 후 날짜 잠금", "[규칙] 근무유형에 연결된 시간표만(work_type_shift · 3교대=오전·오후·야간, 탄력=유연 제외 전체) + 휴무 · 근태 마감월 조회만 · 승인 연차 잠금, 반차 표시", "[점검] 경고만: 주 휴무 0일(§55) · 주 소정 52h 초과(§51②) · 야간 다음 날 오전 — 저장은 허용", "[저장] 변경 칸 표시·[저장]으로 확정 · 미저장 상태로 월 이동 시 저장/버리기 확인 · 교대 패턴=빈 칸만(기본)/덮어쓰기", "[P1] 양식 다운로드·일괄 업로드(M2, 칸 단위 검증)는 MVP 이후 — MVP는 칸 배정·교대 패턴으로 입력", "[데이터] work_schedule(emp_id·work_date UNIQUE·shift_id(NULL=휴무)·start/end_time 스냅샷·is_leave·note) · 휴일=holiday(TA-01-01) · 휴가=leave_use 승인분", "[흐름] TA-03-01 근무유형 → 본 화면 → 근무 이력(TA-03-03) 판정·근태 집계(TA-06-02) / 직원 본인 조회=EMP-02", "우선순위 P0"]}, "TA-03-03": {"user": "출퇴근 기록을 확인·보정하고 하루 근무를 확정하는 곳이에요. 확정한 근무가 집계와 급여의 기초가 됩니다.", "dev": ["[개요] 출퇴근(원자료)+일근무 확정(임시→확정→마감). 대상=근로자(프리랜서·휴직 기간 제외), 기본=이번 달, 지난달 미확정 알림", "[판정] 자동: 정상(시업 이전 출근)·지각(분)·결근(보정 시 지정)·미입력(기록 없음/한쪽만)·휴무(시간표 없음)·휴가(전일 휴가 코드) · 조기 퇴근은 분 표시(조퇴=휴가 209 신청)", "[계산] 기준 시간표=근무스케줄(교대·탄력) 또는 근무유형 기본 시간표 · 휴게=시간표 휴게(없으면 §54 최소) · 야간 22~06(휴게 제외) · 휴일=TA-01-01 휴일·휴무일 근무(8h 이내/초과) · 연장=고정·교대 일 8h 초과, 단시간 소정 초과, 탄력·선택 잠정(기간 정산 TA-06-02)", "[확정] 임시만 확정 · 미입력은 보정/휴가/결근 처리 후 · 확정 행 수정=확정 해제(→임시) 후 보정 · 마감월 조회만(해제는 TA-06-02) · 보정 사유 필수·이력(audit_log)", "[권한] 보정=HR-06-03 ‘편집’ · 확정·해제=‘확정·승인’ (최고관리자·급여 담당자) — ‘인사담당’ 역할 없음", "[데이터] attendance_record(UNIQUE emp_id+work_date · clock_in/out · shift_id · result=ATT_RESULT · late_min · early_min · work/ot/night/holiday/holiday_ot_min · att_code_id · status=ATT_STATUS · source=SOURCE(수기 포함) · confirmed_by/at)", "[흐름] TA-03-04 엑셀 업로드(P0 원자료) → 본 화면 판정·보정(✎)·확정 → TA-06-02 집계·마감 → 급여 / 승인 휴가(TA-04-02) 자동 코드 / EMP-01은 조회", "[P1] 엑셀 다운로드 · 직원 직접 출퇴근(EMP-01 버튼·위치 확인) · 다회 타각 원자기록 분리 / 출처 컬럼 없음 — 관리자 보정 행만 ✎", "우선순위 P0"]}, "TA-03-04": {"user": "출퇴근·휴가 자료를 엑셀로 한 번에 반영하는 곳이에요.", "dev": ["[개요] P0 출퇴근 원자료 유일 경로(직원 직접 출퇴근 P1). 파일 선택 즉시 같은 화면에서 행 단위 검증 → 즉시 반영(동기) → 근무 이력(TA-03-03) attendance_record ‘임시’", "[양식] 사번*·성명·일자*·출근·퇴근·근태코드(선택)·비고 · 근태코드=TA-01-02 근태상태 중 지각 제외(외출·이석·외근·출장·재택근무·교육훈련)+‘결근’ · 정상·지각은 자동 판정 · 휴가는 TA-04-02", "[오류·제외] 사번 없음·프리랜서·입사 전·퇴직 후·휴직 기간·미래 날짜·마감월·시각/코드 형식·결근+출퇴근·파일 안 사번+일자 중복", "[경고·반영] 출퇴근 한쪽만(→미입력)·휴무/휴일 근무(휴일근로)·승인 휴가일 출퇴근·성명 불일치(사번 기준)", "[충돌] 기존 임시=덮어쓰기 · 확정/마감=건너뜀(근무 이력에서 해제 후) · 관리자 보정(source=수기)=건너뜀", "[한도·권한] 5MB·5,000행 · 최고관리자·급여 담당자(HR-06-03 편집)", "[데이터] attendance_upload(파일·처리자·기간·반영/건너뜀/오류 건수) ↔ attendance_record.upload_id · source=엑셀업로드", "[P1] 업로드 1건 되돌리기", "우선순위 P0"]}, "TA-03-05": {"user": "출퇴근이 비었거나 결근한 직원을 찾아 사유를 확인·보정하는 곳이에요.", "dev": ["[개요] 미입력·결근 대상자를 조회하고 사유 확인·보정을 처리한다.", "[데이터] attendance_summary(absent_days)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P1"]}, "TA-04-01": {"user": "연차가 어떻게 생기는지(입사일·회계연도) 기준을 정하고 직원별 발생·사용·잔여를 관리하는 곳이에요.", "dev": ["[개요] 연차 정책(회사당 1건) + 직원별 자동 발생 현황. 발생은 입사 기념일(회계연도 기준은 시작일)·1년 미만 매월 개근일에 일 배치로 자동, [지금 다시 계산]은 확인용", "[규칙] 1년 미만=개근월 1일(최대 11, 입사 1년 소멸) · 1년 이상=기본(≥15)+3년차부터 2년마다 1일(상한 25+가산) · 직전 1년 출근율 80% 미만=개근월 1일(§60②) · 육아휴직·출산휴가·산재 휴업=출근 간주(§60⑥) · 단시간=연차×(주 소정÷40)×8 시간 단위, 주 15h 미만 제외 · 프리랜서 제외", "[회계연도] 첫 회계연도 비례(기본×근무월÷12, 0.5일 내림) + 1년 미만 월차 별도 · 퇴사 시 입사일 기준과 비교해 부족분 수당 정산(HR-04-08·PAY-04-01)", "[소멸] CARRY_OVER: 수당지급(기본·미사용 수당) / 촉진면제(P1·TA-04-04 §61 절차 시) / 이월(노사 합의·1년)", "[조정] M1 가산/차감(0.5일 단위)·사유 필수·잔여 초과 차감 불가 → leave_grant(grant_type=조정+/조정−) · 사용 차감은 TA-04-02 승인 시", "[데이터] leave_policy(accrual_basis·fiscal_start_md·base_days·carry_over) · leave_grant(grant_type·grant_days·grant_hours·grant_date·expire_date·reason·created_by) · 잔여=발생+조정−사용(HR-04-08 연차 정산과 동일 값)", "우선순위 P0"]}, "TA-04-02": {"user": "직원의 휴가 등록·차감·승인 내역을 관리하는 곳이에요.", "dev": ["[개요] 공용 휴가 저장소(leave_use) — 관리자 등록=즉시 승인(처리자 기록), 직원 신청(TA-05-01)=대기→승인/반려, 승인 전 직원 회수=회수, 승인 후 취소=취소(사유)", "[종류] att_code_id=TA-01-02 법정·약정휴가(보상휴가 105는 P1) · 연차 차감은 agg=연차차감(101·102)만 · 공가=206 공가(인정휴가)", "[단위] LEAVE_UNIT: 1일/반차/반반차(연차휴가만)/시간(조퇴 209=조퇴 시각) · 반차·반반차 시간대=그날 시간표 2·4등분 · 단시간 근로자 차감은 시간 환산", "[일수] 1일 단위=그날 시간표상 근무일만(TA-01-01 휴일·스케줄 휴무 제외) · 103·104는 역일", "[검사] 잔여 부족(선사용 P1)·마감월·겹침(대기·승인)·근무일 없음·휴직·퇴직 예정일 이후·조퇴 시각 범위 · 일괄 승인은 통과 건만", "[취소] 사유 필수 · 근무 이력 확정 날짜가 있으면 TA-03-03에서 확정 해제 후 · 마감월 불가 → 잔여 복원·근무 이력/스케줄 원복", "[연동] 승인분 → TA-04-01 사용(잔여) · TA-03-03 근태코드(전일=휴가 판정) · TA-03-02 ●/◐ · HR-04-08 연차 정산", "우선순위 P0"]}, "TA-04-03": {"user": "연차 사용 촉진을 위한 사용 계획을 등록·관리하는 곳이에요.", "dev": ["[개요] 연차 사용 촉진을 위한 사용계획을 등록·관리한다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-04-04": {"user": "미사용 연차를 쓰도록 법에 맞춰 촉구하고 사용 시기를 정하는 절차를 관리하는 곳이에요.", "dev": ["[개요] P1 · 근기법 §61 연차 사용촉진. 일정은 직원별 사용기간 만료일(TA-04-01 lvCalc expire) 기준 자동 계산", "[일정] 연차: 1차 촉구=만료 6개월 전~+10일 · 계획 제출=촉구+10일 · 2차 지정=만료 2개월 전까지(미사용 전부) / 1년 미만(§61②): 9일분 1차=1년 3개월 전~+10일·지정 1개월 전, 2일분 1차=1개월 전~+5일·지정 10일 전", "[단계] 미시작 → 1차 촉구(계획 제출 대기) → 계획안 수령(전부/일부) → 2차 대상 → 지정 완료 / 기간 놓치면 기한 경과(면제 불가) — 2차는 제출 기한 경과 후에만", "[연동] 수령 계획일·사용자 지정일 = 휴가 내역(TA-04-02) leave_use(source=촉진, promo_id) 연차 승인 → 근무 이력·스케줄·잔여 반영", "[면제] 기한 내 완료 + 지정일 출근 시 노무수령 거부 통지 기록 → 만료 후 면제 판정(exempt_yn·사유) → TA-04-01 소멸 정책 '촉진 시 면제'", "[서면] 이메일(전자문서·열람 확인)=서면 증빙, 알림톡=보조 · 발송일·열람일 기록", "우선순위 P1"]}, "TA-05-01": {"user": "직원이 휴가나 근태 정정을 직접 신청하고 내 신청 현황을 보는 곳이에요.", "dev": ["[개요] [직원 모드] 직원이 본인의 휴가·근태 정정을 직접 신청하고 본인 신청 현황을 조회합니다. 유형별 유입: 휴가류(연차·반차·반반차·병가·조퇴)→휴가 내역 관리(TA-04-02), 근태정정→신청현황(APV-02)→승인 시 근무 이력(TA-03-03) 보정. 시스템(관리자) 모드 우선 완료 후 직원 모드 도입 시 제공됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] F3 흐름: (시작) → TA-05-01 → APV-02  ·  F7 흐름: EMP-03 → TA-05-01 → FRM-04", "우선순위 P0"]}, "TA-05-03": {"user": "직원이 연장·야간·휴일 근무를 신청하고 내 현황을 보는 곳이에요.", "dev": ["[개요] [직원 모드] 직원이 연장(야간·휴일 포함) 근무를 사전 또는 사후에 신청하고 본인 현황을 조회합니다. 승인·반영은 관리자 화면(근무 이력/집계)에서 처리하며, '승인분만 수당 반영' 정책과 연장 상한(TA-02-03) 초과 경고를 지원합니다. 시스템(관리자) 모드 우선 완료 후 직원 모드 도입 시 제공됩니다.", "[데이터] 조회·대시보드 — 직접 테이블 매핑 없음(원천 화면 데이터 재사용)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P0"]}, "TA-05-06": {"user": "인사담당자가 여러 직원의 근태 신청을 한 번에 올리는 곳이에요.", "dev": ["[개요] 인사담당 근태 일괄 신청(다건 대리 신청). 직원 셀프 신청(TA-05-01/03)과 구분. LNB 비노출(의도).", "[데이터] form_request(request_id)", "[흐름] 독립 화면(선행/후행 업무흐름 없음 — 목록·설정·조회성)", "우선순위 P2"]}, "TA-06-01": {"user": "근태 집계 규칙(마감일·반올림·항목 매핑 등)을 정하는 곳이에요.", "dev": ["[개요] att_agg_rule 회사당 1건 · 적용 시작월(미마감 달) · 변경 이력(audit_log)", "[기간·단위] 마감 기간 P0=매월 1일~말일 고정(21~20·26~25일은 P1) · 시간 단위 1분 원칙, 10·30분은 올림만(버림·반올림 금지 — 임금 전액 지급 §43) · 주 시작요일은 여기서만(HR-01-01에서 이동)", "[항목] 근무=기본급 · 연장/야간/휴일 8h 이내·초과=가산(OT_RATES = TA-02-03 공유) · 주휴=소정근로일 개근 주 · 유급휴가=차감 없음 · 결근·무급=일할(PAY-01-02) · 지각·외출=정책 켤 때 시간 비례 · 상시 5인 미만이면 가산 미적용(§11)", "[정책] 확정분만 집계=고정 · 연장 승인분만(TA-05-03)=선택 — 미승인 연장은 TA-06-02 ‘마감 전 확인’에서 사후 승인/제외(사유) 필수 · 지각·외출 공제(무노동 무임금, 외출 시간 입력 P1)", "[연동] TA-06-02 마감 조건: 미확정 0건 + 미승인 연장 처리 완료", "우선순위 P0"]}, "TA-06-02": {"user": "직원별 한 달 근무·연장·휴일·주휴·지각·결근·휴가를 자동으로 모아 보고, 회사 전체를 월 단위로 마감하는 곳이에요. 마감하면 근태가 잠기고 급여 계산으로 넘어갑니다.", "dev": ["[개요] 근무 이력(TA-03-03) 확정 기록 + 승인 휴가(TA-04-02)를 집계기준(TA-06-01)대로 실시간 집계(별도 실행 없음) · 마감 시 attendance_summary 스냅샷 저장 + att_close 상태 변경", "[집계] 근무일·근무시간·연장(승인/사후 승인분만, 미승인은 별도 표시)·야간·휴일 8h 이내/초과·주휴(소정근로일 개근 주, 주 15h 이상, 주 마지막 날이 이 달인 주)·지각·조퇴(분, 시간 휴가 제외)·결근·유급/무급휴가(근태코드 유급 여부)·주 최대(주 시작요일, 월 경계 주 포함)", "[마감 조건] 회사 전체·월 단위(부서 선택은 조회용) · 직전 달까지 마감 + 달이 끝남 + 미확정 0건 + 미승인 연장 처리 완료 — 아니면 마감 버튼 비활성 + 사유 표시", "[잠금] 공용 마감월(att_close 최신 마감월) 기준으로 근무 이력·근무스케줄·휴가·발령 소급이 잠김 · 마감 시 기록 상태 확정→마감, 해제 시 마감→확정", "[해제] 가장 최근 마감월만 · 사유 필수 · 이 근태가 들어간 급여 월(PAY-01-02 정산 월 기준)이 확정(PAY-03-02)이면 차단 · 마감/해제 이력은 att_close + audit_log", "[연동] 상단에 반영 급여 월·지급일 표시(PAY-01-02) · 행 클릭 → 근무 이력(그 달·직원) · 상시 5인 미만이면 52h·가산 적용 제외 · 엑셀 다운로드 P1", "[흐름] F2 흐름: TA-03-03 → TA-06-02 → PAY-03-01  ·  F3 흐름: TA-04-02 → TA-06-02 → (끝)", "우선순위 P0"]}};
 function ScrHead({ title, id, pri, path, desc }) {
   return (
     <div className="mb-4">
@@ -4978,6 +5052,23 @@ const REF = {
   ],
   empNo: { use: true, auto: true }, // 회사 공통 설정(사번생성 규칙 HR-03-02)
 };
+REF.orgs.forEach(n => { n.def = true; }); // 시스템이 처음 넣어 둔 기본 부서(샘플) — 부서관리 [기본 부서 전체 삭제] 대상
+// 기본 부서 일괄 삭제 계획 — 하나씩 지울 때와 같은 규칙: 직원 소속=남김 · 확정 급여/발령 이력=미사용 · 그 밖=삭제 · 회사가 추가한 하위 부서가 있으면 남김
+function orgDefPlan() {
+  const emps = HR.emps.filter(e => ORG_ACTIVE.indexOf(e.stat) >= 0);
+  const gone = new Set(), off = new Set(), res = { del: [], off: [], keep: [] };
+  REF.orgs.filter(n => n.def).sort((a, b) => orgDepth(b) - orgDepth(a)).forEach(n => {
+    const sub = orgSub(n.id), people = emps.filter(e => sub.has(e.orgId)).length;
+    const rest = [...sub].filter(id => id !== n.id && !gone.has(id));
+    if (people) return res.keep.push({ n, why: "직원 " + people + "명 소속" });
+    if (rest.some(id => !off.has(id))) return res.keep.push({ n, why: "회사가 추가한 하위 부서 있음" });
+    const used = n.payUsed || Object.values(HR.appts || {}).some(rows => rows.some(r => r.undo && r.undo.orgId === n.id));
+    if (used || rest.length) { off.add(n.id); return res.off.push({ n, why: used ? "확정 급여·발령 이력에 쓰임" : "미사용 하위 부서 보존" }); }
+    gone.add(n.id); res.del.push({ n });
+  });
+  return res;
+}
+function orgDefPurge() { const p = orgDefPlan(); const d = new Set(p.del.map(x => x.n.id)), o = new Set(p.off.map(x => x.n.id)); REF.orgs = REF.orgs.filter(n => !d.has(n.id)).map(n => o.has(n.id) ? { ...n, use: false } : n); refChanged(); return p; }
 function refChanged() { window.dispatchEvent(new Event("ref-change")); }
 function useRefSync() {
   const [, force] = useState(0);
@@ -4995,18 +5086,24 @@ function Sw({ on, onClick }) {
 // 빠른 설정 모달 — 직원 등록 화면을 벗어나지 않고 부서·직위·고용형태·근무유형을 추가/사용 설정 (원천 화면의 모달을 재사용)
 const QUICK_META = {
   "부서": { badge: "HR-02-01-M1", src: "부서관리(HR-02-01)" },
+  "직무": { badge: "SET-01-M1", src: "기준 코드(SET-01) · 직무" },
   "직위": { badge: "SET-01-M1", src: "기준 코드(SET-01) · 직위" },
+  "직책": { badge: "SET-01-M1", src: "기준 코드(SET-01) · 직책" },
+  "직급": { badge: "SET-01-M1", src: "기준 코드(SET-01) · 직급" },
   "고용형태": { badge: "SET-01-M1", src: "기준 코드(SET-01) · 고용형태" },
   "근무유형": { badge: "TA-02-02-M1", src: "근무 유형 관리(TA-02-02)" },
 };
-function QuickSetModal({ kind, onClose, onPick }) {
+function QuickSetModal({ kind, onClose, onPick, onPurged }) {
   useRefSync();
   const meta = QUICK_META[kind];
   const [f, setF] = useState({ name: "", code: "", parent: 0, sys: "고정(통상)", tt: "주간(표준)" });
   const [err, setErr] = useState("");
+  const [purge, setPurge] = useState(null); // 기본값 전체 삭제 확인 { ok }
+  const [done, setDone] = useState("");
   const set = (k, v) => { setF(p => ({ ...p, [k]: v })); setErr(""); };
   const inp = INP + " w-full";
-  const isCode = kind === "직위" || kind === "고용형태";
+  const HRC = ["직무", "직위", "직책", "직급"]; // 기준 코드(SET-01) 인사분류
+  const isCode = HRC.includes(kind) || kind === "고용형태";
   const codeRows = isCode ? CODE_GROUPS[kind].rows : [];
   const toggle = (r) => { r.use = r.use === false; refChanged(); };
   const add = () => {
@@ -5017,11 +5114,11 @@ function QuickSetModal({ kind, onClose, onPick }) {
       const p = REF.orgs.find(n => n.id === Number(f.parent));
       const node = { id: REF.orgSeq++, code, name, parent: p ? p.id : 0, depth: p ? orgDepth(p) + 1 : 1, use: true };
       REF.orgs = [...REF.orgs, node]; refChanged(); onPick(node.id);
-    } else if (kind === "직위") {
+    } else if (HRC.includes(kind)) {
       if (!code) return setErr("코드를 입력하세요.");
       if (codeRows.some(r => r.code === code || r.name === name)) return setErr("이미 있는 코드 또는 명칭입니다.");
       const ord = codeRows.length + 1;
-      codeRows.push({ code, name, extra: String(ord), ord, use: true }); CODE_GROUPS[kind].count = codeRows.length; refChanged(); onPick(name);
+      codeRows.push({ code, name, extra: kind === "직위" ? String(ord) : kind === "직책" ? "" : undefined, ord, use: true }); CODE_GROUPS[kind].count = codeRows.length; refChanged(); onPick(code); // 직위 서열=정렬순 · 직책수당은 기준 코드에서 입력
     } else if (kind === "근무유형") {
       if (REF.workTypes.some(r => r.name === name)) return setErr("이미 있는 근무유형명입니다.");
       REF.workTypes = [...REF.workTypes, { name, sys: f.sys, work: "주 40h", loc: "사무실", tt: f.sys === "교대" ? "오전/오후/야간" : f.tt, use: true }]; refChanged(); onPick(name);
@@ -5029,6 +5126,15 @@ function QuickSetModal({ kind, onClose, onPick }) {
     setF(p => ({ ...p, name: "", code: "" }));
   };
   const rowCls = "flex items-center justify-between gap-2 border-b border-gray-100 px-3 py-2 last:border-b-0";
+  const canPurge = kind === "부서" ? REF.orgs.some(n => n.def) : HRC.includes(kind) && codeRows.some(r => r.def);
+  const DefTag = () => <span title="처음 제공된 기본값" className="ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">기본</span>;
+  const pv = purge ? (kind === "부서" ? (() => { const p = orgDefPlan(); return { del: p.del.map(x => x.n.name), off: p.off.map(x => x.n.name + "(" + x.why + ")"), keep: p.keep.map(x => x.n.name + "(" + x.why + ")") }; })()
+    : (() => { const p = codeDefPlan([kind])[0]; return { del: p.del.map(r => r.name), off: [], keep: p.keep.map(r => r.name + "(직원 " + codeInUse(kind, r) + "명)") }; })()) : null;
+  const runPurge = () => {
+    if (kind === "부서") { const r = orgDefPurge(); setDone("기본 부서 " + r.del.length + "개 삭제 · " + r.off.length + "개 미사용" + (r.keep.length ? " · " + r.keep.length + "개는 직원이 있어 남김" : "")); }
+    else { const r = codeDefPurge([kind])[0]; setDone(kind + " 기본값 " + r.del.length + "개 삭제" + (r.keep.length ? " · 직원이 쓰는 " + r.keep.length + "개는 남김" : "")); }
+    setPurge(null); onPurged && onPurged(kind);
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg bg-white shadow-xl">
@@ -5039,16 +5145,28 @@ function QuickSetModal({ kind, onClose, onPick }) {
         <div className="space-y-3 p-5 text-sm">
           <p className="rounded-md border-l-4 border-blue-400 bg-blue-50 px-3 py-2 text-xs text-gray-600">여기서 바꾼 내용은 <b>{meta.src}</b>에 바로 반영되고, 직원 등록 화면의 선택 목록도 즉시 바뀝니다.</p>
 
+          {(canPurge || done) && <div className="flex items-center justify-between gap-2 text-xs"><span className="text-gray-400">{done ? <span className="text-emerald-600">{done}</span> : "‘기본’ = 처음 제공된 값"}</span>{canPurge && !purge && <button onClick={() => setPurge({ ok: false })} className="shrink-0 font-medium text-red-600 hover:underline">기본값 전체 삭제</button>}</div>}
+          {purge && <div className="space-y-2 rounded-md border border-red-200 bg-red-50/40 p-3 text-xs">
+            <p className="font-semibold text-red-700">{kind} 기본값 전체 삭제</p>
+            <p className="text-gray-600">처음 제공된 기본값만 지웁니다. 회사에서 추가한 값은 그대로입니다.</p>
+            <p><b className="text-red-600">삭제 {pv.del.length}</b> <span className="text-gray-600">{pv.del.join(", ") || "없음"}</span></p>
+            {kind === "부서" && <p><b className="text-amber-600">미사용 {pv.off.length}</b> <span className="text-gray-600">{pv.off.join(", ") || "없음"}</span></p>}
+            <p><b className="text-gray-600">남김 {pv.keep.length}</b> <span className="text-gray-500">{pv.keep.join(", ") || "없음"}</span></p>
+            {pv.keep.length > 0 && <p className="text-amber-700">{kind === "부서" ? "직원이 소속된 부서는 인사 발령으로 직원을 옮긴 뒤 지울 수 있습니다." : "직원에게 지정된 값은 인사 발령으로 바꾼 뒤 지울 수 있습니다."}</p>}
+            <label className="flex items-start gap-2 text-gray-700"><input type="checkbox" checked={purge.ok} onChange={e => setPurge({ ok: e.target.checked })} className="mt-0.5 h-4 w-4 rounded border-gray-300" />되돌릴 수 없음을 확인했습니다.</label>
+            <div className="flex justify-end gap-2"><button onClick={() => setPurge(null)} className="rounded-md border border-gray-300 bg-white px-3 py-1 text-gray-600 hover:bg-gray-50">취소</button><button disabled={!purge.ok || !(pv.del.length + pv.off.length)} onClick={runPurge} className="rounded-md bg-red-600 px-3 py-1 font-medium text-white hover:bg-red-700 disabled:opacity-40">실행</button></div>
+          </div>}
           <div className="max-h-56 overflow-y-auto rounded-md border border-gray-200">
             {kind === "부서" && orgOrdered().map(n => (
               <div key={n.id} className={rowCls}>
-                <span className="text-gray-700" style={{ paddingLeft: (n.depth - 1) * 14 }}>{n.depth > 1 && <span className="mr-1 text-gray-300">└</span>}{n.name}<span className="ml-2 text-xs text-gray-400">{n.code}</span></span>
-                <button onClick={() => { onPick(n.id); onClose(); }} className="shrink-0 text-xs font-medium text-blue-600 hover:underline">선택</button>
+                <span className="text-gray-700" style={{ paddingLeft: (n.depth - 1) * 14 }}>{n.depth > 1 && <span className="mr-1 text-gray-300">└</span>}{n.name}<span className="ml-2 text-xs text-gray-400">{n.code}</span>{n.def && <DefTag />}</span>
               </div>
             ))}
+            {kind === "부서" && !orgOrdered().length && <p className="px-3 py-4 text-center text-xs text-gray-400">사용 중인 부서가 없습니다. 아래에서 추가하세요.</p>}
+            {isCode && !codeRows.length && <p className="px-3 py-4 text-center text-xs text-gray-400">등록된 {kind} 값이 없습니다. 아래에서 추가하세요.</p>}
             {isCode && codeRows.map(r => (
               <div key={r.code} className={rowCls}>
-                <span className={r.use === false ? "text-gray-400 line-through" : "text-gray-700"}>{r.name}<span className="ml-2 text-xs text-gray-400">{r.code}</span></span>
+                <span className={r.use === false ? "text-gray-400 line-through" : "text-gray-700"}>{r.name}<span className="ml-2 text-xs text-gray-400">{r.code}</span>{r.def && HRC.includes(kind) && <DefTag />}</span>
                 <span className="flex items-center gap-2 text-xs text-gray-500"><Sw on={r.use !== false} onClick={() => toggle(r)} />사용</span>
               </div>
             ))}
@@ -5067,14 +5185,14 @@ function QuickSetModal({ kind, onClose, onPick }) {
               <p className="mb-2 text-xs font-semibold text-gray-600">{kind} 추가</p>
               <div className="grid grid-cols-2 gap-2">
                 {kind === "부서" && <div className="col-span-2"><label className="mb-1 block text-xs font-medium text-gray-600">상위 부서</label><select value={f.parent} onChange={e => set("parent", e.target.value)} className={inp + " bg-white"}><option value={0}>(최상위) 전사</option>{orgOrdered().filter(n => n.depth < 3).map(n => <option key={n.id} value={n.id}>{orgPath(n)}</option>)}</select></div>}
-                <div><label className="mb-1 block text-xs font-medium text-gray-600"><span className="text-red-500">*</span>{kind === "근무유형" ? "근무유형명" : kind + "명"}</label><input value={f.name} onChange={e => set("name", e.target.value)} placeholder={kind === "부서" ? "예: 총무팀" : kind === "직위" ? "예: 수석" : "예: 주 4일 근무"} className={inp} /></div>
-                {kind !== "근무유형" && <div><label className="mb-1 block text-xs font-medium text-gray-600"><span className="text-red-500">*</span>{kind === "부서" ? "부서코드" : "코드"}</label><input value={f.code} onChange={e => set("code", e.target.value)} placeholder={kind === "부서" ? "예: 1300" : "예: P8"} className={inp} /></div>}
+                <div><label className="mb-1 block text-xs font-medium text-gray-600"><span className="text-red-500">*</span>{kind === "근무유형" ? "근무유형명" : kind + "명"}</label><input value={f.name} onChange={e => set("name", e.target.value)} placeholder={kind === "부서" ? "예: 총무팀" : ({ 직무: "예: 마케팅", 직위: "예: 수석", 직책: "예: 파트장", 직급: "예: 7급" })[kind] || "예: 주 4일 근무"} className={inp} /></div>
+                {kind !== "근무유형" && <div><label className="mb-1 block text-xs font-medium text-gray-600"><span className="text-red-500">*</span>{kind === "부서" ? "부서코드" : "코드"}</label><input value={f.code} onChange={e => set("code", e.target.value)} placeholder={kind === "부서" ? "예: 1300" : ({ 직무: "예: J04", 직위: "예: P8", 직책: "예: D3", 직급: "예: R7" })[kind] || "예: P8"} className={inp} /></div>}
                 {kind === "근무유형" && <div><label className="mb-1 block text-xs font-medium text-gray-600"><span className="text-red-500">*</span>근무제</label><select value={f.sys} onChange={e => set("sys", e.target.value)} className={inp + " bg-white"}>{["고정(통상)", "고정(시차)", "탄력적", "선택적", "교대"].map(o => <option key={o}>{o}</option>)}</select></div>}
                 {kind === "근무유형" && f.sys !== "교대" && <div className="col-span-2"><label className="mb-1 block text-xs font-medium text-gray-600">연결 시간표</label><select value={f.tt} onChange={e => set("tt", e.target.value)} className={inp + " bg-white"}>{["주간(표준)", "오전 시프트", "오후 시프트", "야간 시프트", "유연근무"].map(o => <option key={o}>{o}</option>)}</select></div>}
               </div>
               {err && <p className="mt-2 text-xs text-red-500">{err}</p>}
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-[11px] text-gray-400">{kind === "부서" ? "3단계(본부 › 팀 › 파트)까지 · 수정·삭제는 부서관리에서" : kind === "근무유형" ? "소정근로·근무 장소 등 상세는 근무 유형 관리에서" : "서열·정렬 등 상세는 기준 코드에서"}</span>
+                <span className="text-[11px] text-gray-400">{kind === "부서" ? "3단계(본부 › 팀 › 파트)까지 · 수정·삭제는 부서관리에서" : kind === "근무유형" ? "소정근로·근무 장소 등 상세는 근무 유형 관리에서" : kind === "직책" ? "직책수당·정렬 등 상세는 기준 코드에서" : "서열·정렬 등 상세는 기준 코드에서"}</span>
                 <button onClick={add} className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700">추가하고 선택</button>
               </div>
             </div>
@@ -5092,15 +5210,15 @@ function EmpRegisterScreen() {
   useRefSync();
   const [modal, setModal] = useState(false);
   const [quick, setQuick] = useState(null); // 부서 | 직위 | 고용형태 | 근무유형
-  const [sel, setSel] = useState({ org: 2, pos: "", emp: "정규직", wt: wtDefault() }); // 근무유형 기본값 = 회사 기본(TA-02-02) → 미배정 없음
+  const [sel, setSel] = useState({ org: 2, 직무: "", 직위: "", 직책: "", 직급: "", emp: "정규직", wt: wtDefault() }); // 인사분류는 코드값(SET-01) // 근무유형 기본값 = 회사 기본(TA-02-02) → 미배정 없음
   const [noUse, setNoUse] = useState(REF.empNo.use);
   const [autoNo, setAutoNo] = useState(REF.empNo.auto);
   const setEmpNo = (use, auto) => { REF.empNo = { use, auto }; setNoUse(use); setAutoNo(auto); };
   const pick = (k, v) => setSel(p => ({ ...p, [k]: v }));
-  const onPick = { "부서": v => pick("org", v), "직위": v => pick("pos", v), "고용형태": v => pick("emp", v), "근무유형": v => pick("wt", v) };
+  const HR_CLASS = [["직무", "수행 업무 분류"], ["직위", "승진 서열 · 최초 발령에 기록"], ["직책", "보직 · 직책수당 연동"], ["직급", "급여 등급"]];
+  const onPick = { "부서": v => pick("org", v), "직무": v => pick("직무", v), "직위": v => pick("직위", v), "직책": v => pick("직책", v), "직급": v => pick("직급", v), "고용형태": v => pick("emp", v), "근무유형": v => pick("wt", v) };
   const inp = INP + " w-full";
   const steps = ["기본 인적사항", "소속·발령", "직원계정 초대"];
-  const posRows = CODE_GROUPS["직위"].rows.filter(r => r.use !== false);
   const empRows = CODE_GROUPS["고용형태"].rows.filter(r => r.use !== false);
   const wtRows = REF.workTypes.filter(r => r.use !== false);
   return (
@@ -5124,8 +5242,9 @@ function EmpRegisterScreen() {
 
       <SecCard icon={P("M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")} title="소속·발령" sub="최초 발령·급여 소속 자동 생성">
         <F2 label="입사일자" req hint="연차·급여 기산 기준"><input type="date" defaultValue="2026-08-04" className={inp} /></F2>
-        <F2 label="부서" req hint="부서관리(HR-02-01) 참조 · 최초 발령 생성" action={<QuickSetBtn onClick={() => setQuick("부서")} />}><select value={sel.org} onChange={e => pick("org", Number(e.target.value))} className={inp + " bg-white"}>{orgOrdered().map(n => <option key={n.id} value={n.id}>{orgPath(n)}</option>)}</select></F2>
-        <F2 label="직위" hint="기준 코드(SET-01) '사용' ON 직위만 노출" action={<QuickSetBtn onClick={() => setQuick("직위")} />}><select value={sel.pos} onChange={e => pick("pos", e.target.value)} className={inp + " bg-white"}><option value="">(선택)</option>{posRows.map(r => <option key={r.code}>{r.name}</option>)}</select></F2>
+        <F2 label="부서" req hint="부서관리(HR-02-01) 참조 · 최초 발령 생성" action={<QuickSetBtn onClick={() => setQuick("부서")} />}><select aria-label="부서" value={sel.org} onChange={e => pick("org", Number(e.target.value))} className={inp + " bg-white"}>{!orgOrdered().length && <option value="">사용 중인 부서 없음 — ⚙ 설정에서 추가</option>}{orgOrdered().map(n => <option key={n.id} value={n.id}>{orgPath(n)}</option>)}</select></F2>
+        {HR_CLASS.map(([k, d]) => { const rows = CODE_GROUPS[k].rows.filter(r => r.use !== false); return (
+          <F2 key={k} label={k} hint={d + " · 기준 코드(SET-01)에서 사용 중인 " + rows.length + "개"} action={<QuickSetBtn onClick={() => setQuick(k)} />}><select aria-label={k} value={sel[k]} disabled={!rows.length} onChange={e => pick(k, e.target.value)} className={inp + " bg-white disabled:bg-gray-50 disabled:text-gray-400"}><option value="">{rows.length ? "(선택)" : "사용 중인 코드 없음 — ⚙ 설정에서 추가"}</option>{rows.map(r => <option key={r.code} value={r.code}>{r.name}{k === "직책" && r.extra ? " · 수당 " + r.extra : ""}</option>)}</select></F2>); })}
         <F2 label="고용형태" req hint="기준 코드(SET-01) '사용' ON 항목 · 4대보험·급여 규칙 분기 · 프리랜서(외주)는 사업/기타소득 원천징수" action={<QuickSetBtn onClick={() => setQuick("고용형태")} />}><select value={sel.emp} onChange={e => pick("emp", e.target.value)} className={inp + " bg-white"}>{empRows.map(r => <option key={r.code}>{r.name}</option>)}</select></F2>
         <F2 label="근무유형" req hint="근무 유형 관리(TA-02-02) '사용' 항목 · 회사 기본이 미리 선택 · 입사일부터 배정(TA-03-01 이력)" action={<QuickSetBtn onClick={() => setQuick("근무유형")} />}><select value={sel.wt} onChange={e => pick("wt", e.target.value)} className={inp + " bg-white"}>{wtRows.map(r => <option key={r.name}>{r.name}</option>)}</select></F2>
         <F2 label="사번" hint={!noUse ? "사번을 쓰지 않습니다 · 직원은 이름·이메일로 구분 · 회사 공통 설정으로 저장" : autoNo ? "채번 규칙({YYYY}-{순번 4자리})에 따라 자동 생성 · 중복 불가" : "수기 입력 · 중복 불가"} action={<label className="inline-flex cursor-pointer items-center gap-1.5 text-xs text-gray-600"><Sw on={noUse} onClick={() => setEmpNo(!noUse, autoNo)} />사번 사용</label>}>
@@ -5136,7 +5255,7 @@ function EmpRegisterScreen() {
                 {autoNo ? <input readOnly value="2026-0042 (자동)" className={INP + " w-full bg-gray-50"} /> : <input placeholder="사번 직접 입력" className={INP + " w-full"} />}
               </div>}
         </F2>
-        <div className="sm:col-span-2 rounded-md border-l-4 border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-gray-600">부서·직위·고용형태·근무유형은 각 항목 우측 <b>⚙ 설정</b>을 누르면 이 화면을 벗어나지 않고 모달에서 바로 추가하거나 사용 여부를 바꿀 수 있습니다. 바꾼 내용은 <b>부서관리(HR-02-01)·기준 코드(SET-01)·근무 유형 관리(TA-02-02)</b>에 그대로 반영되며, '사용' ON 항목만 선택 목록에 나옵니다. 사번 사용 여부와 자동 채번은 회사 공통 설정(사번생성 규칙 HR-03-02)으로 저장됩니다.</div>
+        <div className="sm:col-span-2 rounded-md border-l-4 border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-gray-600">부서·직무·직위·직책·직급·고용형태·근무유형은 각 항목 우측 <b>⚙ 설정</b>을 누르면 이 화면을 벗어나지 않고 모달에서 바로 추가하거나 사용 여부를 바꿀 수 있습니다. 바꾼 내용은 <b>부서관리(HR-02-01)·기준 코드(SET-01)·근무 유형 관리(TA-02-02)</b>에 그대로 반영되며, '사용' ON 항목만 선택 목록에 나옵니다. 사번 사용 여부와 자동 채번은 회사 공통 설정(사번생성 규칙 HR-03-02)으로 저장됩니다.</div>
       </SecCard>
 
       <SecCard icon={P("M9 17v2m6-2v2M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z")} title="직원계정 초대" sub="초대 전용(MVP)">
@@ -5152,7 +5271,20 @@ function EmpRegisterScreen() {
         <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">등록</button>
       </div>
 
-      {quick && <QuickSetModal kind={quick} onClose={() => setQuick(null)} onPick={onPick[quick]} />}
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
+          <li><b>등록 순서</b> — ① 기본 인적사항 → ② 소속·발령 → ③ 직원계정 초대 순서로 입력합니다. <span className="text-red-500">*</span> 표시는 필수입니다(성명·주민등록번호·휴대폰·이메일·입사일자·부서·고용형태·근무유형).</li>
+          <li><b>인사분류</b> — 직무·직위·직책·직급은 기준 코드(SET-01)에서 ‘사용’으로 켜 둔 값이 모두 나옵니다. 넷 다 선택 항목이며, 사용 중인 값이 하나도 없는 분류는 비활성으로 보입니다. 직위는 승진 서열, 직책은 보직(직책수당 연동), 직급은 급여 등급입니다.</li>
+          <li><b>⚙ 설정</b> — 부서·인사분류·고용형태·근무유형 옆 [⚙ 설정]을 누르면 이 화면을 벗어나지 않고 값을 추가하거나 사용 여부를 바꿀 수 있습니다. 새로 추가한 값은 바로 선택됩니다. 부서 수정·삭제와 코드 상세(서열·직책수당)는 원래 화면(부서관리 HR-02-01·기준 코드 SET-01)에서 합니다. 부서·직무·직위·직책·직급 모달에는 [기본값 전체 삭제]가 있어 처음 제공된 값을 한 번에 지울 수 있습니다(직원이 쓰는 값은 남김).</li>
+          <li><b>고용형태·근무유형</b> — 고용형태는 4대보험·급여 규칙이 걸린 시스템 코드라 추가할 수 없고 사용 여부만 바꿉니다. 근무유형은 회사 기본값이 미리 선택되며 입사일부터 배정됩니다(개인 근무유형 관리 TA-03-01 이력).</li>
+          <li><b>사번</b> — 회사가 사번을 쓰면 채번 규칙에 따라 자동으로 붙거나 직접 입력합니다(중복 불가). 사번을 쓰지 않으면 이름·이메일로 구분합니다.</li>
+          <li><b>등록하면</b> — 직원·최초 발령(입사)·근무유형 배정·급여 소속이 한 번에 만들어지고, 하나라도 실패하면 모두 취소됩니다. [등록 + 직원계정 초대 발송]은 등록 뒤 초대 메일을 함께 보냅니다(셀프가입 없음).</li>
+          <li><b>등록 후 변경</b> — 부서·직위·고용형태·입사일 변경은 이력이 남도록 인사 발령(HR-04-02)에서, 연락처는 직원 정보(HR-04-05)에서 고칩니다.</li>
+        </ul>
+      </div>
+
+      {quick && <QuickSetModal kind={quick} onClose={() => setQuick(null)} onPick={onPick[quick]} onPurged={k => setSel(p => k === "부서" ? (orgOrdered().some(n => n.id === p.org) ? p : { ...p, org: (orgOrdered()[0] || {}).id || "" }) : (CODE_GROUPS[k].rows.some(r => r.code === p[k] && r.use !== false) ? p : { ...p, [k]: "" }))} />}
       {modal && <InviteModal target={"김재영" + (noUse ? " · " + (autoNo ? "2026-0042" : "사번 직접 입력") : "")} email="" onClose={() => setModal(false)} onSubmit={() => setModal(false)} />}
     </div>
   );
@@ -5233,7 +5365,8 @@ function EmpListScreen({ ctx }) {
   return (
     <div className="p-5">
       <ScrHead title="직원 목록" id="HR-04-04" pri="P0" path="인사/조직 > 직원관리 > 직원 목록" desc="직원관리의 기본 진입점입니다. 조건으로 검색·필터한 뒤, 직원 셀(이름)을 클릭하면 해당 직원의 직원 정보(HR-04-05) 상세로 이동합니다." />
-
+      <EmpDemoBar modes={["sample", "none"]} />
+      {EMP_DEMO.mode === "none" ? <EmpNoEmployee ctx={ctx} from="HR-04-04" /> : <>
       <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
         <div className="relative min-w-[220px] flex-1"><input value={q} onChange={e => setQ(e.target.value)} placeholder="성명·사번 검색" className={INP + " w-full pl-8"} /><span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"><Ic cls="h-4 w-4" d={P("M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z")} /></span></div>
         <select value={flt.org} onChange={e => setF("org", e.target.value)} className={INP + " bg-white"}><option value="">부서 전체</option>{orgOpts.map(n => <option key={n.id} value={n.id}>{orgPath(n)}</option>)}</select>
@@ -5282,8 +5415,12 @@ function EmpListScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">목록 → 상세 흐름</span> — 직원 셀(이름) 클릭 시 직원 정보(HR-04-05)로 이동합니다. 표시 컬럼은 [컬럼 설정](HR-04-04-M1)에서 고르며 이 브라우저에 기억됩니다. 주민번호는 기본으로 숨기고, 켜도 마스킹되며 엑셀로는 내려받지 않습니다. 필터는 부서·직위·고용형태·재직상태 네 가지이며, 재직상태는 전체·재직·휴직·정직이며 네 필터 모두 기본값은 전체입니다. 퇴직예정·퇴직자는 이 목록에 나오지 않고 퇴직 처리(HR-04-08)에서 확인합니다. 부서·직위·고용형태 선택지는 부서관리·기준 코드에서 '사용' 중인 항목입니다.
+      </>}
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>목록 → 상세 흐름</b> — 직원 셀(이름) 클릭 시 직원 정보(HR-04-05)로 이동합니다. 직원이 한 명도 없으면(회사 첫 사용) 검색·표 대신 [+ 첫 직원 등록하기]와 시작 단계를 보여 줍니다(보라색 시연 버튼으로 미리보기). 표시 컬럼은 [컬럼 설정](HR-04-04-M1)에서 고르며 이 브라우저에 기억됩니다. 주민번호는 기본으로 숨기고, 켜도 마스킹되며 엑셀로는 내려받지 않습니다. 필터는 부서·직위·고용형태·재직상태 네 가지이며, 재직상태는 전체·재직·휴직·정직이며 네 필터 모두 기본값은 전체입니다. 퇴직예정·퇴직자는 이 목록에 나오지 않고 퇴직 처리(HR-04-08)에서 확인합니다. 부서·직위·고용형태 선택지는 부서관리·기준 코드에서 '사용' 중인 항목입니다.
+        </div>
       </div>
       {colModal && <TreeModal title="컬럼 설정" badge="HR-04-04-M1" submit="적용" onClose={() => setColModal(false)} onSubmit={applyCols}>
         <p className="text-xs text-gray-500">목록에 표시할 컬럼을 고릅니다. 설정은 이 브라우저에 저장되어 다음에 들어와도 유지됩니다. 엑셀 다운로드도 이 설정을 따릅니다(주민번호는 제외).</p>
@@ -5296,6 +5433,55 @@ function EmpListScreen({ ctx }) {
         </div>
         <div className="flex items-center justify-between text-xs"><span className="text-gray-400">{draft.length + 1}개 컬럼 표시</span><button onClick={() => setDraft(COL_DEF)} className="text-blue-600 hover:underline">기본값으로</button></div>
       </TreeModal>}
+    </div>
+  );
+}
+// ── 직원 빈 상태(HR-04-04·HR-04-05) — 프로토타입 시연 스위치: 샘플 / 인사정보 미입력 / 직원 0명
+const EMP_DEMO = { mode: "sample" };
+const HR_INFO_EMPTY = () => ({ fam: [], edu: [], car: [], cert: [], mil: { kind: "", branch: "", rank: "", period: "" } });
+function EmpDemoBar({ modes }) {
+  useRefSync();
+  const L = { sample: "샘플 데이터", empty: "인사정보 미입력(신규 입사자)", none: "직원 0명(첫 사용)" };
+  return (
+    <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-dashed border-violet-300 bg-violet-50/50 px-3 py-2 text-xs text-violet-700">
+      <span className="font-semibold">프로토타입 시연</span><span className="text-violet-500">화면 상태</span>
+      {modes.map(m => <button key={m} aria-pressed={EMP_DEMO.mode === m} onClick={() => { EMP_DEMO.mode = m; refChanged(); }} className={"rounded-full border px-2.5 py-0.5 " + (EMP_DEMO.mode === m ? "border-violet-500 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:bg-violet-100")}>{L[m]}</button>)}
+      <span className="ml-auto text-[11px] text-violet-400">실제 서비스에는 없는 시연용 버튼입니다</span>
+    </div>
+  );
+}
+// 직원이 한 명도 없을 때(회사 첫 사용) — 직원 목록·직원 정보 공용
+function EmpNoEmployee({ ctx, from }) {
+  const go = id => ctx && ctx.go && ctx.go(id);
+  const nav = (domain, item, label) => window.__nav && window.__nav({ domain, item, label });
+  const orgN = (REF.orgs || []).length;
+  const STEPS = [
+    ["회사 정보 확인", "사업장·상시 근로자 수·급여 기준", true, () => nav("설정", "HR-01-01", "회사 정보")],
+    ["부서 만들기", orgN ? "부서 " + orgN + "개 등록됨" : "직원을 배치할 부서", orgN > 0, () => go("HR-02-01")],
+    ["직원 등록", "성명·입사일·부서·직위·고용형태·근무유형", false, () => go("HR-04-01")],
+    ["계정 초대", "직원 등록 후 로그인 계정을 보냅니다", false, null],
+  ];
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white px-6 py-10 shadow-sm">
+      <div className="mx-auto max-w-xl text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500"><Ic cls="h-7 w-7" d={P("M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z")} /></div>
+        <p className="text-lg font-bold text-gray-800">{from === "HR-04-05" ? "아직 볼 수 있는 직원 정보가 없습니다" : "아직 등록된 직원이 없습니다"}</p>
+        <p className="mt-1.5 text-sm text-gray-500">{from === "HR-04-05" ? "직원을 먼저 등록하면 인사 카드(기본정보·발령이력·급여·근태·인사정보·상벌)가 만들어집니다." : "첫 직원을 등록하면 근태·연차·급여를 바로 관리할 수 있어요."}</p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <button onClick={() => go("HR-04-01")} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">+ 첫 직원 등록하기</button>
+          <button disabled title="P1" className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-400">엑셀로 여러 명 등록 <span className="text-[10px]">P1</span></button>
+          {from === "HR-04-05" && <button onClick={() => go("HR-04-04")} className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">직원 목록</button>}
+        </div>
+      </div>
+      <ol className="mx-auto mt-8 grid max-w-3xl gap-2 sm:grid-cols-4">
+        {STEPS.map(([t, d, done, fn], i) => (
+          <li key={t} className={"rounded-lg border px-3 py-3 text-left " + (done ? "border-emerald-200 bg-emerald-50/50" : "border-gray-200")}>
+            <p className="text-xs font-semibold text-gray-400">STEP {i + 1}</p>
+            <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold text-gray-800">{done && <span className="text-emerald-600">✓</span>}{t}</p>
+            <p className="mt-0.5 text-xs text-gray-500">{d}</p>
+            {fn && !done && <button onClick={fn} className="mt-1.5 text-xs font-medium text-blue-600 hover:underline">바로가기 ›</button>}
+          </li>))}
+      </ol>
     </div>
   );
 }
@@ -5313,6 +5499,17 @@ const EdBox = ({ title, right, children }) => (
 );
 const EdTH = ({ cols }) => <thead><tr className="border-b border-gray-200 text-xs font-semibold text-slate-500">{cols.map((c, i) => <th key={i} className={"px-5 py-2.5 " + (c[1] || "")}>{c[0]}</th>)}</tr></thead>;
 function EmpDetailScreen({ ctx }) {
+  useRefSync();
+  if (EMP_DEMO.mode === "none") return (
+    <div className="p-5">
+      <ScrHead title="직원 정보" id="HR-04-05" pri="P0" path="인사/조직 > 직원 > 직원관리 > 직원 정보" desc="직원 한 명의 인사 카드입니다. 기본정보·발령이력·급여·근태/연차·인사정보·상벌을 탭으로 모아 보고, 소속·직위 변경은 인사 발령으로, 급여·근태 변경은 각 담당 화면으로 연결합니다." />
+      <EmpDemoBar modes={["sample", "empty", "none"]} />
+      <EmpNoEmployee ctx={ctx} from="HR-04-05" />
+    </div>
+  );
+  return <EmpDetailBody key={EMP_DEMO.mode} ctx={ctx} />;
+}
+function EmpDetailBody({ ctx }) {
   useRefSync();
   // 직원 1명 상세(직원 카드). 샘플 = 김예스(2019-03-02 입사 · 과장) — 급여·근태·직원 모드 화면과 같은 사람
   const EMP = { name: "김예스", en: "Kim Yesform", no: "2019-0007", rrnMask: "900101-1******", rrnFull: "900101-1234567", phone: "010-2481-0042", email: "yes.kim@company.com", join: "2019-03-02", dept: "경영지원본부 › 인사팀", grade: "과장", emp: "정규직", wt: "표준 통상근무", stat: "재직" };
@@ -5372,7 +5569,7 @@ function EmpDetailScreen({ ctx }) {
 
   // ── 인사정보(가족·학력·경력·자격·병역) — 섹션별 편집
   const RELS = ["배우자", "직계비속", "직계존속", "형제자매", "기타"];
-  const [hr, setHr] = useState({
+  const [hr, setHr] = useState(() => EMP_DEMO.mode === "empty" ? HR_INFO_EMPTY() : {
     fam: [{ rel: "배우자", name: "박하나", birth: "1991-05-01", dep: true }, { rel: "직계비속", name: "김별", birth: "2021-03-02", dep: true }, { rel: "직계존속", name: "김철수", birth: "1958-01-01", dep: false }],
     edu: [{ a: "예스대학교", b: "경영학 학사", c: "2009-03 ~ 2013-02", d: "졸업" }, { a: "예스고등학교", b: "인문계", c: "2006-03 ~ 2009-02", d: "졸업" }],
     car: [{ a: "(주)에이비씨", b: "인사팀 · 주임", c: "2016-01 ~ 2019-02" }, { a: "(주)디이에프", b: "총무팀 · 사원", c: "2013-03 ~ 2015-12" }],
@@ -5381,8 +5578,21 @@ function EmpDetailScreen({ ctx }) {
   });
   const [ed, setEd] = useState(null); // 편집 중 섹션 키
   const [hd, setHd] = useState(null); // 편집 초안
-  const startEd = k => { setEd(k); setHd(JSON.parse(JSON.stringify(hr[k]))); };
-  const saveEd = () => { setHr(h => ({ ...h, [ed]: hd })); setEd(null); flash("인사정보를 저장했습니다."); };
+  const SEC = { fam: "가족", edu: "학력", car: "경력", cert: "자격·어학", mil: "병역" };
+  const HR_BLANK = { fam: { rel: "직계비속", name: "", birth: "", dep: false }, edu: { a: "", b: "", c: "", d: "졸업" }, car: { a: "", b: "", c: "" }, cert: { a: "", b: "", c: "" } };
+  const HR_REQ = { fam: [["rel", "관계"], ["name", "성명"]], edu: [["a", "학교"]], car: [["a", "회사"]], cert: [["a", "자격·시험"]] };
+  const isEmptySec = k => k === "mil" ? !hr.mil.kind : !hr[k].length;
+  const allEmpty = Object.keys(SEC).every(isEmptySec);
+  const startEd = k => { setEd(k); const v = JSON.parse(JSON.stringify(hr[k])); setHd(Array.isArray(v) && !v.length ? [{ ...HR_BLANK[k] }] : v); }; // 비어 있으면 빈 행 하나로 시작
+  const saveEd = () => {
+    let v = hd;
+    if (Array.isArray(v)) { // 완전히 빈 행은 버리고, 남은 행은 필수값 확인
+      v = v.filter(r => Object.entries(r).some(([k, x]) => !["rel", "d", "dep"].includes(k) && String(x || "").trim()));
+      const bad = v.findIndex(r => HR_REQ[ed].some(([k]) => !String(r[k] || "").trim()));
+      if (bad >= 0) return flash(SEC[ed] + " " + (bad + 1) + "행: " + HR_REQ[ed].find(([k]) => !String(v[bad][k] || "").trim())[1] + "을(를) 입력하세요.", true);
+    } else if (ed === "mil") { if (!v.kind) return flash("병역 구분을 선택하세요.", true); if (v.kind !== "군필") v = { kind: v.kind, branch: "", rank: "", period: "" }; }
+    setHr(h => ({ ...h, [ed]: v })); setEd(null); flash(SEC[ed] + " 정보를 저장했습니다" + (Array.isArray(v) && !v.length ? "(비어 있음)." : "."));
+  };
   const cin = "w-full rounded-md border border-gray-300 px-2 py-1 text-sm";
 
   // ── 상벌(조회 전용 · HR-04-09에서 등록)
@@ -5393,7 +5603,7 @@ function EmpDetailScreen({ ctx }) {
   const Link = ({ id, children }) => <button onClick={() => go(id)} className="text-xs font-medium text-blue-600 hover:underline">{children} ›</button>;
   const EdBtn = ({ k }) => ed === k
     ? <div className="flex gap-2"><button onClick={() => setEd(null)} className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50">취소</button><button onClick={saveEd} className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700">저장</button></div>
-    : <button disabled={!!ed} onClick={() => startEd(k)} className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-300">✎ 수정</button>;
+    : <button disabled={!!ed} onClick={() => startEd(k)} className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-300">{isEmptySec(k) ? "+ 등록" : "✎ 수정"}</button>;
   // 표 편집 공용: rows(배열) · cols([key, 라벨, 입력 렌더러?])
   const setRow = (i, k, v) => setHd(d => d.map((r, j) => j === i ? { ...r, [k]: v } : r));
   const editTable = (key, cols, blank) => {
@@ -5402,7 +5612,7 @@ function EmpDetailScreen({ ctx }) {
       <div className="overflow-x-auto"><table className="w-full min-w-[480px] text-left text-sm"><EdTH cols={[...cols.map(c => [c[1], c[3] || ""]), ...(ed === key ? [["", "w-10"]] : [])]} /><tbody>
         {rows.map((r, i) => <tr key={i} className="border-b border-gray-100">{cols.map(c => <td key={c[0]} className={"px-5 " + (ed === key ? "py-2" : "py-2.5 text-gray-700") + " " + (c[3] || "")}>{ed === key ? (c[2] ? c[2](r[c[0]], v => setRow(i, c[0], v)) : <input value={r[c[0]]} onChange={e => setRow(i, c[0], e.target.value)} className={cin} />) : (c[4] ? c[4](r[c[0]]) : r[c[0]])}</td>)}
           {ed === key && <td className="px-2 py-2 text-center"><button onClick={() => setHd(d => d.filter((_, j) => j !== i))} title="행 삭제" className="text-gray-400 hover:text-red-500">✕</button></td>}</tr>)}
-        {rows.length === 0 && <tr><td colSpan={cols.length + 1} className="px-5 py-6 text-center text-sm text-gray-400">등록된 내용이 없습니다. [✎ 수정]에서 추가하세요.</td></tr>}
+        {rows.length === 0 && <tr><td colSpan={cols.length + 1} className="px-5 py-6 text-center text-sm text-gray-400">{ed === key ? "행이 없습니다. [+ 행 추가]로 입력하거나, 이대로 저장하면 비어 있는 상태가 됩니다." : <>등록된 {SEC[key]} 정보가 없습니다.<button disabled={!!ed} onClick={() => startEd(key)} className="ml-2 font-medium text-blue-600 hover:underline disabled:text-gray-300">+ {SEC[key]} 추가</button></>}</td></tr>}
       </tbody></table>
       {ed === key && <div className="px-5 py-2"><button onClick={() => setHd(d => [...d, { ...blank }])} className="text-xs font-medium text-blue-600 hover:underline">+ 행 추가</button></div>}</div>
     );
@@ -5425,6 +5635,7 @@ function EmpDetailScreen({ ctx }) {
     <div className="p-5">
       <div className="mb-3 text-sm"><button onClick={() => go("HR-04-04")} className="font-medium text-blue-600 hover:underline">‹ 직원 목록</button><span className="mx-2 text-gray-300">›</span><span className="text-gray-500">직원 정보</span></div>
       <ScrHead title="직원 정보" id="HR-04-05" pri="P0" path="인사/조직 > 직원 > 직원관리 > 직원 정보" desc="직원 한 명의 인사 카드입니다. 기본정보·발령이력·급여·근태/연차·인사정보·상벌을 탭으로 모아 보고, 소속·직위 변경은 인사 발령으로, 급여·근태 변경은 각 담당 화면으로 연결합니다." />
+      <EmpDemoBar modes={["sample", "empty", "none"]} />
 
       <div className="sticky top-0 z-10 mb-4 flex flex-wrap items-start justify-between gap-4 rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
         <div className="flex items-center gap-4">
@@ -5539,6 +5750,7 @@ function EmpDetailScreen({ ctx }) {
         </>}
 
         {tab === "인사정보" && <>
+          {allEmpty && !ed && <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-5 py-4 text-sm text-gray-600"><p className="font-semibold text-gray-800">아직 입력된 인사정보가 없습니다</p><p className="mt-1 text-xs leading-relaxed">가족·학력·경력·자격·병역은 모두 <b>선택 항목</b>이에요. 필요한 섹션만 [+ 등록]으로 입력하세요. 급여 계산에는 쓰이지 않으며, 원천세 부양가족 공제는 <button onClick={() => go("PAY-02-02")} className="font-medium text-blue-600 hover:underline">부양가족 정보(PAY-02-02)</button>에서 따로 등록합니다. 직원이 직접 입력하는 기능(HR-04-06)은 P1입니다.</p></div>}
           <EdBox title="가족" right={<EdBtn k="fam" />}>
             {editTable("fam", [
               ["rel", "관계", (v, set) => <select value={v} onChange={e => set(e.target.value)} className={cin + " bg-white"}>{RELS.map(o => <option key={o}>{o}</option>)}</select>],
@@ -5551,11 +5763,12 @@ function EmpDetailScreen({ ctx }) {
           <EdBox title="경력" right={<EdBtn k="car" />}>{editTable("car", [["a", "회사"], ["b", "부서·직위"], ["c", "재직기간"]], { a: "", b: "", c: "" })}</EdBox>
           <EdBox title="자격 · 어학" right={<EdBtn k="cert" />}>{editTable("cert", [["a", "자격·시험"], ["b", "취득일"], ["c", "발급기관"]], { a: "", b: "", c: "" })}</EdBox>
           <EdBox title="병역" right={<EdBtn k="mil" />}>
-            <div className="grid grid-cols-1 gap-x-10 gap-y-4 p-5 sm:grid-cols-2">
-              {[["kind", "구분", ["군필", "미필", "면제", "해당없음"]], ["branch", "군별"], ["rank", "계급"], ["period", "복무기간"]].map(([k, l, opts]) => <EdD key={k} label={l}>{ed === "mil"
-                ? (opts ? <select value={hd[k]} onChange={e => setHd({ ...hd, [k]: e.target.value })} className={inp2 + " bg-white"}>{opts.map(o => <option key={o}>{o}</option>)}</select> : <input value={hd[k]} onChange={e => setHd({ ...hd, [k]: e.target.value })} className={inp2} />)
+            {ed !== "mil" && !hr.mil.kind ? <p className="px-5 py-6 text-center text-sm text-gray-400">등록된 병역 정보가 없습니다.<button disabled={!!ed} onClick={() => startEd("mil")} className="ml-2 font-medium text-blue-600 hover:underline disabled:text-gray-300">+ 병역 등록</button></p>
+            : <div className="grid grid-cols-1 gap-x-10 gap-y-4 p-5 sm:grid-cols-2">
+              {[["kind", "구분", ["군필", "미필", "면제", "해당없음"]], ["branch", "군별"], ["rank", "계급"], ["period", "복무기간"]].filter(([k]) => k === "kind" || (ed === "mil" ? hd.kind : hr.mil.kind) === "군필").map(([k, l, opts]) => <EdD key={k} label={l}>{ed === "mil"
+                ? (opts ? <select aria-label="병역 구분" value={hd[k]} onChange={e => setHd({ ...hd, [k]: e.target.value })} className={inp2 + " bg-white"}><option value="">선택</option>{opts.map(o => <option key={o}>{o}</option>)}</select> : <input aria-label={l} value={hd[k]} placeholder={k === "period" ? "예: 2013-03 ~ 2014-12" : ""} onChange={e => setHd({ ...hd, [k]: e.target.value })} className={inp2} />)
                 : (hr.mil[k] || "—")}</EdD>)}
-            </div>
+            </div>}
           </EdBox>
         </>}
 
@@ -5582,9 +5795,10 @@ function EmpDetailScreen({ ctx }) {
         )}
       </div>
 
-      <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-5 py-4 text-sm text-gray-600">
-        <p className="mb-2 font-semibold text-blue-700">직원 정보 사용 안내</p>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
+          <li><b>직원이 없을 때</b> — 회사에 등록된 직원이 없으면 인사 카드 대신 ‘아직 볼 수 있는 직원 정보가 없습니다’ 화면과 [+ 첫 직원 등록하기]·시작 단계(회사 정보 → 부서 → 직원 등록 → 계정 초대)를 보여 줍니다. 위의 보라색 ‘프로토타입 시연’ 버튼으로 각 상태를 미리 볼 수 있습니다(실제 서비스에는 없음).</li>
           <li><b>들어오는 방법</b> — 직원 목록(HR-04-04)에서 이름을 누르면 열립니다. 위쪽 프로필 카드는 스크롤해도 고정되며, [‹ 직원 목록]으로 돌아갑니다.</li>
           <li><b>프로필 버튼</b> — [인사 발령]은 이 직원이 선택된 채로 발령 화면을 엽니다. 계정 상태(활성·초대중·잠금·비활성·없음)가 이름 옆에 보이고, 계정이 없으면 [계정 초대], 초대중이면 [초대 재발송]을 누릅니다. [퇴직 처리]는 퇴직 처리(HR-04-08)로 이동합니다.</li>
           <li><b>기본정보</b> — 여기서 고칠 수 있는 것은 성명·영문명·휴대폰·이메일뿐입니다([✎ 수정] → [저장], 변경 이력 기록). 입사일자·부서·직위·고용형태는 이력이 남도록 인사 발령에서 바꿉니다. 주민번호는 가려져 있고, 최고관리자만 [열람]으로 10초간 볼 수 있으며 열람 기록이 남습니다.</li>
@@ -5592,7 +5806,7 @@ function EmpDetailScreen({ ctx }) {
           <li><b>발령이력</b> — 인사 발령에서 확정한 입사·부서이동·승진·전보·휴직·복직이 날짜순으로 쌓입니다. 이 탭에서는 고칠 수 없습니다.</li>
           <li><b>급여정보</b> — 급여 계약·4대보험 기준·급여 계좌를 조회만 합니다. 국민연금은 기준소득월액, 건강·고용은 보수월액으로 따로 표시합니다. 변경은 각 담당 화면(PAY-02-04·PAY-02-03·PAY-02-01)에서 하며, 급여 열람 권한이 없는 사용자에게는 이 탭이 보이지 않습니다.</li>
           <li><b>근태·연차</b> — 연차 발생·사용·잔여와 이번 달 근태를 근태코드(법정휴가 1xx·약정휴가 2xx·근태상태 3xx) 기준으로 보여 줍니다. 근속 1년 이상은 매년 15일(3년 이상 2년마다 1일 가산), 1년 미만은 1개월 개근마다 1일씩 생기며 미리 쓸 수 없습니다. 신청·승인은 휴가 내역 관리(TA-04-02)에서 합니다.</li>
-          <li><b>인사정보</b> — 가족·학력·경력·자격·병역을 섹션별 [✎ 수정]으로 고칩니다. 표 섹션은 [+ 행 추가]와 ✕로 행을 늘리고 지웁니다. 한 번에 한 섹션만 편집할 수 있고, 편집 중에는 다른 탭으로 이동할 수 없습니다. 가족의 부양 여부는 원천세에 쓰이므로 부양가족 정보(PAY-02-02)에서만 바꿉니다.</li>
+          <li><b>인사정보</b> — 가족·학력·경력·자격·병역은 모두 선택 항목입니다. 비어 있으면 섹션마다 ‘등록된 ○○ 정보가 없습니다’와 [+ 등록]이 보이고, 누르면 빈 행 하나로 입력을 시작합니다. 완전히 빈 행은 저장 때 버리고, 가족(관계·성명)·학력(학교)·경력(회사)·자격(자격·시험)은 필수입니다. 병역은 ‘군필’일 때만 군별·계급·복무기간을 받습니다. 입력된 섹션은 [✎ 수정]으로 고칩니다. 표 섹션은 [+ 행 추가]와 ✕로 행을 늘리고 지웁니다. 한 번에 한 섹션만 편집할 수 있고, 편집 중에는 다른 탭으로 이동할 수 없습니다. 가족의 부양 여부는 원천세에 쓰이므로 부양가족 정보(PAY-02-02)에서만 바꿉니다.</li>
           <li><b>상벌</b> — 상벌 관리(HR-04-09)에서 등록한 포상·징계를 조회만 합니다. 행을 누르거나 Enter로 사유·첨부를 펼칩니다. 감봉은 근로기준법 §95 한도(1회 평균임금 1일분의 1/2, 총액 월 임금의 1/10)를 넘을 수 없습니다.</li>
         </ul>
       </div>
@@ -5850,8 +6064,8 @@ function EmpAssignScreen({ ctx }) {
         <div className="flex-1"><span className="font-medium text-amber-700">퇴직은 별도 메뉴</span> — 퇴직은 계정 비활성·최종 급여·퇴직금·4대보험 상실 등 연동이 많아 [퇴직 처리](HR-04-08)에서 진행합니다.</div>
         <button onClick={() => { if (pick) window.__empTarget = { no: pick.no }; ctx && ctx.go && ctx.go("HR-04-08"); }} className="shrink-0 rounded-md border border-amber-500 bg-white px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100">퇴직 처리로 이동 →</button>
       </div>
-      <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/60 px-5 py-4 text-sm text-gray-600">
-        <p className="mb-2 font-semibold text-blue-700">인사 발령 사용 안내</p>
+      <div className="mt-3 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
           <li><b>대상 직원</b> — [직원 검색·불러오기]로 재직·휴직·정직 직원을 고릅니다(이름·사번·부서 검색, 부서 필터). 직원 정보(HR-04-05)의 [인사 발령]으로 오면 그 직원이 선택된 채로 열립니다.</li>
           <li><b>발령유형</b> — 재직 중이면 승진·부서이동(전보)·고용형태 변경·휴직, 휴직 중이면 복직만 고를 수 있습니다. 승진은 현재보다 높은 직위만, 부서이동·고용형태 변경은 현재와 다른 값만 고를 수 있습니다. 직위를 낮추는 강등은 상벌 관리(HR-04-09)의 징계로 처리합니다.</li>
@@ -6060,8 +6274,8 @@ function EmpResignScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-5 py-4 text-sm text-gray-600">
-        <p className="mb-2 font-semibold text-blue-700">퇴직 처리 사용 안내</p>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
           <li><b>대상 직원</b> — 재직·휴직·정직 직원을 고릅니다. 직원 정보(HR-04-05)·인사 발령(HR-04-02)의 [퇴직 처리], 상벌 관리(HR-04-09)의 해임·파면에서 오면 그 직원이 선택된 채로 열립니다. 본인과 마지막 최고관리자는 퇴직 처리할 수 없습니다.</li>
           <li><b>퇴직일</b> — 마지막 근무일 하나만 넣습니다. 4대보험 자격상실일은 그 다음날로 자동 계산됩니다. 오늘 이후 날짜면 [퇴직 예약]이 되어 그날까지 재직(퇴직예정)·계정이 유지되고, 날짜가 지나면 자동 확정됩니다.</li>
@@ -6278,8 +6492,11 @@ function AccountMgmtScreen({ ctx }) {
         </div>
         <p className="mt-2 text-xs text-gray-500">잠금은 관리자가 직접 할 때만 걸립니다(비밀번호 오류 횟수에 따른 자동 잠금 없음). 요금의 인당 인원은 <b>활성·잠금</b> 계정 수로 셉니다(구독·이용요금제 SET-06).</p>
       </div>
-      <div className="mt-3 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">계정 ↔ 직원 1:1 연결</span> — 사전 등록된 직원에만 계정이 연결됩니다(유령 계정 방지). 모든 직원이 계정을 가질 필요는 없으며, 계정이 없는 직원은 <b>계정 없는 직원</b> 탭에서 언제든 초대할 수 있습니다(직원 등록 때와 같은 초대 모달). 역할은 목록에서 바로 바꾸며, 역할별로 할 수 있는 일은 권한 관리(HR-06-03)에서 정합니다. <b>최고관리자는 최소 1명</b>을 유지해야 하므로 마지막 최고관리자는 역할 변경·잠금·비활성화할 수 없고, 본인 계정도 잠그거나 역할을 바꿀 수 없습니다. 초대중은 이메일 인증(최초 1회) 전 상태로, 재발송 시 이전 링크는 무효화됩니다. 퇴직 발령 시 계정은 자동으로 비활성됩니다. 역할·상태 변경은 감사 로그에 기록됩니다. 직원 직접가입(self-signup)은 P1(가입 승인·연결 HR-06-04).
+      <div className="mt-3 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>계정 ↔ 직원 1:1 연결</b> — 사전 등록된 직원에만 계정이 연결됩니다(유령 계정 방지). 모든 직원이 계정을 가질 필요는 없으며, 계정이 없는 직원은 <b>계정 없는 직원</b> 탭에서 언제든 초대할 수 있습니다(직원 등록 때와 같은 초대 모달). 역할은 목록에서 바로 바꾸며, 역할별로 할 수 있는 일은 권한 관리(HR-06-03)에서 정합니다. <b>최고관리자는 최소 1명</b>을 유지해야 하므로 마지막 최고관리자는 역할 변경·잠금·비활성화할 수 없고, 본인 계정도 잠그거나 역할을 바꿀 수 없습니다. 초대중은 이메일 인증(최초 1회) 전 상태로, 재발송 시 이전 링크는 무효화됩니다. 퇴직 발령 시 계정은 자동으로 비활성됩니다. 역할·상태 변경은 감사 로그에 기록됩니다. 직원 직접가입(self-signup)은 P1(가입 승인·연결 HR-06-04).
+        </div>
       </div>
     </div>
   );
@@ -6324,8 +6541,11 @@ function EmailAuthScreen() {
           <p className="text-center text-xs text-gray-400">가입 완료 시 초대에 포함된 직원 정보로 계정이 자동 연결됩니다. 미완료 상태에서는 로그인할 수 없습니다.</p>
         </div>
       </div>
-      <div className="mx-auto mt-4 max-w-md rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">이메일 인증 = 가입 최초 1회</span> — OTP·상시 2차 인증을 이 이메일 인증으로 대체합니다. IP 접근 제어·세션 보안·감사 로그 등 상시 보안 옵션은 MVP에서 제외(향후 보안 설정으로 분리). 관리자 관점의 인증 상태(초대중/완료/만료)는 계정 관리(HR-06-01)에서 확인·재발송합니다.
+      <div className="mx-auto mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>이메일 인증 = 가입 최초 1회</b> — OTP·상시 2차 인증을 이 이메일 인증으로 대체합니다. IP 접근 제어·세션 보안·감사 로그 등 상시 보안 옵션은 MVP에서 제외(향후 보안 설정으로 분리). 관리자 관점의 인증 상태(초대중/완료/만료)는 계정 관리(HR-06-01)에서 확인·재발송합니다.
+        </div>
       </div>
     </div>
   );
@@ -6431,8 +6651,11 @@ function PermMatrixScreen() {
         </div>}
       </div>
 
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">관리자 역할 2종</span> — 최고관리자(전체 권한 · 고정) · 급여 담당자(메뉴별 조정). <b>확정·승인</b>은 발령 확정, 근태 마감, 휴가 승인, 급여 확정·이체, 신청 승인·반려처럼 되돌리기 어려운 마무리 처리를 뜻하며, 이런 처리가 없는 메뉴는 '해당 없음'입니다. 계정·권한과 구독·결제·서비스 해지는 <b>최고관리자 전용</b>이라 다른 역할에 부여할 수 없습니다(본인 권한을 스스로 올리는 것 방지). 누가 어떤 역할인지는 <b>구성원 보기</b>로 이동하는 계정 관리(HR-06-01)에서 지정합니다. 일반 직원은 역할 설정 없이 직원 모드에서 본인 정보만 봅니다. 모든 권한 변경은 감사 로그에 기록됩니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>관리자 역할 2종</b> — 최고관리자(전체 권한 · 고정) · 급여 담당자(메뉴별 조정). <b>확정·승인</b>은 발령 확정, 근태 마감, 휴가 승인, 급여 확정·이체, 신청 승인·반려처럼 되돌리기 어려운 마무리 처리를 뜻하며, 이런 처리가 없는 메뉴는 '해당 없음'입니다. 계정·권한과 구독·결제·서비스 해지는 <b>최고관리자 전용</b>이라 다른 역할에 부여할 수 없습니다(본인 권한을 스스로 올리는 것 방지). 누가 어떤 역할인지는 <b>구성원 보기</b>로 이동하는 계정 관리(HR-06-01)에서 지정합니다. 일반 직원은 역할 설정 없이 직원 모드에서 본인 정보만 봅니다. 모든 권한 변경은 감사 로그에 기록됩니다.
+        </div>
       </div>
       {roleModal && <TreeModal title="역할 추가" badge="HR-06-03-M1" submit="추가" onClose={() => setRoleModal(false)}>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>역할명</label><input placeholder="1~20자 · 중복 불가 (예: 인사 담당자)" className={INP + " w-full"} /></div>
@@ -6487,8 +6710,11 @@ function MyAccountScreen() {
         <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-3"><button className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50">취소</button><button className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">저장</button></div>
       </div>
 
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">계정 관리(HR-06-01) vs 내 계정(HR-06-05)</span> — 관리자가 남의 계정을 관리하는 건 계정 관리, 내 로그인 정보·프로필을 바꾸는 건 내 계정입니다. 이름·소속 같은 인사정보는 직원으로 연결돼 있으면 여기선 읽기전용이고, 변경은 인사담당이 직원 정보(HR-04-05)에서 처리합니다. 최고관리자도 본인 비밀번호·프로필은 이 화면에서 바꿉니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>계정 관리(HR-06-01) vs 내 계정(HR-06-05)</b> — 관리자가 남의 계정을 관리하는 건 계정 관리, 내 로그인 정보·프로필을 바꾸는 건 내 계정입니다. 이름·소속 같은 인사정보는 직원으로 연결돼 있으면 여기선 읽기전용이고, 변경은 인사담당이 직원 정보(HR-04-05)에서 처리합니다. 최고관리자도 본인 비밀번호·프로필은 이 화면에서 바꿉니다.
+        </div>
       </div>
     </div>
   );
@@ -6669,8 +6895,8 @@ function AwardDisciplineScreen({ ctx }) {
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-5 py-4 text-sm text-gray-600">
-        <p className="mb-2 font-semibold text-blue-700">상벌 관리 사용 안내</p>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
           <li><b>대상 직원</b> — [직원 검색·불러오기]에서 재직·휴직·정직 직원을 이름·사번·부서로 찾아 고릅니다.</li>
           <li><b>포상</b> — 표창·포상금·특별휴가·승진가점·기타. 포상금은 과세 수당이라 금액과 지급 급여월을 넣으면 <b>급여 반영 대기</b>에 올라갑니다. 특별휴가는 일수·사용기한을 넣으면 약정휴가(202)로 자동 부여됩니다.</li>
@@ -6921,8 +7147,11 @@ function EmpPhotoScreen({ target } = {}) {
         </div>
       )}
 
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">사진 = 아바타 소스</span> — 규격 초과 시 자동 리사이즈 또는 반려하고, 일괄 업로드는 zip 안의 파일명(사번)으로 자동 매칭합니다. 실패 파일은 목록으로 안내해 재시도할 수 있습니다. 사진이 없으면 이니셜 아바타로 표시됩니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>사진 = 아바타 소스</b> — 규격 초과 시 자동 리사이즈 또는 반려하고, 일괄 업로드는 zip 안의 파일명(사번)으로 자동 매칭합니다. 실패 파일은 목록으로 안내해 재시도할 수 있습니다. 사진이 없으면 이니셜 아바타로 표시됩니다.
+        </div>
       </div>
 
       {crop && (
@@ -6969,10 +7198,17 @@ const CODE_GROUPS = {
   "호칭": { sec: "기타 공통", count: 3, extra: null, rows: [
     { code: "T1", name: "님", ord: 1 }, { code: "T2", name: "프로", ord: 2 }, { code: "T3", name: "매니저", ord: 3 } ] },
 };
+const HR_CLASS_KEYS = ["직무", "직위", "직책", "직급"]; // 인사분류 4종
+HR_CLASS_KEYS.forEach(k => CODE_GROUPS[k].rows.forEach(r => { r.def = true; })); // 시스템 기본 제공값 — [기본값 전체 삭제] 대상
+const codeInUse = (k, r) => k === "직위" ? HR.emps.filter(e => e.grade === r.name).length : 0; // 직원에 지정된 수(샘플 직원은 직무·직책·직급 미지정)
+function codeDefPlan(keys) { return keys.map(k => { const d = CODE_GROUPS[k].rows.filter(r => r.def); return { k, del: d.filter(r => !codeInUse(k, r)), keep: d.filter(r => codeInUse(k, r)) }; }); }
+function codeDefPurge(keys) { const plan = codeDefPlan(keys); plan.forEach(p => { const g = CODE_GROUPS[p.k]; g.rows = g.rows.filter(r => p.del.indexOf(r) < 0); g.count = g.rows.length; }); refChanged(); return plan; }
 function CodeMasterScreen() {
   useRefSync();
   const [grp, setGrp] = useState("직급");
   const [modal, setModal] = useState(false);
+  const [purge, setPurge] = useState(null); // 기본값 전체 삭제 확인 { all, ok }
+  const [toast, setToast] = useState("");
   const [help, setHelp] = useState(true);
   const G = CODE_GROUPS[grp];
   const secs = ["인사분류 계층", "기타 공통"];
@@ -7027,7 +7263,7 @@ function CodeMasterScreen() {
         <div className="h-fit rounded-lg border border-gray-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 px-5 py-3">
             <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700">{grp} · 코드값</span>{G.sub && <span className="text-xs text-gray-400">{G.sub}</span>}</div>
-            <div className="flex gap-2"><button className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50">엑셀 일괄</button><button onClick={() => setModal(true)} className="rounded-md border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">+ 추가</button><button className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">저장</button></div>
+            <div className="flex gap-2">{HR_CLASS_KEYS.includes(grp) && HR_CLASS_KEYS.some(k => CODE_GROUPS[k].rows.some(r => r.def)) && <button onClick={() => setPurge({ all: false, ok: false })} className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50">기본값 전체 삭제</button>}<button className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50">엑셀 일괄</button><button onClick={() => setModal(true)} className="rounded-md border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">+ 추가</button><button className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">저장</button></div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
@@ -7041,30 +7277,29 @@ function CodeMasterScreen() {
                 <tr key={i} className="border-b border-gray-100 hover:bg-slate-50/60">
                   <td className="px-5 py-3"><input type="checkbox" className="h-4 w-4 rounded border-gray-300" /></td>
                   <td className="px-5 py-3 font-medium text-gray-800">{r.code}</td>
-                  <td className="px-5 py-3 text-gray-700">{r.name}</td>
+                  <td className="px-5 py-3 text-gray-700">{r.name}{r.def && <span title="시스템 기본 제공값" className="ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">기본</span>}{codeInUse(grp, r) > 0 && <span className="ml-1 text-[10px] text-gray-400">직원 {codeInUse(grp, r)}명</span>}</td>
                   {G.extra && <td className="px-5 py-3 text-gray-600">{r.extra}</td>}
                   <td className="px-5 py-3 text-gray-500">{r.ord}</td>
                   <td className="px-5 py-3"><Sw on={r.use !== false} onClick={() => { r.use = r.use === false; refChanged(); }} /></td>
                   <td className="px-5 py-3 text-right"><button onClick={() => setModal(true)} className="text-xs font-medium text-blue-600 hover:underline">수정</button></td>
                 </tr>
-              ))}</tbody>
+              ))}
+              {G.rows.length === 0 && <tr><td colSpan={7} className="px-5 py-8 text-center text-sm text-gray-400">등록된 {grp} 코드값이 없습니다. [+ 추가]로 회사에 맞는 값을 만드세요.</td></tr>}</tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50/50 p-4">
-        <p className="mb-1 text-sm font-semibold text-amber-700">예외 · 제약</p>
-        <ul className="space-y-1 text-sm text-gray-600">
-          <li>· 코드그룹 = 인사분류(직무·직위·직책·직급) + 기타 공통(고용형태·호칭)</li>
-          <li>· 고용형태 코드값 = 정규직·계약직(기간제)·일용직·단시간(파트타임) 등 — 4대보험·급여 규칙 분기의 기준</li>
-          <li>· 고용형태(SET-01)와 근무제(근로시간제: 고정/탄력/선택/교대)는 다른 축 — 근무제는 근태 근무유형(TA-02-02)에서 관리</li>
-          <li>· 단시간 근로자는 고용형태=단시간(파트타임)으로 지정하고, 소정근로시간은 TA-02-02 근무유형에서 짧게 설정</li>
-          <li>· 부서 = 조직(HR-02), 사업장 = 사업장 관리(HR-01-02) — 여기서 관리하지 않음</li>
-          <li>· 직책수당은 급여(PAY) 산정에 연동</li>
-          <li>· 직원 등록/발령의 드롭다운 선택지 원천 — 사용 중 코드 삭제 금지(미사용 처리·삭제 가드)</li>
-          <li>· 구성원 적용 코드 변경 시 참조 데이터 영향 경고</li>
-          <li>· 코드값 추가/수정 = M1 (SET-01-M1)</li>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
+          <li><b>화면 구성</b> — 왼쪽에서 코드그룹을 고르면 오른쪽에 그 그룹의 코드값이 나옵니다. 인사분류(직무·직위·직책·직급)와 기타 공통(고용형태·호칭)으로 나뉩니다.</li>
+          <li><b>인사분류</b> — 직무는 하는 일, 직위는 승진 서열(사원→이사), 직책은 보직(팀장·본부장, 직책수당이 급여에 연동), 직급은 급여 등급입니다. 한 직원에게 네 가지를 함께 붙일 수 있습니다.</li>
+          <li><b>추가·수정</b> — [+ 추가]나 행의 [수정]으로 코드값을 관리합니다(SET-01-M1). 코드는 그룹 안에서 겹칠 수 없고, 등록한 뒤에는 되도록 바꾸지 않습니다.</li>
+          <li><b>사용 여부</b> — ‘사용’을 끄면 직원 등록(HR-04-01)·인사 발령의 선택 목록에서 바로 빠집니다. 직원에게 이미 지정된 코드는 지울 수 없으니 사용을 꺼서 숨기세요.</li>
+          <li><b>기본값 전체 삭제</b> — ‘기본’ 표시는 처음 제공된 값입니다. 직무·직위·직책·직급에서 [기본값 전체 삭제]로 이 그룹만 또는 4종 모두를 한 번에 지울 수 있고, 직원에게 지정된 값은 남습니다. 회사가 추가한 값은 지우지 않습니다.</li>
+          <li><b>고용형태</b> — 정규직·계약직(기간제)·일용직·단시간 등은 4대보험·급여 계산 규칙이 걸린 코드입니다. 근무제(고정·탄력·선택·교대)는 다른 기준이라 근무 유형 관리(TA-02-02)에서 정하고, 단시간 근로자의 짧은 소정근로시간도 거기서 설정합니다.</li>
+          <li><b>여기서 다루지 않는 것</b> — 부서는 부서관리(HR-02-01), 사업장은 사업장 관리(HR-01-02)에서 관리합니다.</li>
         </ul>
       </div>
 
@@ -7077,6 +7312,16 @@ function CodeMasterScreen() {
         <div><label className="mb-1 block font-medium text-gray-700">사용여부</label><div className="flex items-center gap-2"><Toggle checked={true} /><span className="text-gray-600">사용</span></div></div>
         <p className="text-xs text-gray-400">※ 그룹에 따라 필드가 바뀝니다 — 직책=조직장 여부·직책수당</p>
       </TreeModal>}
+      {purge && (() => { const keys = purge.all ? HR_CLASS_KEYS : [grp]; const plan = codeDefPlan(keys); const nDel = plan.reduce((t, p) => t + p.del.length, 0), nKeep = plan.reduce((t, p) => t + p.keep.length, 0);
+        return <TreeModal title="기본값 전체 삭제" badge="SET-01" submit={"삭제 " + nDel + "개"} danger submitDisabled={!purge.ok || !nDel} onClose={() => setPurge(null)} onSubmit={() => { codeDefPurge(keys); setPurge(null); setToast(keys.join("·") + " 기본값 " + nDel + "개를 삭제했습니다." + (nKeep ? " 직원이 쓰는 " + nKeep + "개는 남겼습니다." : "")); setTimeout(() => setToast(""), 3200); }}>
+          <p className="text-gray-600">처음 제공된 <b>기본값</b>(‘기본’ 표시)만 지웁니다. 회사에서 추가한 값은 그대로입니다.</p>
+          <div className="flex flex-wrap gap-2">{[[false, "이 그룹(" + grp + ")만"], [true, "인사분류 4종 모두(직무·직위·직책·직급)"]].map(([v, t]) => <button key={t} aria-pressed={purge.all === v} onClick={() => setPurge(p => ({ ...p, all: v }))} className={"rounded-md border px-3 py-1.5 text-xs " + (purge.all === v ? "border-red-400 bg-red-50 text-red-700" : "border-gray-200 text-gray-600")}>{t}</button>)}</div>
+          <div className="overflow-hidden rounded-md border border-gray-200 text-xs">{plan.map(p => <div key={p.k} className="border-b border-gray-100 px-3 py-2 last:border-0"><p className="font-semibold text-gray-700">{p.k} <span className="font-normal text-red-600">삭제 {p.del.length}</span>{p.keep.length > 0 && <span className="font-normal text-gray-500"> · 남김 {p.keep.length}</span>}</p>
+            <p className="mt-0.5 text-gray-500">{p.del.map(r => r.name).join(", ") || "삭제할 기본값 없음"}{p.keep.length > 0 && <span className="text-amber-600"> · 남김: {p.keep.map(r => r.name + "(직원 " + codeInUse(p.k, r) + "명)").join(", ")}</span>}</p></div>)}</div>
+          {nKeep > 0 && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">직원에게 지정된 값은 지울 수 없어 남깁니다. 인사 발령(HR-04-02)으로 직원의 값을 바꾼 뒤 다시 실행하세요.</p>}
+          <label className="flex items-start gap-2 text-xs text-gray-700"><input type="checkbox" checked={purge.ok} onChange={e => setPurge(p => ({ ...p, ok: e.target.checked }))} className="mt-0.5 h-4 w-4 rounded border-gray-300" />삭제한 기본값은 되돌릴 수 없음을 확인했습니다(필요하면 [+ 추가]로 다시 만듭니다).</label>
+        </TreeModal>; })()}
+      {toast && <div role="status" className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
   );
 }
@@ -7150,8 +7395,11 @@ function AlertSettingsScreen() {
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">매트릭스의 수신 대상·발송 셀을 클릭</span>하면 수신·발송 설정(M1)이, 템플릿 열 [편집]을 누르면 템플릿 편집(M2)이 열립니다. 알림톡은 사전 승인 템플릿만 사용하고 수신 거부(옵트아웃) 대상은 자동 제외됩니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>매트릭스의 수신 대상·발송 셀을 클릭</b>하면 수신·발송 설정(M1)이, 템플릿 열 [편집]을 누르면 템플릿 편집(M2)이 열립니다. 알림톡은 사전 승인 템플릿만 사용하고 수신 거부(옵트아웃) 대상은 자동 제외됩니다.
+        </div>
       </div>
 
       {modal === "m1" && <TreeModal title="수신·발송 설정" badge="SET-02-M1" submit="저장" onClose={() => setModal(null)}>
@@ -7299,8 +7547,11 @@ function HolidayScreen() {
         )}
       </div>
 
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">법정·대체공휴일은 공공데이터 기준 자동 반영</span>됩니다. 회사 지정 휴일(창립기념일·하계휴가 등)만 직접 등록·수정하며, 휴일 근무는 연장근무 보상 기준의 휴일 가산이 적용됩니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>법정·대체공휴일은 공공데이터 기준 자동 반영</b>됩니다. 회사 지정 휴일(창립기념일·하계휴가 등)만 직접 등록·수정하며, 휴일 근무는 연장근무 보상 기준의 휴일 가산이 적용됩니다.
+        </div>
       </div>
       {modal && <TreeModal title="회사 지정 휴일 추가" badge="TA-01-01" submit="추가" onClose={() => setModal(false)}>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>휴일명</label><input placeholder="예: 창립기념일" className={INP + " w-full"} /></div>
@@ -7405,8 +7656,11 @@ const ATT_CODE_GROUPS = [ // 근태코드 관리(TA-01-02) — 근무 이력(TA-
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">기본 마스터는 시스템 고정</span>(삭제 불가). 회사는 <b>약정휴가·근태상태</b>에 한해 자체 종류를 추가할 수 있고(법정휴가 추가 불가), <b>회사추가</b> 종류만 수정·삭제됩니다. 법정휴가 9종은 사용여부 해제 불가입니다. 사용 이력이 있는 회사종류는 삭제 대신 미사용 처리를 권장합니다. <b>코드번호는 분류별 대역</b>(법정 1xx · 약정 2xx · 근태상태 3xx)으로 회사 내 유일하며, <b>약정휴가의 집계 반영은 유급여부에 연동</b>(유급→유급휴일 · 무급→무급)되고 <b>근태상태는 유급여부 대상이 아닙니다</b>.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>기본 마스터는 시스템 고정</b>(삭제 불가). 회사는 <b>약정휴가·근태상태</b>에 한해 자체 종류를 추가할 수 있고(법정휴가 추가 불가), <b>회사추가</b> 종류만 수정·삭제됩니다. 법정휴가 9종은 사용여부 해제 불가입니다. 사용 이력이 있는 회사종류는 삭제 대신 미사용 처리를 권장합니다. <b>코드번호는 분류별 대역</b>(법정 1xx · 약정 2xx · 근태상태 3xx)으로 회사 내 유일하며, <b>약정휴가의 집계 반영은 유급여부에 연동</b>(유급→유급휴일 · 무급→무급)되고 <b>근태상태는 유급여부 대상이 아닙니다</b>.
+        </div>
       </div>
       {modal && <TreeModal title="회사 근태 추가" badge="TA-01-02-M1" submit="추가" danger={!codeOk} onClose={() => setModal(false)}>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>종류명</label><input placeholder="기본·기존 회사종류와 중복 불가" className={INP + " w-full"} /></div>
@@ -7483,8 +7737,11 @@ function WorkTimeScreen() {
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">근무시간은 (종료−시작−휴게)로 자동 계산</span>되어 읽기전용입니다. 종료가 시작보다 이르면 익일 종료(교대)로 처리하고, 야간(22:00~06:00) 포함 시 야간 가산 대상으로 자동 판정합니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>근무시간은 (종료−시작−휴게)로 자동 계산</b>되어 읽기전용입니다. 종료가 시작보다 이르면 익일 종료(교대)로 처리하고, 야간(22:00~06:00) 포함 시 야간 가산 대상으로 자동 판정합니다.
+        </div>
       </div>
       {modal && <TreeModal title="근무 시간표 추가 / 편집" badge="TA-02-01-M1" submit="저장" onClose={() => setModal(false)}>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>시간표명</label><input placeholder="예: 주간 (표준) · 유일" className={INP + " w-full"} /></div>
@@ -7538,8 +7795,11 @@ function WorkTypeScreen() {
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">근무제 4종</span> — 고정(소정 초과분)·탄력적(단위기간 평균)·선택적(정산기간 총량)·교대(복수 시간표). <b>시차출퇴근</b>은 별도 제도가 아니라 고정근무제의 '시차 옵션'이고, <b>재택·원격</b>은 근무 장소 속성(어떤 근무제에도 부여 가능)입니다. 고용형태는 SET-01, 가산율은 TA-02-03에서 관리하며 소정 주52h 초과 시 경고합니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>근무제 4종</b> — 고정(소정 초과분)·탄력적(단위기간 평균)·선택적(정산기간 총량)·교대(복수 시간표). <b>시차출퇴근</b>은 별도 제도가 아니라 고정근무제의 '시차 옵션'이고, <b>재택·원격</b>은 근무 장소 속성(어떤 근무제에도 부여 가능)입니다. 고용형태는 SET-01, 가산율은 TA-02-03에서 관리하며 소정 주52h 초과 시 경고합니다.
+        </div>
       </div>
       {modal && <TreeModal title="근무 유형 추가 / 편집" badge="TA-02-02-M1" submit="저장" onClose={() => setModal(false)}>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span>근무유형명</label><input placeholder="예: 표준 통상근무 · 유일" className={INP + " w-full"} /></div>
@@ -7660,8 +7920,11 @@ function WorkOTScreen() {
               <p className="text-xs text-gray-400">※ 근무 유형 프리셋을 고르면 시간이 채워지고, 시간 값을 직접 수정하면 '직접 입력'으로 전환됩니다. 야간+연장 중복 시 각 가산을 합산(연장 1.5 + 야간 0.5). 실제 시간은 근태 집계(TA-06)에서 산출되며 급여는 PAY에서 최종 계산됩니다.</p>
             </div>
           </div>
-          <div className="rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-            <span className="font-medium text-blue-700">연동</span> — 이 가산율·상한은 근태 집계(TA-06-02)와 급여 산정(PAY)에 그대로 반영됩니다. 근로기준법상 가산은 최소 50%(×1.5)이며, 상시 5인 미만 사업장은 가산 적용이 제외될 수 있습니다. 보상휴가 전환분은 연차와 별도로 관리됩니다.
+          <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+            <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+            <div className="text-[13px] leading-relaxed">
+            <b>연동</b> — 이 가산율·상한은 근태 집계(TA-06-02)와 급여 산정(PAY)에 그대로 반영됩니다. 근로기준법상 가산은 최소 50%(×1.5)이며, 상시 5인 미만 사업장은 가산 적용이 제외될 수 있습니다. 보상휴가 전환분은 연차와 별도로 관리됩니다.
+            </div>
           </div>
         </div>
       </div>
@@ -8402,8 +8665,11 @@ function AttRequestScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>직원 모드</b> — 이 화면에서 직원은 <b>신청·조회·취소</b>만 하고, 승인/반려는 관리자 화면에서 처리됩니다. 신청 유형별로 유입처가 갈립니다: <b>휴가류(연차·반차·반반차·병가·조퇴)</b>는 <b>휴가 내역 관리(TA-04-02)</b>에 '대기'로 유입(연차류는 신청 시 잔여 확인·부족 경고, 승인 시 차감 · 조퇴는 미차감)되고, <b>근태정정</b>은 <b>신청현황(APV-02)</b>으로 유입되어 승인 시 <b>근무 이력(TA-03-03)</b>에 보정 반영·집계(TA-06-02) 연동됩니다. 직원 모드는 시스템(관리자) 모드 우선 완료 후 도입됩니다. <b className="text-orange-600">[P2]</b> 신청 첨부파일은 <b>신청 서식(FRM)</b>과 연동되어, 신청 유형별 표준 서식(doc_layout)이 자동 첨부되고 필수 증빙 규칙이 매핑됩니다(FRM-01/FRM-02 서식 관리 연계).
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>직원 모드</b> — 이 화면에서 직원은 <b>신청·조회·취소</b>만 하고, 승인/반려는 관리자 화면에서 처리됩니다. 신청 유형별로 유입처가 갈립니다: <b>휴가류(연차·반차·반반차·병가·조퇴)</b>는 <b>휴가 내역 관리(TA-04-02)</b>에 '대기'로 유입(연차류는 신청 시 잔여 확인·부족 경고, 승인 시 차감 · 조퇴는 미차감)되고, <b>근태정정</b>은 <b>신청현황(APV-02)</b>으로 유입되어 승인 시 <b>근무 이력(TA-03-03)</b>에 보정 반영·집계(TA-06-02) 연동됩니다. 직원 모드는 시스템(관리자) 모드 우선 완료 후 도입됩니다. <b className="text-orange-600">[P2]</b> 신청 첨부파일은 <b>신청 서식(FRM)</b>과 연동되어, 신청 유형별 표준 서식(doc_layout)이 자동 첨부되고 필수 증빙 규칙이 매핑됩니다(FRM-01/FRM-02 서식 관리 연계).
+        </div>
       </div>
 
       {modal && (
@@ -8528,8 +8794,11 @@ function AttOTRequestScreen() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>직원 모드</b> — 이 화면에서 직원은 <b>신청·조회·취소</b>만 합니다. 승인·반영은 관리자 화면(근무 이력/집계)에서 처리됩니다. 회사가 <b>'승인분만 수당 반영'</b> 정책을 쓰면 승인된 연장만 <b>연장근무 보상 기준(TA-02-03)</b>의 가산율로 집계·수당에 반영되고, 연장 상한(주 12h) 초과 시 경고합니다. 승인 시 <b>근무 이력(TA-03-03)</b>·집계와 연동됩니다. 직원 모드는 시스템(관리자) 모드 우선 완료 후 도입됩니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>직원 모드</b> — 이 화면에서 직원은 <b>신청·조회·취소</b>만 합니다. 승인·반영은 관리자 화면(근무 이력/집계)에서 처리됩니다. 회사가 <b>'승인분만 수당 반영'</b> 정책을 쓰면 승인된 연장만 <b>연장근무 보상 기준(TA-02-03)</b>의 가산율로 집계·수당에 반영되고, 연장 상한(주 12h) 초과 시 경고합니다. 승인 시 <b>근무 이력(TA-03-03)</b>·집계와 연동됩니다. 직원 모드는 시스템(관리자) 모드 우선 완료 후 도입됩니다.
+        </div>
       </div>
 
       {modal && (
@@ -9702,8 +9971,11 @@ function SubscriptionScreen({ ctx }) {
         ))}
       </div>
       <p className="mt-2 text-xs text-gray-400">※ 표시된 모든 금액은 부가세(VAT) 별도입니다. 결제 시 부가세 10%가 합산되어 청구되며, 세금계산서는 부가세 포함 금액으로 발행됩니다.</p>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">변경 안내</span> — 업그레이드는 즉시 적용·차액 비례정산, 다운그레이드는 다음 결제일부터 적용됩니다. 인당 요금은 <b>활성·잠금 계정 수</b>로 계산되며(비활성·초대중 제외, 계정 관리 HR-06-01), 인원이 늘면 자동 반영됩니다. 모든 요금은 <b>VAT 별도</b>이며 결제 시 부가세 10%가 합산됩니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>변경 안내</b> — 업그레이드는 즉시 적용·차액 비례정산, 다운그레이드는 다음 결제일부터 적용됩니다. 인당 요금은 <b>활성·잠금 계정 수</b>로 계산되며(비활성·초대중 제외, 계정 관리 HR-06-01), 인원이 늘면 자동 반영됩니다. 모든 요금은 <b>VAT 별도</b>이며 결제 시 부가세 10%가 합산됩니다.
+        </div>
       </div>
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setModal(null)}>
@@ -9831,8 +10103,11 @@ function BillingHistoryScreen() {
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">증빙 안내</span> — 요금은 <b>공급가액(VAT 별도)</b> 기준이며 부가세 10%를 더한 <b>합계</b>가 청구됩니다. 세금계산서(사업자)·현금영수증(지출증빙)은 결제 건 기준으로 <b>payDream 운영팀이 발급</b>해 국세청에 전자 전송하며, 이 화면에서 조회·다운로드합니다. 증빙 유형 변경·재발급은 <button onClick={() => window.__nav && window.__nav({ domain: "설정", item: "SET-09", label: "설정" })} className="font-medium text-blue-600 hover:underline">1:1 문의</button>로 요청하세요. 사업자등록번호·담당자 이메일은 회사 정보(HR-01-01)에서 관리합니다.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>증빙 안내</b> — 요금은 <b>공급가액(VAT 별도)</b> 기준이며 부가세 10%를 더한 <b>합계</b>가 청구됩니다. 세금계산서(사업자)·현금영수증(지출증빙)은 결제 건 기준으로 <b>payDream 운영팀이 발급</b>해 국세청에 전자 전송하며, 이 화면에서 조회·다운로드합니다. 증빙 유형 변경·재발급은 <button onClick={() => window.__nav && window.__nav({ domain: "설정", item: "SET-09", label: "설정" })} className="font-medium text-blue-600 hover:underline">1:1 문의</button>로 요청하세요. 사업자등록번호·담당자 이메일은 회사 정보(HR-01-01)에서 관리합니다.
+        </div>
       </div>
       {toast && <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-md bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
     </div>
@@ -9886,8 +10161,11 @@ function MembershipCancelScreen() {
             </div>
           </div>
         </div>
-        <div className="rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-          <span className="font-medium text-blue-700">처리 흐름</span> — 해지 신청 → 운영자 접수·확인(해지·탈퇴 처리) → 잔여기간 정산·환불 → 보존기간 경과 후 데이터 파기. 진행 상태는 이 화면과 알림으로 안내됩니다.
+        <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+          <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+          <div className="text-[13px] leading-relaxed">
+          <b>처리 흐름</b> — 해지 신청 → 운영자 접수·확인(해지·탈퇴 처리) → 잔여기간 정산·환불 → 보존기간 경과 후 데이터 파기. 진행 상태는 이 화면과 알림으로 안내됩니다.
+          </div>
         </div>
       </div>
 
@@ -9954,8 +10232,11 @@ function SupportScreen() {
           </table>
         </div>
       </div>
-      <div className="mt-4 rounded-lg border-l-4 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-gray-600">
-        <span className="font-medium text-blue-700">처리 흐름</span> — 문의 등록 → payDream 운영팀 접수·담당자 배정 → 답변 등록 시 이메일·카카오 알림톡으로 안내 → 이 화면에서 답변 확인·추가 문의. 결제 증빙(세금계산서·현금영수증) 유형 변경·재발급은 분류 <b>구독·결제</b>로 요청하세요.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <div className="text-[13px] leading-relaxed">
+        <b>처리 흐름</b> — 문의 등록 → payDream 운영팀 접수·담당자 배정 → 답변 등록 시 이메일·카카오 알림톡으로 안내 → 이 화면에서 답변 확인·추가 문의. 결제 증빙(세금계산서·현금영수증) 유형 변경·재발급은 분류 <b>구독·결제</b>로 요청하세요.
+        </div>
       </div>
 
       {modal === "new" && (
