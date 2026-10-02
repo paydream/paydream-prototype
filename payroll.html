@@ -5469,7 +5469,7 @@ function EmpListScreen({ ctx }) {
   );
 }
 // ── 직원 빈 상태(HR-04-04·HR-04-05) — 프로토타입 시연 스위치: 샘플 / 인사정보 미입력 / 직원 0명
-const EMP_DEMO = { mode: "sample" };
+const EMP_DEMO = { mode: "sample", setup: "" }; // setup(직원 0명 시연): info=회사 정보 미완료 · org=부서 없음 · ""=둘 다 완료
 const HR_INFO_EMPTY = () => ({ fam: [], edu: [], car: [], cert: [], mil: { kind: "", branch: "", rank: "", period: "" } });
 function EmpDemoBar({ modes }) {
   useRefSync();
@@ -5478,41 +5478,58 @@ function EmpDemoBar({ modes }) {
     <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-dashed border-violet-300 bg-violet-50/50 px-3 py-2 text-xs text-violet-700">
       <span className="font-semibold">프로토타입 시연</span><span className="text-violet-500">화면 상태</span>
       {modes.map(m => <button key={m} aria-pressed={EMP_DEMO.mode === m} onClick={() => { EMP_DEMO.mode = m; refChanged(); }} className={"rounded-full border px-2.5 py-0.5 " + (EMP_DEMO.mode === m ? "border-violet-500 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:bg-violet-100")}>{L[m]}</button>)}
+      {EMP_DEMO.mode === "none" && <><span className="ml-2 text-violet-500">시작 단계</span>{[["info", "회사 정보부터"], ["org", "부서부터"], ["", "직원 등록만 남음"]].map(([k, l]) => <button key={l} aria-pressed={(EMP_DEMO.setup || "") === k} onClick={() => { EMP_DEMO.setup = k; refChanged(); }} className={"rounded-full border px-2.5 py-0.5 " + ((EMP_DEMO.setup || "") === k ? "border-violet-400 bg-violet-100 text-violet-800" : "border-violet-200 bg-white text-violet-600 hover:bg-violet-100")}>{l}</button>)}</>}
       <span className="ml-auto text-[11px] text-violet-400">실제 서비스에는 없는 시연용 버튼입니다</span>
     </div>
   );
 }
 // 직원이 한 명도 없을 때(회사 첫 사용) — 직원 목록·직원 정보 공용
+// 시작 단계: ① 회사 정보 → ② 부서 → ③ 직원 등록 → ④ 계정 초대 · 앞 단계가 안 끝났으면 '지금 할 일'로 안내
+// 회사 정보는 권장(미완료면 급여 계산·신고 불가 경고), 부서는 필수(직원 등록의 필수 항목)
 function EmpNoEmployee({ ctx, from }) {
+  useRefSync();
   const go = id => ctx && ctx.go && ctx.go(id);
   const nav = (domain, item, label) => window.__nav && window.__nav({ domain, item, label });
-  const orgN = (REF.orgs || []).length;
+  const setup = EMP_DEMO.setup || "";
+  const infoDone = setup !== "info"; // 시연: 회사 정보 미완료
+  const orgN = setup ? 0 : (REF.orgs || []).filter(n => n.use !== false).length; // 시연: 부서 없음
   const STEPS = [
-    ["회사 정보 확인", "사업장·상시 근로자 수·급여 기준", true, () => nav("설정", "HR-01-01", "회사 정보")],
-    ["부서 만들기", orgN ? "부서 " + orgN + "개 등록됨" : "직원을 배치할 부서", orgN > 0, () => go("HR-02-01")],
-    ["직원 등록", "성명·입사일·부서·직위·고용형태·근무유형", false, () => go("HR-04-01")],
-    ["계정 초대", "직원 등록 후 로그인 계정을 보냅니다", false, null],
+    { t: "회사 정보 입력", d: infoDone ? "사업자등록번호·사업장·급여 기준 입력됨" : "사업자등록번호·사업장·상시 근로자 수·급여 기준", done: infoDone, act: "회사 정보 입력하기", fn: () => nav("설정", "HR-01-01", "회사 정보") },
+    { t: "부서 만들기", d: orgN ? "부서 " + orgN + "개 등록됨" : "직원을 배치할 부서(최소 1개 필요)", done: orgN > 0, act: "부서 만들기", fn: () => go("HR-02-01") },
+    { t: "직원 등록", d: "성명·입사일·부서·직위·고용형태·근무유형", done: false, act: "첫 직원 등록하기", fn: () => go("HR-04-01"), need: orgN > 0 ? "" : "부서를 1개 이상 만든 뒤 등록할 수 있어요" },
+    { t: "계정 초대", d: "직원 등록 후 로그인 계정을 보냅니다", done: false, need: "직원을 등록한 뒤 할 수 있어요" },
   ];
+  const cur = STEPS.findIndex(s => !s.done && !s.need); // 지금 할 일 = 할 수 있는 첫 미완료 단계
+  const canReg = orgN > 0;
+  const head = from === "HR-04-05" ? "아직 볼 수 있는 직원 정보가 없습니다" : "아직 등록된 직원이 없습니다";
+  const sub = !infoDone && !orgN ? "직원을 등록하기 전에 회사 정보와 부서를 먼저 준비해 주세요. 두 단계만 끝내면 바로 직원을 등록할 수 있어요."
+    : !orgN ? "직원을 배치할 부서를 먼저 만들어 주세요. 부서는 직원 등록의 필수 항목이에요."
+    : !infoDone ? "직원은 지금 등록할 수 있어요. 다만 회사 정보가 비어 있으면 급여 계산·4대보험 신고를 할 수 없으니 함께 입력해 주세요."
+    : from === "HR-04-05" ? "직원을 먼저 등록하면 인사 카드(기본정보·발령이력·급여·근태·이력사항·상벌)가 만들어집니다." : "첫 직원을 등록하면 근태·연차·급여를 바로 관리할 수 있어요.";
+  const primary = STEPS[cur];
   return (
     <div className="rounded-lg border border-gray-200 bg-white px-6 py-10 shadow-sm">
       <div className="mx-auto max-w-xl text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500"><Ic cls="h-7 w-7" d={P("M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z")} /></div>
-        <p className="text-lg font-bold text-gray-800">{from === "HR-04-05" ? "아직 볼 수 있는 직원 정보가 없습니다" : "아직 등록된 직원이 없습니다"}</p>
-        <p className="mt-1.5 text-sm text-gray-500">{from === "HR-04-05" ? "직원을 먼저 등록하면 인사 카드(기본정보·발령이력·급여·근태·이력사항·상벌)가 만들어집니다." : "첫 직원을 등록하면 근태·연차·급여를 바로 관리할 수 있어요."}</p>
+        <p className="text-lg font-bold text-gray-800">{head}</p>
+        <p className="mt-1.5 text-sm text-gray-500">{sub}</p>
         <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <button onClick={() => go("HR-04-01")} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">+ 첫 직원 등록하기</button>
+          {primary && cur !== 2 && <button onClick={primary.fn} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">{primary.act} →</button>}
+          <button disabled={!canReg} title={canReg ? undefined : STEPS[2].need} onClick={() => go("HR-04-01")} className={canReg && cur === 2 ? "rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" : "rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"}>+ 첫 직원 등록하기</button>
           <button disabled title="P1" className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-400">엑셀로 여러 명 등록 <span className="text-[10px]">P1</span></button>
           {from === "HR-04-05" && <button onClick={() => go("HR-04-04")} className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">직원 목록</button>}
         </div>
+        {!canReg && <p className="mt-2 text-xs text-gray-400">부서를 1개 이상 만들면 [+ 첫 직원 등록하기]가 켜져요.</p>}
       </div>
       <ol className="mx-auto mt-8 grid max-w-3xl gap-2 sm:grid-cols-4">
-        {STEPS.map(([t, d, done, fn], i) => (
-          <li key={t} className={"rounded-lg border px-3 py-3 text-left " + (done ? "border-emerald-200 bg-emerald-50/50" : "border-gray-200")}>
-            <p className="text-xs font-semibold text-gray-400">STEP {i + 1}</p>
-            <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold text-gray-800">{done && <span className="text-emerald-600">✓</span>}{t}</p>
-            <p className="mt-0.5 text-xs text-gray-500">{d}</p>
-            {fn && !done && <button onClick={fn} className="mt-1.5 text-xs font-medium text-blue-600 hover:underline">바로가기 ›</button>}
-          </li>))}
+        {STEPS.map((s, i) => { const now = i === cur; return (
+          <li key={s.t} aria-current={now ? "step" : undefined} className={"rounded-lg border px-3 py-3 text-left " + (s.done ? "border-emerald-200 bg-emerald-50/50" : now ? "border-blue-400 bg-blue-50/50 ring-1 ring-blue-200" : "border-gray-200")}>
+            <p className="flex items-center justify-between text-xs font-semibold text-gray-400">STEP {i + 1}{now && <span className="rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-medium text-white">지금 할 일</span>}{s.done && <span className="text-[10px] font-medium text-emerald-600">완료</span>}</p>
+            <p className={"mt-0.5 flex items-center gap-1 text-sm font-semibold " + (s.need && !s.done ? "text-gray-400" : "text-gray-800")}>{s.done && <span className="text-emerald-600">✓</span>}{s.t}</p>
+            <p className="mt-0.5 text-xs text-gray-500">{s.d}</p>
+            {!s.done && s.need && <p className="mt-1.5 text-[11px] text-gray-400">🔒 {s.need}</p>}
+            {!s.done && !s.need && s.fn && <button onClick={s.fn} className="mt-1.5 text-xs font-medium text-blue-600 hover:underline">{now ? s.act + " ›" : "바로가기 ›"}</button>}
+          </li>); })}
       </ol>
     </div>
   );
@@ -5830,7 +5847,7 @@ function EmpDetailBody({ ctx }) {
       <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
         <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
         <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
-          <li><b>직원이 없을 때</b> — 회사에 등록된 직원이 없으면 인사 카드 대신 ‘아직 볼 수 있는 직원 정보가 없습니다’ 화면과 [+ 첫 직원 등록하기]·시작 단계(회사 정보 → 부서 → 직원 등록 → 계정 초대)를 보여 줍니다. 위의 보라색 ‘프로토타입 시연’ 버튼으로 각 상태를 미리 볼 수 있습니다(실제 서비스에는 없음).</li>
+          <li><b>직원이 없을 때</b> — 회사에 등록된 직원이 없으면 인사 카드 대신 ‘아직 볼 수 있는 직원 정보가 없습니다’ 화면과 시작 단계(회사 정보 → 부서 → 직원 등록 → 계정 초대)를 보여 줍니다. 아직 안 끝난 첫 단계가 ‘지금 할 일’로 강조되고 큰 버튼도 그 단계로 안내합니다. 부서가 하나도 없으면 직원을 등록할 수 없고, 회사 정보가 비어 있으면 등록은 되지만 급여 계산·신고 전에 채우라고 알려 줍니다. 위의 보라색 ‘프로토타입 시연’ 버튼으로 각 상태를 미리 볼 수 있습니다(실제 서비스에는 없음).</li>
           <li><b>들어오는 방법</b> — 직원 목록(HR-04-04)에서 이름을 누르면 열립니다. 위쪽 프로필 카드는 스크롤해도 고정되며, [‹ 직원 목록]으로 돌아갑니다.</li>
           <li><b>프로필 버튼</b> — [인사 발령]은 이 직원이 선택된 채로 발령 화면을 엽니다. 계정 상태(활성·초대중·잠금·비활성·없음)가 이름 옆에 보이고, 계정이 없으면 [계정 초대], 초대중이면 [초대 재발송]을 누릅니다. [퇴직 처리]는 퇴직 처리(HR-04-08)로 이동합니다.</li>
           <li><b>기본정보</b> — 여기서 고칠 수 있는 것은 성명·영문명·휴대폰·이메일뿐입니다([✎ 수정] → [저장], 변경 이력 기록). 입사일자·부서·직위·고용형태는 이력이 남도록 인사 발령에서 바꿉니다. 주민번호는 가려져 있고, 최고관리자만 [열람]으로 10초간 볼 수 있으며 열람 기록이 남습니다.</li>
