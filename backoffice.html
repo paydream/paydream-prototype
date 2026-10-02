@@ -97,7 +97,7 @@ function Modal({ title, badge, onClose, children, footer, wide }){
 }
 const Btn = ({ tone="primary", children, ...p }) => {
   const c = tone==="primary" ? "bg-blue-600 text-white hover:bg-blue-700" : tone==="danger" ? "bg-red-600 text-white hover:bg-red-700" : "border border-gray-300 text-gray-600 hover:bg-gray-50";
-  return <button {...p} className={"rounded-md px-4 py-1.5 text-sm font-medium "+c}>{children}</button>;
+  return <button {...p} className={"rounded-md px-4 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 "+c}>{children}</button>;
 };
 function Field({ label, req, hint, children }){
   return <div><label className="mb-1 block text-sm font-medium text-gray-700">{req && <span className="text-red-500">*</span>}{label}</label>{children}{hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}</div>;
@@ -1012,17 +1012,114 @@ function PGConfig({ flash }){
   );
 }
 
+// ─── 공휴일 관리(BO-SET-06) — 회원사 공통 공휴일(holiday.company_id NULL)을 연도별로 등록·검수·배포 ───
+// 회원사 휴일 관리(TA-01-01)는 '배포'된 연도만 '시스템 제공'으로 읽는다(회사 수정 불가)
+const BO_TODAY = "2026-10-01";
+const HOL_SRC = { 공휴일: "관공서의 공휴일에 관한 규정 §2", 대체: "관공서의 공휴일에 관한 규정 §3", 근로자의날: "근로자의날 제정에 관한 법률" };
+const hd = (date, name, kind, note, src) => ({ date, name, kind, note: note || HOL_SRC[kind], src: src || "공공데이터" });
+const BO_HOL = {
+  "2025": { status: "배포", at: "2024-06-20", by: "김운영", rows: [hd("2025-01-01", "신정", "공휴일"), hd("2025-01-27", "임시공휴일", "공휴일", "국무회의 의결(2025-01-08)", "수기"), hd("2025-01-28", "설날 연휴", "공휴일"), hd("2025-01-29", "설날", "공휴일"), hd("2025-01-30", "설날 연휴", "공휴일"), hd("2025-03-01", "삼일절", "공휴일"), hd("2025-03-03", "대체공휴일(삼일절)", "대체"), hd("2025-05-01", "근로자의 날", "근로자의날"), hd("2025-05-05", "어린이날·부처님오신날", "공휴일"), hd("2025-05-06", "대체공휴일(어린이날·부처님오신날)", "대체"), hd("2025-06-03", "대통령선거일", "공휴일", "공직선거법 §34", "수기"), hd("2025-06-06", "현충일", "공휴일"), hd("2025-08-15", "광복절", "공휴일"), hd("2025-10-03", "개천절", "공휴일"), hd("2025-10-05", "추석 연휴", "공휴일"), hd("2025-10-06", "추석", "공휴일"), hd("2025-10-07", "추석 연휴", "공휴일"), hd("2025-10-08", "대체공휴일(추석)", "대체"), hd("2025-10-09", "한글날", "공휴일"), hd("2025-12-25", "성탄절", "공휴일")] },
+  "2026": { status: "배포", at: "2025-06-18", by: "김운영", rows: [hd("2026-01-01", "신정", "공휴일"), hd("2026-02-16", "설날 연휴", "공휴일"), hd("2026-02-17", "설날", "공휴일"), hd("2026-02-18", "설날 연휴", "공휴일"), hd("2026-03-01", "삼일절", "공휴일"), hd("2026-03-02", "대체공휴일(삼일절)", "대체"), hd("2026-05-01", "근로자의 날", "근로자의날"), hd("2026-05-05", "어린이날", "공휴일"), hd("2026-05-24", "부처님오신날", "공휴일"), hd("2026-05-25", "대체공휴일(부처님오신날)", "대체"), hd("2026-06-03", "지방선거일", "공휴일", "공직선거법 §34", "수기"), hd("2026-06-06", "현충일", "공휴일"), hd("2026-08-15", "광복절", "공휴일"), hd("2026-08-17", "대체공휴일(광복절)", "대체"), hd("2026-09-24", "추석 연휴", "공휴일"), hd("2026-09-25", "추석", "공휴일"), hd("2026-09-26", "추석 연휴", "공휴일"), hd("2026-10-03", "개천절", "공휴일"), hd("2026-10-05", "대체공휴일(개천절)", "대체"), hd("2026-10-09", "한글날", "공휴일"), hd("2026-12-25", "성탄절", "공휴일")] },
+  "2027": { status: "미등록", rows: [] },
+};
+// 공공데이터포털(한국천문연구원 특일 정보) 응답 — 시연용 샘플 · 배포 전 관보·월력요항과 반드시 대조
+const BO_HOL_FETCH = { "2027": [hd("2027-01-01", "신정", "공휴일"), hd("2027-02-06", "설날", "공휴일"), hd("2027-02-05", "설날 연휴", "공휴일"), hd("2027-02-07", "설날 연휴", "공휴일"), hd("2027-02-08", "대체공휴일(설날)", "대체"), hd("2027-03-01", "삼일절", "공휴일"), hd("2027-05-01", "근로자의 날", "근로자의날"), hd("2027-05-05", "어린이날", "공휴일"), hd("2027-05-13", "부처님오신날", "공휴일"), hd("2027-06-06", "현충일", "공휴일"), hd("2027-08-15", "광복절", "공휴일"), hd("2027-08-16", "대체공휴일(광복절)", "대체"), hd("2027-09-14", "추석 연휴", "공휴일"), hd("2027-09-15", "추석", "공휴일"), hd("2027-09-16", "추석 연휴", "공휴일"), hd("2027-10-03", "개천절", "공휴일"), hd("2027-10-04", "대체공휴일(개천절)", "대체"), hd("2027-10-09", "한글날", "공휴일"), hd("2027-10-11", "대체공휴일(한글날)", "대체"), hd("2027-12-25", "성탄절", "공휴일"), hd("2027-12-27", "대체공휴일(성탄절)", "대체")] };
+const BO_HOL_LOG = [{ at: "2025-06-18", by: "김운영", what: "2026년 공휴일 21건 검수·배포" }, { at: "2024-06-20", by: "김운영", what: "2025년 공휴일 20건 검수·배포" }];
+const HOL_K = { 공휴일: ["공휴일", "blue"], 대체: ["대체공휴일", "slate"], 근로자의날: ["근로자의 날", "emerald"] };
+const HOL_ST = { 배포: "emerald", 검수대기: "amber", 미등록: "gray" };
+const bdow = d => ["일", "월", "화", "수", "목", "금", "토"][new Date(d + "T00:00:00").getDay()];
+function HolidayMaster({ flash }){
+  const [, bump] = useState(0); const re = () => bump(n => n + 1);
+  const [yr, setYr] = useState("2026");
+  const [modal, setModal] = useState(null); // { idx?, date, name, kind, note, reason, notice }
+  const [err, setErr] = useState("");
+  const [ok, setOk] = useState(false); // 검수 확인 체크
+  const [del, setDel] = useState(null); // { r, reason }
+  const Y = BO_HOL[yr], live = Y.status === "배포";
+  const rows = Y.rows.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const past = r => r.date <= BO_TODAY; // 지난 날짜 = 회원사 근태·급여에 이미 쓰였을 수 있어 잠금
+  const fetchYear = () => { Y.rows = (BO_HOL_FETCH[yr] || []).map(r => ({ ...r })); Y.status = "검수대기"; setOk(false); re(); flash(yr + "년 공휴일 " + Y.rows.length + "건을 불러왔습니다 — 관보·월력요항과 대조한 뒤 배포하세요."); };
+  const release = () => { Y.status = "배포"; Y.at = BO_TODAY; Y.by = "운영관리자"; BO_HOL_LOG.unshift({ at: BO_TODAY, by: "운영관리자", what: yr + "년 공휴일 " + Y.rows.length + "건 검수·배포" }); re(); flash(yr + "년 공휴일을 배포했습니다 — 모든 회원사 휴일 관리(TA-01-01)에 ‘시스템 제공’으로 나타납니다."); };
+  const openAdd = () => { setErr(""); setModal({ date: "", name: "", kind: "공휴일", note: "", reason: "", notice: true }); };
+  const openEdit = (r, i) => { setErr(""); setModal({ ...r, idx: Y.rows.indexOf(r), reason: "", notice: true }); };
+  const sunWarn = m => m.date && m.kind === "공휴일" && [0, 6].includes(new Date(m.date + "T00:00:00").getDay()) ? "주말과 겹칩니다 — 대체공휴일 대상인지 확인하세요(설·추석·어린이날 등은 일요일, 삼일절·광복절·개천절·한글날·어린이날·부처님오신날·성탄절은 토·일요일과 겹치면 대체)." : "";
+  const save = () => {
+    const m = modal;
+    if (!m.date || !m.date.startsWith(yr)) return setErr(yr + "년 날짜를 입력하세요.");
+    if (!m.name.trim()) return setErr("휴일명을 입력하세요.");
+    if (live && m.date <= BO_TODAY) return setErr("지난 날짜는 이미 회원사 근태·급여에 쓰였을 수 있어 추가·변경할 수 없습니다.");
+    if (Y.rows.some((r, i) => r.date === m.date && i !== m.idx)) return setErr("같은 날짜의 공휴일이 이미 있습니다.");
+    if (live && !m.reason.trim()) return setErr("배포된 연도를 바꾸려면 변경 사유가 필요합니다(감사 로그).");
+    const row = hd(m.date, m.name.trim(), m.kind, m.note.trim() || HOL_SRC[m.kind], "수기");
+    if (m.idx != null) Y.rows[m.idx] = row; else Y.rows.push(row);
+    if (live) BO_HOL_LOG.unshift({ at: BO_TODAY, by: "운영관리자", what: (m.idx != null ? "수정" : "추가") + " " + m.date + " " + row.name + " — " + m.reason.trim() + (m.notice ? " · 회원사 공지 발송" : "") });
+    setModal(null); re(); flash(live ? "배포된 공휴일을 " + (m.idx != null ? "수정" : "추가") + "했습니다 — 회원사에 즉시 반영" + (m.notice ? "되고 공지(BO-SUP-04)를 보냈습니다." : "됩니다.") : "공휴일을 " + (m.idx != null ? "수정" : "추가") + "했습니다(검수 대기).");
+  };
+  const remove = () => {
+    const { r, reason } = del; if (live && !reason.trim()) return;
+    if (live) BO_HOL_LOG.unshift({ at: BO_TODAY, by: "운영관리자", what: "삭제 " + r.date + " " + r.name + " — " + reason.trim() });
+    Y.rows.splice(Y.rows.indexOf(r), 1); setDel(null); re(); flash(r.name + "을(를) 삭제했습니다" + (live ? " — 회원사에 즉시 반영됩니다." : "."));
+  };
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-SET-06" title="공휴일 관리" pri="P0" path="통계·운영 > 시스템 설정" desc="모든 회원사가 함께 쓰는 공휴일·대체공휴일·근로자의 날을 연도별로 등록·검수·배포합니다. 배포한 연도는 회원사 휴일 관리(TA-01-01)에 ‘시스템 제공’으로 나타나고, 근무 계획·휴일근로 가산·급여 지급일 계산에 쓰입니다." />
+      <div className="mb-4 flex flex-wrap gap-2">{Object.keys(BO_HOL).map(y => (
+        <button key={y} onClick={() => { setYr(y); setOk(false); }} className={"flex items-center gap-2 rounded-lg border px-4 py-2 text-sm " + (yr === y ? "border-blue-400 bg-blue-50 font-semibold text-blue-700" : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50")}>{y}년 <Badge tone={HOL_ST[BO_HOL[y].status]}>{BO_HOL[y].status}</Badge></button>))}</div>
+      <Card title={yr + "년 공휴일 · " + rows.length + "건"} pad={false} right={<div className="flex items-center gap-2">
+        {Y.status === "미등록" && <Btn onClick={fetchYear}>공공데이터 불러오기</Btn>}
+        {Y.status !== "미등록" && <Btn tone="ghost" onClick={openAdd}>+ {live ? "임시공휴일 등 추가" : "공휴일 추가"}</Btn>}
+      </div>}>
+        {Y.status === "배포" && <p className="border-b border-gray-100 bg-emerald-50/60 px-5 py-2 text-xs text-emerald-700">배포됨 · {Y.at} · {Y.by} — 회원사에 반영 중입니다. 오늘({BO_TODAY}) 이전 날짜는 잠기고, 앞으로의 날짜만 사유를 남기고 바꿀 수 있습니다.</p>}
+        {Y.status === "검수대기" && <div className="flex flex-wrap items-center gap-3 border-b border-amber-100 bg-amber-50 px-5 py-2.5 text-xs text-amber-800"><span>검수 대기 — 공공데이터 응답을 관보·월력요항(인사혁신처)과 대조하세요. 배포 전에는 회원사에 보이지 않습니다.</span>
+          <label className="flex items-center gap-1.5"><input type="checkbox" checked={ok} onChange={e => setOk(e.target.checked)} className="h-4 w-4 rounded border-gray-300" />대조를 마쳤습니다</label>
+          <Btn disabled={!ok || !rows.length} onClick={release}>검수 완료 · 배포</Btn></div>}
+        {Y.status === "미등록" ? <p className="px-5 py-10 text-center text-sm text-gray-400">{yr}년 공휴일이 아직 없습니다. 정부가 다음 해 월력요항을 발표하면(보통 6월경) [공공데이터 불러오기]로 가져와 검수한 뒤 배포하세요. 그 전까지 회원사 화면에는 ‘미등록’ 안내가 보입니다.</p>
+          : <Table min="760px" cols={[{ t: "날짜" }, { t: "휴일명" }, { t: "구분" }, { t: "근거" }, { t: "출처" }, { t: "관리", r: 1 }]} rows={rows} render={r => <>
+            <Td cls="whitespace-nowrap font-medium text-gray-800">{r.date} ({bdow(r.date)})</Td><Td cls="text-gray-700">{r.name}</Td><Td><Badge tone={HOL_K[r.kind][1]}>{HOL_K[r.kind][0]}</Badge></Td>
+            <Td cls="text-xs text-gray-500">{r.note}</Td><Td cls="text-xs text-gray-500">{r.src}</Td>
+            <Td r>{live && past(r) ? <span className="text-xs text-gray-400">🔒 지난 날짜</span> : <><button onClick={() => openEdit(r)} className="mr-3 text-xs font-medium text-blue-600 hover:underline">수정</button><button onClick={() => setDel({ r, reason: "" })} className="text-xs font-medium text-red-600 hover:underline">삭제</button></>}</Td></>} />}
+      </Card>
+      <div className="mt-4"><Card title="변경 이력"><ul className="space-y-1 text-xs text-gray-600">{BO_HOL_LOG.slice(0, 6).map((l, i) => <li key={i}><span className="text-gray-400">{l.at}</span> · {l.by} · {l.what}</li>)}</ul></Card></div>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
+          <li><b>연도별 흐름</b> — 미등록 → [공공데이터 불러오기](한국천문연구원 특일 정보) → 검수 대기(관보·월력요항과 대조) → [검수 완료 · 배포]. 배포한 연도만 회원사에 보입니다.</li>
+          <li><b>회원사 반영</b> — 배포된 공휴일은 모든 회원사 휴일 관리(TA-01-01)에 ‘시스템 제공’으로 나타나며 회원사는 수정할 수 없습니다. 근무 계획·휴일근로 가산·주휴·급여 지급일 계산에 바로 쓰입니다.</li>
+          <li><b>임시공휴일·선거일</b> — 국무회의 의결로 정해지는 임시공휴일과 선거일은 공공데이터에 늦게 반영될 수 있어 [+ 임시공휴일 등 추가]로 직접 넣습니다. 근거(의결일·법 조항)와 변경 사유를 남기고, 필요하면 회원사 공지(BO-SUP-04)를 함께 보냅니다.</li>
+          <li><b>대체공휴일</b> — 설·추석·어린이날은 일요일, 삼일절·광복절·개천절·한글날·어린이날·부처님오신날·성탄절은 토·일요일과 겹치면 대체공휴일이 생깁니다. 주말 날짜를 넣으면 확인 안내가 나옵니다.</li>
+          <li><b>잠금</b> — 배포 후 오늘 이전 날짜는 회원사 근태·급여에 이미 쓰였을 수 있어 바꿀 수 없습니다. 앞으로의 날짜는 사유를 남기고 바꿀 수 있으며, 회원사에서 이미 근태를 마감한 달에는 반영되지 않습니다.</li>
+          <li><b>권한</b> — 운영관리자 이상만 추가·수정·배포할 수 있고, 모든 변경은 감사 로그(BO-ADM-03)에 남습니다.</li>
+        </ul>
+      </div>
+      {del && <Modal title="공휴일 삭제" badge="BO-SET-06" onClose={() => setDel(null)} footer={<><Btn tone="ghost" onClick={() => setDel(null)}>취소</Btn><Btn tone="danger" disabled={live && !del.reason.trim()} onClick={remove}>삭제</Btn></>}>
+        <p className="text-gray-700"><b>{del.r.date} {del.r.name}</b>을(를) 삭제할까요?{live && " 회원사 화면과 계산에서 바로 빠집니다."}</p>
+        {live && <Field label="삭제 사유" req hint="감사 로그에 남습니다"><input value={del.reason} onChange={e => setDel(d => ({ ...d, reason: e.target.value }))} className={INP + " w-full"} /></Field>}
+      </Modal>}
+      {modal && <Modal title={(modal.idx != null ? "공휴일 수정" : "공휴일 추가") + " · " + yr + "년"} badge="BO-SET-06-M1" onClose={() => setModal(null)} footer={<><Btn tone="ghost" onClick={() => setModal(null)}>취소</Btn><Btn onClick={save}>{live ? "저장 · 회원사 반영" : "저장"}</Btn></>}>
+        <Field label="날짜" req><input type="date" value={modal.date} onChange={e => { setModal(m => ({ ...m, date: e.target.value })); setErr(""); }} className={INP + " w-full"} /></Field>
+        <Field label="휴일명" req><input value={modal.name} onChange={e => { setModal(m => ({ ...m, name: e.target.value })); setErr(""); }} placeholder="예: 임시공휴일" className={INP + " w-full"} /></Field>
+        <Field label="구분" req><select value={modal.kind} onChange={e => setModal(m => ({ ...m, kind: e.target.value }))} className={INP + " w-full bg-white"}>{Object.entries(HOL_K).map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}</select></Field>
+        <Field label="근거" hint={"비우면 ‘" + HOL_SRC[modal.kind] + "’"}><input value={modal.note} onChange={e => setModal(m => ({ ...m, note: e.target.value }))} placeholder="예: 국무회의 의결(2026-10-15)" className={INP + " w-full"} /></Field>
+        {live && <Field label="변경 사유" req hint="배포된 연도 변경 — 감사 로그에 남습니다"><input value={modal.reason} onChange={e => { setModal(m => ({ ...m, reason: e.target.value })); setErr(""); }} placeholder="예: 임시공휴일 지정" className={INP + " w-full"} /></Field>}
+        {live && <label className="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" checked={modal.notice} onChange={e => setModal(m => ({ ...m, notice: e.target.checked }))} className="h-4 w-4 rounded border-gray-300" />회원사 공지 함께 발송(BO-SUP-04)</label>}
+        {sunWarn(modal) && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">{sunWarn(modal)}</p>}
+        {err && <p className="text-xs text-red-600">{err}</p>}
+      </Modal>}
+    </div>
+  );
+}
+
 // ─── 네비게이션 ───
 const NAV = [
   { key:"dash", icon:ICN.dash, label:"대시보드", items:[["BO-DSH-01","운영 대시보드"]] },
   { key:"cust", icon:ICN.cust, label:"회원 관리", items:[["BO-CMP-01","회원 리스트"],["BO-CMP-08","해지·탈퇴"]] },
   { key:"bill", icon:ICN.bill, label:"구독·결제", items:[["BO-BILL-01","요금제 관리"],["BO-BILL-04","구독 목록"],["BO-BILL-06","결제증빙발급"],["BO-BILL-07","결제 내역"],["BO-BILL-08","미납·연체"],["BO-BILL-09","환불 관리"],["BO-BILL-11","정산·세무 리포트"],["BO-BILL-12","PG 연동 설정"]] },
   { key:"cs", icon:ICN.cs, label:"CS·공지", items:[["BO-SUP-01","1:1 문의함"],["BO-SUP-04","공지사항"]] },
-  { key:"stat", icon:ICN.stat, label:"통계·운영", items:[["BO-STAT-02","매출·구독 지표"],["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"]] },
+  { key:"stat", icon:ICN.stat, label:"통계·운영", items:[["BO-STAT-02","매출·구독 지표"],["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"],["BO-SET-06","공휴일 관리"]] },
 ];
 const TITLES = {}; NAV.forEach(g=>g.items.forEach(([id,nm])=>TITLES[id]=nm));
 const PATHS = {}; NAV.forEach(g=>g.items.forEach(([id])=>PATHS[id]=g.label));
-const PRIS = { "BO-DSH-01":"P0","BO-CMP-01":"P0","BO-CMP-02":"P0","BO-CMP-08":"P0","BO-BILL-01":"P0","BO-BILL-04":"P0","BO-BILL-06":"P0","BO-BILL-07":"P0","BO-BILL-08":"P0","BO-BILL-09":"P0","BO-BILL-11":"P0","BO-BILL-12":"P0","BO-SUP-01":"P0","BO-SUP-04":"P0","BO-STAT-02":"P0","BO-ADM-01":"P0","BO-ADM-02":"P0","BO-ADM-03":"P0","BO-SET-03":"P1","BO-SET-04":"P1" };
+const PRIS = { "BO-DSH-01":"P0","BO-CMP-01":"P0","BO-CMP-02":"P0","BO-CMP-08":"P0","BO-BILL-01":"P0","BO-BILL-04":"P0","BO-BILL-06":"P0","BO-BILL-07":"P0","BO-BILL-08":"P0","BO-BILL-09":"P0","BO-BILL-11":"P0","BO-BILL-12":"P0","BO-SUP-01":"P0","BO-SUP-04":"P0","BO-STAT-02":"P0","BO-ADM-01":"P0","BO-ADM-02":"P0","BO-ADM-03":"P0","BO-SET-06":"P0","BO-SET-03":"P1","BO-SET-04":"P1" };
 
 function App(){
   const [cur,setCur]=useState("BO-DSH-01");
@@ -1037,7 +1134,7 @@ function App(){
     "BO-BILL-04":<SubList go={go} flash={flash} open={openTenant}/>, "BO-BILL-06":<Invoices flash={flash} open={openTenant}/>, "BO-BILL-07":<Payments open={openTenant}/>, "BO-BILL-08":<Overdue flash={flash} open={openTenant}/>,
     "BO-BILL-09":<Refunds flash={flash} open={openTenant}/>, "BO-BILL-11":<Settlement/>, "BO-BILL-12":<PGConfig flash={flash}/>,
     "BO-SUP-01":<SupportInbox flash={flash} open={openTenant}/>, "BO-SUP-04":<Notices flash={flash}/>,
-    "BO-STAT-02":<RevenueStats/>, "BO-ADM-01":<OperatorAccounts flash={flash}/>, "BO-ADM-02":<RolePermissions flash={flash}/>, "BO-ADM-03":<AuditLog/> };
+    "BO-STAT-02":<RevenueStats/>, "BO-ADM-01":<OperatorAccounts flash={flash}/>, "BO-ADM-02":<RolePermissions flash={flash}/>, "BO-ADM-03":<AuditLog/>, "BO-SET-06":<HolidayMaster flash={flash}/> };
   const content = P0IMPL[cur] || <Placeholder id={cur} title={TITLES[cur]||cur} pri={PRIS[cur]||"P1"} path={(PATHS[cur]||"")+" > "+(TITLES[cur]||"")} />;
   return (
     <div className="flex h-screen flex-col">
