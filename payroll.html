@@ -8675,20 +8675,27 @@ function AggBasisScreen() {
 const OT_APPROVED = { "2019-0007|2026-09-02": true, "2019-0007|2026-09-14": true, "2021-0007|2026-09-24": true, "2023-0019|2026-09-08": true, "2019-0002|2026-09-07": true, "1998-0001|2026-09-24": true, "2026-0088|2026-09-11": true }; // 연장근무 신청(TA-05-03) 승인분(샘플)
 const OT_DECISION = {}; // "사번|일자" → { act: 승인/제외, reason, by, at }
 function aggPreClose(ym) {
-  const data = attMonth(ym); let unfixed = 0; const ot = [];
-  Object.keys(data).forEach(no => { const e = hrEmp(no); if (!e) return; Object.keys(data[no]).forEach(dd => { const date = wsDate(ym, +dd), rec = data[no][dd]; if (rec.fix === "임시") unfixed++;
-    const c = attCalc2(rec, attPlan(e, date), e, date); const k = no + "|" + date; if (AGG_RULE.approvedOt && c.ot > 0 && !OT_APPROVED[k]) ot.push({ k, e, date, ot: c.ot, dec: OT_DECISION[k] || null }); }); });
-  return { unfixed, ot, pending: ot.filter(x => !x.dec) };
+  const data = attMonth(ym); let unfixed = 0; const ot = [], fixable = [], missing = [];
+  Object.keys(data).forEach(no => { const e = hrEmp(no); if (!e) return; Object.keys(data[no]).forEach(dd => { const date = wsDate(ym, +dd), rec = data[no][dd]; const p = attPlan(e, date);
+    if (rec.fix === "임시") { unfixed++; if (attJudge(rec, p) === "미입력") missing.push({ e, date }); else fixable.push(rec); }
+    const c = attCalc2(rec, p, e, date); const k = no + "|" + date; if (AGG_RULE.approvedOt && c.ot > 0 && !OT_APPROVED[k]) ot.push({ k, e, date, ot: c.ot, dec: OT_DECISION[k] || null }); }); });
+  return { unfixed, fixable, missing, ot, pending: ot.filter(x => !x.dec) };
 }
 function AggPreClosePanel({ ym, go }) {
   const [, bump] = useState(0); const [rsn, setRsn] = useState({});
   const pc = aggPreClose(ym);
+  const fixAll = () => { pc.fixable.forEach(rec => { rec.fix = "확정"; rec.hist.push({ at: HR_TODAY, by: ACCT.me, what: "확정(근태 집계에서 일괄)" }); }); refChanged(); bump(n => n + 1); };
   const decide = (x, act) => { if (act === "제외" && !(rsn[x.k] || "").trim()) return; OT_DECISION[x.k] = { act, reason: (rsn[x.k] || "").trim(), by: ACCT.me, at: HR_TODAY }; refChanged(); bump(n => n + 1); };
   return (
     <div className="rounded-lg border border-amber-200 bg-amber-50/40 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 px-5 py-3"><span className="text-sm font-semibold text-amber-900">마감 전 확인 · {ym}</span><span className="text-xs text-amber-700">집계기준(TA-06-01): 확정분만 집계{AGG_RULE.approvedOt ? " · 연장 승인분만" : ""}</span></div>
       <div className="space-y-2 px-5 py-3 text-sm">
-        <p className={pc.unfixed ? "text-red-600" : "text-emerald-700"}>{pc.unfixed ? "미확정 근무 기록 " + pc.unfixed + "건 — 근무 이력에서 확정해야 마감할 수 있습니다." : "미확정 근무 기록 없음"} {pc.unfixed > 0 && <button onClick={() => go && go("TA-03-03")} className="ml-1 text-xs text-blue-600 underline">근무 이력으로</button>}</p>
+        {!pc.unfixed ? <p className="text-emerald-700">미확정 근무 기록 없음</p> : <div className="space-y-1">
+          <p className="text-red-600">미확정 근무 기록 {pc.unfixed}건 — 모두 확정해야 마감할 수 있습니다.</p>
+          {pc.fixable.length > 0 && <p className="flex flex-wrap items-center gap-2 text-gray-700">· 바로 확정할 수 있는 기록 {pc.fixable.length}건 <button onClick={fixAll} className="rounded border border-emerald-500 px-2 py-0.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">{pc.fixable.length}건 일괄 확정</button><span className="text-xs text-gray-400">근무 이력(TA-03-03)의 ‘확정’과 같고 이력이 남습니다</span></p>}
+          {pc.missing.length > 0 && <div className="text-gray-700">· 출퇴근이 비어 있는 기록 {pc.missing.length}건 — 근무 이력에서 출퇴근을 보정하거나 결근으로 처리한 뒤 확정하세요:
+            <span className="ml-1 inline-flex flex-wrap gap-1">{pc.missing.map(m => <button key={m.e.no + m.date} onClick={() => go && go("TA-03-03", m.e.name)} className="rounded bg-white px-1.5 py-0.5 text-xs text-blue-600 ring-1 ring-blue-200 hover:bg-blue-50">{m.e.name} {m.date.slice(5)} →</button>)}</span></div>}
+        </div>}
         <p className={pc.pending.length ? "text-red-600" : "text-emerald-700"}>{AGG_RULE.approvedOt ? (pc.pending.length ? "미승인 연장 " + pc.pending.length + "건 — 사후 승인하거나 사유를 적어 제외하세요." : "미승인 연장 처리 완료(" + pc.ot.length + "건)") : "연장 승인 정책 꺼짐 — 실적 전체 반영"}</p>
         {pc.ot.length > 0 && <div className="overflow-x-auto"><table className="w-full min-w-[620px] text-left text-xs"><thead><tr className="text-gray-500"><th className="py-1">직원</th><th>일자</th><th>연장</th><th>처리</th></tr></thead><tbody>{pc.ot.map(x => (
           <tr key={x.k} className="border-t border-amber-100"><td className="py-1.5">{x.e.name}</td><td>{x.date}</td><td>{attFmt(x.ot)}</td>
@@ -8757,7 +8764,7 @@ function AggCloseScreen() {
   const pc = aggPreClose(ym);
   const payYm = payYmForAtt(ym);
   // 마감 조건: 직전 달까지 마감 · 달이 끝남 · 미확정 0건 · 미승인 연장 처리 완료
-  const closeWhy = locked ? "" : ym !== wsAdd(HR_CLOSED_UNTIL, 1) ? wsAdd(HR_CLOSED_UNTIL, 1) + "부터 순서대로 마감하세요." : ym >= maxYm ? "달이 끝난 뒤 마감할 수 있습니다." : pc.unfixed ? "미확정 근무 기록 " + pc.unfixed + "건을 근무 이력(TA-03-03)에서 확정하세요." : pc.pending.length ? "미승인 연장 " + pc.pending.length + "건을 위 ‘마감 전 확인’에서 처리하세요." : "";
+  const closeWhy = locked ? "" : ym !== wsAdd(HR_CLOSED_UNTIL, 1) ? wsAdd(HR_CLOSED_UNTIL, 1) + "부터 순서대로 마감하세요." : ym >= maxYm ? "달이 끝난 뒤 마감할 수 있습니다." : pc.fixable.length ? "‘마감 전 확인’에서 미확정 " + pc.fixable.length + "건을 일괄 확정하세요." : pc.missing.length ? "출퇴근이 비어 있는 " + pc.missing.length + "건을 근무 이력(TA-03-03)에서 보정하거나 결근 처리하세요." : pc.pending.length ? "미승인 연장 " + pc.pending.length + "건을 위 ‘마감 전 확인’에서 처리하세요." : "";
   const reopenWhy = !locked ? "" : ym !== HR_CLOSED_UNTIL ? "가장 최근 마감월(" + HR_CLOSED_UNTIL + ")부터 해제할 수 있습니다." : PAY_RUN_CONFIRMED[payYm] ? payYm + " 급여가 확정되어 있습니다 — 급여 확정 해제(PAY-03-02)를 먼저 하세요." : "";
   const setFix = (m, to) => { const d = attMonth(m); Object.values(d).forEach(days => Object.values(days).forEach(rec => { rec.fix = to; })); };
   const doClose = () => { setFix(ym, "마감"); HR_CLOSED_UNTIL = ym; ATT_CLOSE[ym] = { stat: "마감", by: ACCT.me, at: HR_TODAY }; ATT_CLOSE_HIST.unshift({ ym, act: "마감", by: ACCT.me, at: HR_TODAY, reason: "" }); refChanged(); setModal(null); flash(ym + " 근태를 마감했습니다 — 근태 수정이 잠기고 급여(" + payYm + ")에 전달됩니다."); };
@@ -8788,11 +8795,14 @@ function AggCloseScreen() {
             : <button disabled={!!closeWhy} title={closeWhy} onClick={() => setModal("close")} className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-40">마감</button>}
         </div>
       </div>
-      {(closeWhy || reopenWhy) && <p className="-mt-2 text-right text-xs text-gray-500">{closeWhy || reopenWhy}</p>}
+      {!locked && <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs shadow-sm"><span className="font-semibold text-gray-700">마감 조건</span>
+        {[[ym === wsAdd(HR_CLOSED_UNTIL, 1), "이전 달까지 마감(" + HR_CLOSED_UNTIL + ")"], [ym < maxYm, "달이 끝남"], [!pc.unfixed, "미확정 기록 0건" + (pc.unfixed ? " (남은 " + pc.unfixed + "건)" : "")], [!pc.pending.length, "미승인 연장 처리" + (pc.pending.length ? " (남은 " + pc.pending.length + "건)" : "")]].map(([ok, t]) => <span key={t} className={ok ? "text-emerald-700" : "text-red-600"}>{ok ? "✓" : "✗"} {t}</span>)}
+        <span className="ml-auto text-gray-500">{closeWhy ? "→ " + closeWhy : "→ 마감할 수 있습니다."}</span></div>}
+      {locked && reopenWhy && <p className="-mt-2 text-right text-xs text-gray-500">{reopenWhy}</p>}
 
       <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2.5 text-xs text-gray-600">💰 <b>{ym} 근태</b>의 연장·야간·휴일·주휴·결근/지각은 <b>{payYm} 급여</b>({payDateOf(payYm)} 지급)에 반영됩니다 · 기본급은 그달 급여 · 정산 월 {PAY_POLICY.varMonth}(급여 지급율 설정 PAY-01-02)</div>
 
-      {!locked && <AggPreClosePanel ym={ym} go={id => { ATT_FOCUS = { ym, name: "" }; window.__nav && window.__nav({ domain: "근태/근무", item: id, label: "근무 이력" }); }} />}
+      {!locked && <AggPreClosePanel ym={ym} go={(id, name) => { ATT_FOCUS = { ym, name: name || "" }; window.__nav && window.__nav({ domain: "근태/근무", item: id, label: "근무 이력" }); }} />}
       {locked && <div className="rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-600"><b>마감됨</b>{ATT_CLOSE[ym] ? " (" + ATT_CLOSE[ym].at + " · " + ATT_CLOSE[ym].by + ")" : ""} · 근무 이력·근무스케줄·휴가의 이 달 수정이 잠겼고 급여로 확정 전달되었습니다.</div>}
 
       {small ? <p className="rounded-lg bg-gray-50 px-4 py-2 text-xs text-gray-500">상시 5인 미만 사업장 — 주 52시간 한도와 연장·야간·휴일 가산이 적용되지 않습니다(근로기준법 §11).</p>
@@ -8830,8 +8840,18 @@ function AggCloseScreen() {
         <ul className="divide-y divide-gray-100 text-sm">{ATT_CLOSE_HIST.map((h, i) => <li key={i} className="flex flex-wrap gap-x-3 px-5 py-2"><span className="w-20 text-gray-500">{h.at}</span><span className="font-medium text-gray-700">{h.ym} {h.act}</span><span className="text-gray-500">{h.by}</span>{h.reason && <span className="text-gray-500">· 사유: {h.reason}</span>}</li>)}</ul>
       </div>
 
-      <div className="rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-xs leading-relaxed text-gray-600">
-        <span className="mr-1">💡</span><b>집계 · 마감</b> — 근무 이력(TA-03-03)의 기록과 승인 휴가(TA-04-02)를 집계기준(TA-06-01)대로 자동 집계합니다(따로 실행할 필요 없음). 연장은 {AGG_RULE.approvedOt ? "승인분·사후 승인분만" : "전부"} 반영, 지각·조퇴는 분 단위(공제는 PAY-01-02 설정), 주휴는 소정근로일을 개근한 주(주 15시간 이상)를 셉니다. <b>주 최대</b>는 이 달에 걸친 주(주 시작 {AGG_RULE.weekStart}, 월 경계 주 포함)의 실근로 최댓값입니다. 마감은 회사 전체·한 달 단위이며(부서 선택은 조회용) 이전 달부터 순서대로 합니다. 해제는 가장 최근 마감월만, 사유를 남기고, 그 근태가 들어간 급여가 확정되지 않았을 때만 가능합니다. 엑셀 다운로드는 P1입니다.
+      <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <ul className="list-disc space-y-1.5 pl-5">
+          <li><b>자동 집계</b> — 근무 이력(TA-03-03)의 기록과 승인된 휴가(TA-04-02)를 집계기준(TA-06-01)대로 바로 계산합니다. 따로 ‘집계 실행’을 누를 필요가 없습니다.</li>
+          <li><b>마감 순서</b> — ① ‘마감 전 확인’에서 미확정 기록을 확정(바로 확정 가능한 건은 일괄 확정, 출퇴근이 비어 있는 건은 근무 이력에서 보정·결근 처리) → ② 미승인 연장을 사후 승인하거나 사유를 적어 제외 → ③ 마감 조건이 모두 ✓이면 [마감].</li>
+          <li><b>마감 단위</b> — 회사 전체를 한 달 단위로, 이전 달부터 순서대로 마감합니다. 달이 끝나야 마감할 수 있고, 부서 선택은 조회용입니다.</li>
+          <li><b>마감하면</b> — 그 달의 근무 이력·근무스케줄·휴가 수정이 잠기고, 집계값이 급여 계산으로 넘어갑니다. 어느 달 급여에 들어가는지는 위 안내(급여 지급율 설정 PAY-01-02의 정산 월)를 보세요.</li>
+          <li><b>집계 기준</b> — 연장은 {AGG_RULE.approvedOt ? "승인·사후 승인분만" : "전부"} 반영합니다. 지각·조퇴는 분 단위로 모으고, 공제 여부는 PAY-01-02에서 정합니다. 주휴는 소정근로일을 개근한 주(주 15시간 이상)를 셉니다.</li>
+          <li><b>주 52시간</b> — 이 달에 걸친 주(주 시작 {AGG_RULE.weekStart}, 월 경계 주 포함)의 실근로 최댓값입니다. 넘으면 경고만 하고 마감은 막지 않습니다. 상시 5인 미만이면 적용되지 않습니다.</li>
+          <li><b>마감 해제</b> — 가장 최근 마감월만, 사유를 적어 해제합니다. 그 근태가 들어간 급여가 이미 확정됐으면 급여 확정 해제(PAY-03-02)를 먼저 해야 합니다.</li>
+          <li><b>표 활용</b> — 직원 행을 누르면 그 직원의 일별 근무 이력으로 이동합니다. 엑셀 다운로드는 P1입니다.</li>
+        </ul>
       </div>
 
       {modal === "close" && (
