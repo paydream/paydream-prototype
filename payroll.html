@@ -3230,7 +3230,7 @@ function PayAnnualScreen() {
   const rows = SALARY_CONTRACTS.filter(s => (!q || s.name.includes(q) || s.no.includes(q)) && (!org || (empOf(s.no).orgId && hrOrg(empOf(s.no).orgId).includes(org))));
   const PI_FIXED = () => PAY_ITEMS.filter(r => r.use && r.type !== "공제" && r.calc === "정액");
   const open = s => { const c = s ? scCur(s.no) || s.hist[0] : null; const base = c ? { ...c, items: { ...c.items } } : { code: "S01", unit: "월급", items: {}, rate: 0 };
-    setModal({ no: s ? s.no : "", from: wsAdd(HR_TODAY.slice(0, 7), 1) + "-01", to: "", code: base.code, unit: base.unit, items: base.items, rate: base.rate, reason: s ? "정기 인상" : "입사" }); };
+    setModal({ pick: !s, no: s ? s.no : "", from: wsAdd(HR_TODAY.slice(0, 7), 1) + "-01", to: "", code: base.code, unit: base.unit, items: base.items, rate: base.rate, reason: s ? "정기 인상" : "입사" }); };
   const pc = modal ? pcCode(modal.code) : null, rule = pc ? PC_RULE[pc.kind] : null;
   const isBiz = pc && pc.kind === "사업/기타소득";
   const itemNames = isBiz ? ["용역료 (세전)"] : modal && (modal.unit === "시급" || modal.unit === "일급") ? [] : PI_FIXED().map(r => r.name);
@@ -3305,8 +3305,8 @@ function PayAnnualScreen() {
       </div>
 
       {modal && (
-        <TreeModal title={sc ? sc.name + " 새 계약" : "계약 등록"} badge="PAY-02-04-M1" submit="저장" danger={minBad} submitDisabled={!!mErr} onClose={() => setModal(null)} onSubmit={save}>
-          {!sc ? <div><label className={L}><span className="text-red-500">*</span>대상 직원</label><select value={modal.no} onChange={e => setModal(m => ({ ...m, no: e.target.value }))} className={INP + " w-full bg-white"}><option value="">선택</option>{HR.emps.filter(e => e.stat !== "퇴직" && !scOf(e.no)).map(e => <option key={e.no} value={e.no}>{e.name} ({e.no}) · {e.emp}</option>)}</select></div>
+        <TreeModal title={modal.pick ? "계약 등록" : sc.name + " 새 계약"} badge="PAY-02-04-M1" submit="저장" danger={minBad} submitDisabled={!!mErr} onClose={() => setModal(null)} onSubmit={save}>
+          {modal.pick ? <div><label className={L}><span className="text-red-500">*</span>대상 직원</label><select value={modal.no} onChange={e => { const no = e.target.value, c = no && scCur(no); setModal(m => ({ ...m, no, ...(c ? { code: c.code, unit: c.unit, items: { ...c.items }, rate: c.rate, reason: "정기 인상" } : { reason: "입사" }) })); }} className={INP + " w-full bg-white"}><option value="">선택</option>{HR.emps.filter(e => e.stat !== "퇴직").sort((a, b) => (scOf(a.no) ? 1 : 0) - (scOf(b.no) ? 1 : 0)).map(e => <option key={e.no} value={e.no}>{e.name} ({e.no}) · {e.emp}{scOf(e.no) ? " — 계약 있음(새 계약으로 등록)" : " — 계약 없음"}</option>)}</select><Hint>계약이 있는 직원을 고르면 현재 계약 값을 불러와 새 계약으로 등록합니다</Hint>{sc && <p className="mt-1 text-xs text-gray-500">현재 계약 {(scCur(modal.no) || {}).from} ~ · 저장하면 현재 계약은 시작일 전날로 끝납니다.</p>}</div>
             : <p className="text-xs text-gray-500">현재 계약 {(scCur(modal.no) || {}).from} ~ · 새 계약을 저장하면 현재 계약은 시작일 전날로 끝납니다.</p>}
           <div className="grid grid-cols-3 gap-3">
             <div><label className={L}><span className="text-red-500">*</span>적용 시작</label><input type="date" value={modal.from} onChange={e => setModal(m => ({ ...m, from: e.target.value }))} className={INP + " w-full"} /></div>
