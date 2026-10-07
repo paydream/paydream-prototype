@@ -1108,6 +1108,90 @@ function HolidayMaster({ flash }){
     </div>
   );
 }
+// ─── 요율·세액표 관리(BO-SET-07) — 회원사 공통 공제 요율(deduction_rate)을 연도별로 등록·검수·배포 ───
+const rt = (grp, item, val, unit, from, to, src) => ({ grp, item, val, unit, from, to, src });
+const BO_RATE = {
+  "2025": { status: "배포", at: "2024-12-20", by: "김운영", rows: [
+    rt("국민연금", "근로자 부담률", "4.5", "%", "2025-01", "2025-12", "국민연금법 시행령 · 보험료율 9%"),
+    rt("국민연금", "기준소득월액 상한", "6170000", "원", "2024-07", "2025-06", "보건복지부 고시"),
+    rt("국민연금", "기준소득월액 하한", "390000", "원", "2024-07", "2025-06", "보건복지부 고시"),
+    rt("국민연금", "기준소득월액 상한", "6370000", "원", "2025-07", "2026-06", "보건복지부 고시"),
+    rt("국민연금", "기준소득월액 하한", "400000", "원", "2025-07", "2026-06", "보건복지부 고시"),
+    rt("건강보험", "근로자 부담률", "3.545", "%", "2025-01", "2025-12", "보험료율 7.09%"),
+    rt("건강보험", "보수월액 상한", "127056982", "원", "2025-01", "2025-12", "월별 건강보험료액 상·하한 고시"),
+    rt("건강보험", "보수월액 하한", "279266", "원", "2025-01", "2025-12", "월별 건강보험료액 상·하한 고시"),
+    rt("장기요양", "건강보험료 대비", "12.95", "%", "2025-01", "2025-12", "장기요양보험료율 고시"),
+    rt("고용보험", "근로자 부담률(실업급여)", "0.9", "%", "2025-01", "2025-12", "고용보험법 시행령"),
+    rt("일용근로", "일 근로소득공제", "150000", "원", "2025-01", "2025-12", "소득세법 §47②"),
+    rt("일용근로", "세율 · 세액공제", "6 · 55", "%", "2025-01", "2025-12", "소득세법 §129·§59"),
+    rt("간이세액표", "근로소득 간이세액표", "2025년판", "", "2025-01", "2025-12", "소득세법 시행령 별표2"),
+  ] },
+  "2026": { status: "배포", at: "2025-12-22", by: "김운영", rows: [
+    rt("국민연금", "근로자 부담률", "4.75", "%", "2026-01", "2026-12", "국민연금법 개정 · 보험료율 9.5%"),
+    rt("국민연금", "기준소득월액 상한", "6590000", "원", "2026-07", "2027-06", "보건복지부 고시"),
+    rt("국민연금", "기준소득월액 하한", "410000", "원", "2026-07", "2027-06", "보건복지부 고시"),
+    rt("건강보험", "근로자 부담률", "3.595", "%", "2026-01", "2026-12", "보험료율 7.19%"),
+    rt("건강보험", "보수월액 상한", "127725730", "원", "2026-01", "2026-12", "월별 건강보험료액 상·하한 고시"),
+    rt("건강보험", "보수월액 하한", "280390", "원", "2026-01", "2026-12", "월별 건강보험료액 상·하한 고시"),
+    rt("장기요양", "건강보험료 대비", "13.14", "%", "2026-01", "2026-12", "장기요양보험료율 고시(보수 대비 0.9448%)"),
+    rt("고용보험", "근로자 부담률(실업급여)", "0.9", "%", "2026-01", "2026-12", "고용보험법 시행령"),
+    rt("일용근로", "일 근로소득공제", "150000", "원", "2026-01", "2026-12", "소득세법 §47②"),
+    rt("일용근로", "세율 · 세액공제", "6 · 55", "%", "2026-01", "2026-12", "소득세법 §129·§59"),
+    rt("간이세액표", "근로소득 간이세액표", "2026년판", "", "2026-01", "2026-12", "소득세법 시행령 별표2"),
+  ] },
+  "2027": { status: "미등록", rows: [] },
+};
+const BO_RATE_LOG = [{ at: "2026-06-26", by: "김운영", what: "2026-07 국민연금 기준소득월액 상·하한 659만/41만원 추가 배포(2026년 판)" }, { at: "2025-12-22", by: "김운영", what: "2026년 요율·세액표 검수·배포" }];
+function RateMaster({ flash }){
+  const [, bump] = useState(0); const re = () => bump(n => n + 1);
+  const [yr, setYr] = useState("2026");
+  const [ok, setOk] = useState(false);
+  const [edit, setEdit] = useState(null); // { r, val, reason }
+  const Y = BO_RATE[yr], live = Y.status === "배포";
+  const fmt = r => /^\d+$/.test(r.val) ? Number(r.val).toLocaleString() : r.val;
+  const started = r => r.from <= BO_TODAY.slice(0, 7); // 적용 시작된 값 = 회원사 급여에 쓰였을 수 있어 잠금
+  const draft = () => { const prev = BO_RATE[String(+yr - 1)], up = d => (+d.slice(0, 4) + 1) + d.slice(4); Y.rows = (prev ? prev.rows : []).filter(r => r.from.startsWith(String(+yr - 1))).map(r => ({ ...r, from: up(r.from), to: up(r.to), val: r.grp === "간이세액표" ? yr + "년판" : r.val })); Y.status = "검수대기"; setOk(false); re(); flash(yr + "년 초안을 전년 값으로 만들었습니다 — 고시가 나오면 값을 고친 뒤 배포하세요."); };
+  const release = () => { Y.status = "배포"; Y.at = BO_TODAY; Y.by = "운영관리자"; BO_RATE_LOG.unshift({ at: BO_TODAY, by: "운영관리자", what: yr + "년 요율·세액표 " + Y.rows.length + "건 검수·배포" }); re(); flash(yr + "년 요율을 배포했습니다 — 회원사 공제 요율 설정(PAY-01-04)과 급여 계산에 적용됩니다."); };
+  const save = () => {
+    const { r, val, reason } = edit; if (!String(val).trim()) return;
+    if (live && (started(r) || !reason.trim())) return;
+    if (live) BO_RATE_LOG.unshift({ at: BO_TODAY, by: "운영관리자", what: "정정 " + r.grp + " " + r.item + " " + fmt(r) + "→" + val + " — " + reason.trim() });
+    r.val = String(val).replace(/,/g, "").trim(); setEdit(null); re(); flash(live ? "배포된 값을 정정했습니다 — 적용 시작 전이라 회원사에 바로 반영됩니다." : "값을 고쳤습니다.");
+  };
+  return (
+    <div className="p-5">
+      <ScrHead id="BO-SET-07" title="요율·세액표 관리" pri="P0" path="통계·운영 > 시스템 설정" desc="모든 회원사가 함께 쓰는 4대보험 요율·상하한, 일용근로 세율, 근로소득 간이세액표를 연도별로 등록·검수·배포합니다. 배포한 값만 회원사 공제 요율 설정(PAY-01-04)과 급여 계산에 쓰입니다." />
+      <div className="mb-4 flex flex-wrap gap-2">{Object.keys(BO_RATE).map(y => (
+        <button key={y} onClick={() => { setYr(y); setOk(false); }} className={"flex items-center gap-2 rounded-lg border px-4 py-2 text-sm " + (yr === y ? "border-blue-400 bg-blue-50 font-semibold text-blue-700" : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50")}>{y}년 <Badge tone={BO_RATE[y].status === "배포" ? "emerald" : BO_RATE[y].status === "검수대기" ? "amber" : "gray"}>{BO_RATE[y].status}</Badge></button>))}</div>
+      <Card title={yr + "년 요율·세액표 · " + Y.rows.length + "건"} pad={false} right={Y.status === "미등록" ? <Btn onClick={draft}>전년 값으로 초안 만들기</Btn> : null}>
+        {live && <p className="border-b border-gray-100 bg-emerald-50/60 px-5 py-2 text-xs text-emerald-700">배포됨 · {Y.at} · {Y.by} — 회원사에 반영 중입니다. 적용이 시작된 값은 잠기고, 시작 전 값만 사유를 남기고 정정할 수 있습니다.</p>}
+        {Y.status === "검수대기" && <div className="flex flex-wrap items-center gap-3 border-b border-amber-100 bg-amber-50 px-5 py-2.5 text-xs text-amber-800"><span>검수 대기 — 각 값을 관보·부처 고시와 대조하세요. 배포 전에는 회원사에 보이지 않습니다.</span>
+          <label className="flex items-center gap-1.5"><input type="checkbox" checked={ok} onChange={e => setOk(e.target.checked)} className="h-4 w-4 rounded border-gray-300" />고시와 대조를 마쳤습니다</label>
+          <Btn disabled={!ok || !Y.rows.length} onClick={release}>검수 완료 · 배포</Btn></div>}
+        {Y.status === "미등록" ? <p className="px-5 py-10 text-center text-sm text-gray-400">{yr}년 값이 아직 없습니다. 요율 고시(보통 전년 8~12월)가 나오면 [전년 값으로 초안 만들기]로 시작해 값을 고친 뒤 배포하세요. 그 전까지 회원사는 직전 연도 값을 씁니다.</p>
+          : <Table min="820px" cols={[{ t: "구분" }, { t: "항목" }, { t: "값", r: 1 }, { t: "적용 기간" }, { t: "근거" }, { t: "관리", r: 1 }]} rows={Y.rows} render={r => <>
+            <Td cls="font-medium text-gray-800">{r.grp}</Td><Td cls="text-gray-700">{r.item}</Td><Td r cls="font-mono text-gray-800">{fmt(r)}{r.unit && <span className="ml-0.5 text-xs text-gray-400">{r.unit}</span>}</Td>
+            <Td cls="whitespace-nowrap text-xs text-gray-500">{r.from} ~ {r.to}</Td><Td cls="text-xs text-gray-500">{r.src}</Td>
+            <Td r>{live && started(r) ? <span className="text-xs text-gray-400">🔒 적용 중</span> : <button onClick={() => setEdit({ r, val: r.val, reason: "" })} className="text-xs font-medium text-blue-600 hover:underline">{live ? "정정" : "수정"}</button>}</Td></>} />}
+      </Card>
+      <div className="mt-4"><Card title="변경 이력"><ul className="space-y-1 text-xs text-gray-600">{BO_RATE_LOG.slice(0, 6).map((l, i) => <li key={i}><span className="text-gray-400">{l.at}</span> · {l.by} · {l.what}</li>)}</ul></Card></div>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm">
+        <p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p>
+        <ul className="list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed">
+          <li><b>연도별 흐름</b> — 미등록 → [전년 값으로 초안 만들기] → 고시값으로 수정 → 검수 대기(관보·부처 고시와 대조) → [검수 완료 · 배포]. 배포한 연도만 회원사에 쓰입니다.</li>
+          <li><b>적용 기간</b> — 요율과 건강보험 상·하한은 1~12월, 국민연금 기준소득월액 상·하한은 7월~다음 해 6월입니다. 회원사 급여는 귀속월에 맞는 값을 자동으로 고릅니다.</li>
+          <li><b>회원사 반영</b> — 회원사 공제 요율 설정(PAY-01-04)에 읽기 전용으로 보이고, 급여 계산·명세서·급여대장·급여항목 계산식에 바로 쓰입니다. 산재보험 요율과 고용보험 사업주 추가요율은 회원사가 직접 정합니다.</li>
+          <li><b>잠금·정정</b> — 적용이 시작된 값은 회원사 급여에 쓰였을 수 있어 바꿀 수 없습니다. 시작 전 값은 사유를 남기고 정정할 수 있으며, 모든 변경은 감사 로그(BO-ADM-03)에 남습니다.</li>
+          <li><b>간이세액표</b> — 국세청이 별표를 개정하면 새 판을 올리고 적용 시작월을 정합니다. 세액 데이터 업로드·검증은 급여 계산 엔진 단계에서 연결합니다.</li>
+        </ul>
+      </div>
+      {edit && <Modal title={(live ? "값 정정" : "값 수정") + " · " + edit.r.grp + " " + edit.r.item} badge="BO-SET-07-M1" onClose={() => setEdit(null)} footer={<><Btn tone="ghost" onClick={() => setEdit(null)}>취소</Btn><Btn disabled={!String(edit.val).trim() || (live && !edit.reason.trim())} onClick={save}>저장</Btn></>}>
+        <Field label="값" req hint={"단위 " + (edit.r.unit || "—") + " · 적용 " + edit.r.from + " ~ " + edit.r.to}><input value={edit.val} onChange={e => setEdit(x => ({ ...x, val: e.target.value }))} className={INP + " w-full font-mono"} /></Field>
+        {live && <Field label="정정 사유" req hint="감사 로그에 남습니다"><input value={edit.reason} onChange={e => setEdit(x => ({ ...x, reason: e.target.value }))} placeholder="예: 고시 정정 공고 반영" className={INP + " w-full"} /></Field>}
+      </Modal>}
+    </div>
+  );
+}
 
 // ─── 네비게이션 ───
 const NAV = [
@@ -1115,11 +1199,11 @@ const NAV = [
   { key:"cust", icon:ICN.cust, label:"회원 관리", items:[["BO-CMP-01","회원 리스트"],["BO-CMP-08","해지·탈퇴"]] },
   { key:"bill", icon:ICN.bill, label:"구독·결제", items:[["BO-BILL-01","요금제 관리"],["BO-BILL-04","구독 목록"],["BO-BILL-06","결제증빙발급"],["BO-BILL-07","결제 내역"],["BO-BILL-08","미납·연체"],["BO-BILL-09","환불 관리"],["BO-BILL-11","정산·세무 리포트"],["BO-BILL-12","PG 연동 설정"]] },
   { key:"cs", icon:ICN.cs, label:"CS·공지", items:[["BO-SUP-01","1:1 문의함"],["BO-SUP-04","공지사항"]] },
-  { key:"stat", icon:ICN.stat, label:"통계·운영", items:[["BO-STAT-02","매출·구독 지표"],["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"],["BO-SET-06","공휴일 관리"]] },
+  { key:"stat", icon:ICN.stat, label:"통계·운영", items:[["BO-STAT-02","매출·구독 지표"],["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"],["BO-SET-06","공휴일 관리"],["BO-SET-07","요율·세액표 관리"]] },
 ];
 const TITLES = {}; NAV.forEach(g=>g.items.forEach(([id,nm])=>TITLES[id]=nm));
 const PATHS = {}; NAV.forEach(g=>g.items.forEach(([id])=>PATHS[id]=g.label));
-const PRIS = { "BO-DSH-01":"P0","BO-CMP-01":"P0","BO-CMP-02":"P0","BO-CMP-08":"P0","BO-BILL-01":"P0","BO-BILL-04":"P0","BO-BILL-06":"P0","BO-BILL-07":"P0","BO-BILL-08":"P0","BO-BILL-09":"P0","BO-BILL-11":"P0","BO-BILL-12":"P0","BO-SUP-01":"P0","BO-SUP-04":"P0","BO-STAT-02":"P0","BO-ADM-01":"P0","BO-ADM-02":"P0","BO-ADM-03":"P0","BO-SET-06":"P0","BO-SET-03":"P1","BO-SET-04":"P1" };
+const PRIS = { "BO-DSH-01":"P0","BO-CMP-01":"P0","BO-CMP-02":"P0","BO-CMP-08":"P0","BO-BILL-01":"P0","BO-BILL-04":"P0","BO-BILL-06":"P0","BO-BILL-07":"P0","BO-BILL-08":"P0","BO-BILL-09":"P0","BO-BILL-11":"P0","BO-BILL-12":"P0","BO-SUP-01":"P0","BO-SUP-04":"P0","BO-STAT-02":"P0","BO-ADM-01":"P0","BO-ADM-02":"P0","BO-ADM-03":"P0","BO-SET-06":"P0","BO-SET-07":"P0","BO-SET-03":"P1","BO-SET-04":"P1" };
 
 function App(){
   const [cur,setCur]=useState("BO-DSH-01");
@@ -1134,7 +1218,7 @@ function App(){
     "BO-BILL-04":<SubList go={go} flash={flash} open={openTenant}/>, "BO-BILL-06":<Invoices flash={flash} open={openTenant}/>, "BO-BILL-07":<Payments open={openTenant}/>, "BO-BILL-08":<Overdue flash={flash} open={openTenant}/>,
     "BO-BILL-09":<Refunds flash={flash} open={openTenant}/>, "BO-BILL-11":<Settlement/>, "BO-BILL-12":<PGConfig flash={flash}/>,
     "BO-SUP-01":<SupportInbox flash={flash} open={openTenant}/>, "BO-SUP-04":<Notices flash={flash}/>,
-    "BO-STAT-02":<RevenueStats/>, "BO-ADM-01":<OperatorAccounts flash={flash}/>, "BO-ADM-02":<RolePermissions flash={flash}/>, "BO-ADM-03":<AuditLog/>, "BO-SET-06":<HolidayMaster flash={flash}/> };
+    "BO-STAT-02":<RevenueStats/>, "BO-ADM-01":<OperatorAccounts flash={flash}/>, "BO-ADM-02":<RolePermissions flash={flash}/>, "BO-ADM-03":<AuditLog/>, "BO-SET-06":<HolidayMaster flash={flash}/>, "BO-SET-07":<RateMaster flash={flash}/> };
   const content = P0IMPL[cur] || <Placeholder id={cur} title={TITLES[cur]||cur} pri={PRIS[cur]||"P1"} path={(PATHS[cur]||"")+" > "+(TITLES[cur]||"")} />;
   return (
     <div className="flex h-screen flex-col">
