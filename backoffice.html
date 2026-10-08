@@ -108,9 +108,9 @@ function Field({ label, req, hint, children }){
 //  · 1번 회원사 = 관리자 앱 회사(페이드림 주식회사 · COMPANY/SUB/PAY_METHODS/PAYMENTS/MY_TICKETS 값 그대로)
 //  · 요금제 = 관리자 앱 SAAS_PLANS와 같은 구조(code·ver·min·max·base·seat) · 연 결제 10% 할인
 //  · 금액: 요금제·월 반복 매출 = 공급가(VAT 별도) / 결제·미납·환불 = 합계(VAT 포함)
-//  · 기준일 BO_TODAY = 관리자 앱 HR_TODAY(2026-10-01)
+//  · 기준일 BO_TODAY = 관리자 앱 HR_TODAY(2026-10-08)
 // ═══════════════════════════════════════════════════════════════
-const BO_TODAY = "2026-10-01";
+const BO_TODAY = "2026-10-08";
 const won = n => (n || 0).toLocaleString("ko-KR");
 const dAdd = (d, n) => { const t = new Date(d + "T00:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
 const dDiff = (a, b) => Math.round((new Date(a + "T00:00:00Z") - new Date(b + "T00:00:00Z")) / 864e5);
@@ -120,10 +120,10 @@ const ANNUAL_DC = 0.1; // 연 결제 할인율(관리자 앱 planFee와 동일)
 
 // 운영자(BO-ADM-01) · 로그인 운영자 = ME (헤더에서 전환 — 2인 승인 시연)
 const OPERATORS = [
-  { id: 1, name: "서보안", email: "seo@paydream.io", role: "슈퍼관리자", stat: "활성", mfa: true, last: "2026-10-01 08:30", invited: "2024-01-02" },
-  { id: 2, name: "김운영", email: "kim@paydream.io", role: "운영관리자", stat: "활성", mfa: true, last: "2026-10-01 09:00", invited: "2024-01-02" },
+  { id: 1, name: "서보안", email: "seo@paydream.io", role: "슈퍼관리자", stat: "활성", mfa: true, last: "2026-10-08 08:30", invited: "2024-01-02" },
+  { id: 2, name: "김운영", email: "kim@paydream.io", role: "운영관리자", stat: "활성", mfa: true, last: "2026-10-08 09:00", invited: "2024-01-02" },
   { id: 3, name: "이빌링", email: "lee@paydream.io", role: "빌링담당", stat: "활성", mfa: true, last: "2026-09-30 18:20", invited: "2024-03-04" },
-  { id: 4, name: "박상담", email: "park@paydream.io", role: "CS", stat: "활성", mfa: true, last: "2026-10-01 08:40", invited: "2024-03-04" },
+  { id: 4, name: "박상담", email: "park@paydream.io", role: "CS", stat: "활성", mfa: true, last: "2026-10-08 08:40", invited: "2024-03-04" },
   { id: 5, name: "김상담", email: "kim.cs@paydream.io", role: "CS", stat: "활성", mfa: true, last: "2026-09-30 17:55", invited: "2025-02-10" },
   { id: 6, name: "최분석", email: "choi@paydream.io", role: "분석", stat: "잠금", mfa: false, last: "2026-08-20 11:00", invited: "2025-05-12", lockReason: "비밀번호 5회 연속 오류(자동)" },
 ];
@@ -142,7 +142,7 @@ const PERMS = {
 const can = (menu, need) => { const v = (PERMS[meOp().role] || {})[menu] || ""; return need === "승인" ? v === "승인" : need === "요청" ? v === "승인" || v === "요청" : v.includes(need); };
 // 감사 로그(BO-ADM-03) — append-only
 const AUDIT = [
-  { at: "2026-10-01 09:02", op: "김운영", act: "로그인", target: "운영 콘솔", detail: "2FA(OTP) 통과", ip: "10.1.2.5", res: "성공" },
+  { at: "2026-10-08 09:02", op: "김운영", act: "로그인", target: "운영 콘솔", detail: "2FA(OTP) 통과", ip: "10.1.2.5", res: "성공" },
   { at: "2026-09-30 10:20", op: "이빌링", act: "환불 요청", target: "(주)한빛테크 · INV-2609-0021-D", detail: "중복 승인 전액 76,340원", ip: "10.1.2.10", res: "승인대기" },
   { at: "2026-09-29 03:00", op: "시스템", act: "상태 전환", target: "미래에듀", detail: "유료 → 정지(미납 D+14 자동)", ip: "-", res: "성공" },
   { at: "2026-08-30 10:15", op: "박상담", act: "대리 접속", target: "페이드림 주식회사", detail: "TCK-2026-0912 명세서 확인 · 읽기 전용 30분", ip: "10.1.2.33", res: "성공" },
@@ -165,12 +165,12 @@ const fee = (code, ver, seats, cycle) => { const p = planVer(code, ver), m = p.b
 // 회원사(테넌트) + 구독 — svc(CMP_STATUS 체험/유료/정지/해지) · sub(SUB_STATUS 체험/이용중/연체/정지/해지예정/해지)
 const TENANTS = [
   { no: "0031", name: "페이드림 주식회사", biz: "214-87-12348", owner: "김대표", email: "han.jiwon@company.com", route: "검색광고", signup: "2026-03-02", svc: "유료", sub: "이용중", plan: "Basic", ver: 1, cycle: "월", seats: 11, start: "2026-03-02", trialEnd: "2026-03-31", nextBill: "2026-10-15", billDay: 15,
-    card: { brand: "신한카드", last4: "6411", exp: "2029-08" }, contacts: [["한지원", "최고관리자", "010-****-3333", "2026-10-01"], ["임철수", "최고관리자", "010-****-4444", "2026-09-30"], ["고은솔", "급여 담당자", "010-****-5252", "2026-09-30"]],
+    card: { brand: "신한카드", last4: "6411", exp: "2029-08" }, contacts: [["한지원", "최고관리자", "010-****-3333", "2026-10-08"], ["임철수", "최고관리자", "010-****-4444", "2026-09-30"], ["고은솔", "급여 담당자", "010-****-5252", "2026-09-30"]],
     usage: { runs: 7, att: 42, apv: 18, login30: 9, storage: 0.8 }, tags: [], memo: "관리자 앱 시연 회사 — 관리자 앱 COMPANY·SUB·PAYMENTS와 같은 값", hist: [{ at: "2026-03-02 10:20", by: "한지원", what: "구독 시작 · Basic 월 결제(체험 30일 후 첫 결제) · 자동갱신 동의" }] },
   { no: "0021", name: "(주)한빛테크", biz: "124-81-00021", owner: "정한빛", email: "admin@hanbit.co.kr", route: "지인추천", signup: "2024-03-02", svc: "유료", sub: "이용중", plan: "Pro", ver: 1, cycle: "월", seats: 42, start: "2024-03-02", nextBill: "2026-10-15", billDay: 15,
     card: { brand: "현대카드", last4: "1023", exp: "2028-04" }, contacts: [["정한빛", "최고관리자", "010-****-1212", "2026-09-30"], ["오경리", "급여 담당자", "010-****-8080", "2026-09-29"]],
     usage: { runs: 31, att: 210, apv: 96, login30: 38, storage: 3.4 }, tags: ["VIP"], memo: "", hist: [] },
-  { no: "0022", name: "블루오션물류", biz: "212-88-11234", owner: "이사장", email: "ceo@blueocean.kr", route: "블로그", signup: "2025-01-11", svc: "유료", sub: "이용중", plan: "Basic", ver: 1, cycle: "월", seats: 18, start: "2025-01-11", nextBill: "2026-10-03", billDay: 3,
+  { no: "0022", name: "블루오션물류", biz: "212-88-11234", owner: "이사장", email: "ceo@blueocean.kr", route: "블로그", signup: "2025-01-11", svc: "유료", sub: "이용중", plan: "Basic", ver: 1, cycle: "월", seats: 18, start: "2025-01-11", nextBill: "2026-11-03", billDay: 3,
     card: { brand: "KB국민카드", last4: "7788", exp: "2027-11" }, contacts: [["이사장", "최고관리자", "010-****-9090", "2026-09-30"]],
     usage: { runs: 9, att: 64, apv: 12, login30: 6, storage: 1.1 }, tags: [], memo: "8월 장애 보상 부분 환불 완료", hist: [] },
   { no: "0033", name: "그린바이오", biz: "312-86-55110", owner: "박연구", email: "lab@greenbio.io", route: "네이버", signup: "2026-09-22", svc: "체험", sub: "체험", plan: "Basic", ver: 1, cycle: "월", seats: 7, start: "2026-09-22", trialEnd: "2026-10-21", nextBill: "2026-10-22", billDay: 22,
@@ -179,7 +179,7 @@ const TENANTS = [
   { no: "0024", name: "미래에듀", biz: "506-81-33221", owner: "최원장", email: "hr@miraeedu.ac", route: "블로그", signup: "2023-06-01", svc: "정지", sub: "정지", plan: "Pro", ver: 1, cycle: "월", seats: 31, start: "2023-06-01", nextBill: "2026-10-15", billDay: 15,
     card: { brand: "삼성카드", last4: "5512", exp: "2026-08" }, contacts: [["최원장", "최고관리자", "010-****-7171", "2026-09-18"]],
     usage: { runs: 0, att: 0, apv: 0, login30: 1, storage: 2.6 }, tags: ["이탈위험"], memo: "카드 유효기간 만료(2026-08) — 결제 수단 변경 링크 2회 발송", hist: [{ at: "2026-09-29 03:00", by: "시스템", what: "미납 D+14 → 정지" }] },
-  { no: "0009", name: "소상공회계", biz: "101-29-77654", owner: "정대리", email: "sosang@acc.co.kr", route: "구글", signup: "2024-11-20", svc: "유료", sub: "이용중", plan: "Starter", ver: 1, cycle: "월", seats: 5, start: "2024-11-20", nextBill: "2026-10-03", billDay: 3,
+  { no: "0009", name: "소상공회계", biz: "101-29-77654", owner: "정대리", email: "sosang@acc.co.kr", route: "구글", signup: "2024-11-20", svc: "유료", sub: "이용중", plan: "Starter", ver: 1, cycle: "월", seats: 5, start: "2024-11-20", nextBill: "2026-11-03", billDay: 3,
     card: { brand: "BC카드", last4: "4040", exp: "2027-06" }, contacts: [["정대리", "최고관리자", "010-****-6060", "2026-09-28"]],
     usage: { runs: 1, att: 0, apv: 0, login30: 2, storage: 0.3 }, tags: ["이탈위험"], memo: "", hist: [] },
   { no: "0027", name: "두손상사", biz: "220-81-90127", owner: "강두손", email: "biz@dooson.kr", route: "검색광고", signup: "2025-04-25", svc: "유료", sub: "연체", plan: "Basic", ver: 1, cycle: "월", seats: 12, start: "2025-04-25", nextBill: "2026-10-25", billDay: 25,
@@ -206,12 +206,12 @@ const PAYMENTS = [
   // 다른 회원사
   pay(T("0021"), "2026-07"), pay(T("0021"), "2026-08"), pay(T("0021"), "2026-09"),
   pay(T("0021"), "2026-09", { inv: "INV-2609-0021-D", at: "2026-09-15 03:11", taxInv: "미발급", note: "PG 재시도 오류로 중복 승인" }),
-  pay(T("0022"), "2026-07"), pay(T("0022"), "2026-08", { refunded: 7920, note: "8월 장애 보상 20% 부분 환불" }), pay(T("0022"), "2026-09"),
+  pay(T("0022"), "2026-07"), pay(T("0022"), "2026-08", { refunded: 7920, note: "8월 장애 보상 20% 부분 환불" }), pay(T("0022"), "2026-09"), pay(T("0022"), "2026-10", { taxInv: "미발급" }),
   pay(T("0024"), "2026-07"), pay(T("0024"), "2026-08"),
   pay(T("0024"), "2026-09", { stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", retry: 3, note: "카드 유효기간 만료 — D+1·3·7 재시도 실패" }),
-  pay(T("0009"), "2026-07"), pay(T("0009"), "2026-08"), pay(T("0009"), "2026-09"),
+  pay(T("0009"), "2026-07"), pay(T("0009"), "2026-08"), pay(T("0009"), "2026-09"), pay(T("0009"), "2026-10", { taxInv: "미발급" }),
   pay(T("0027"), "2026-07"), pay(T("0027"), "2026-08"),
-  pay(T("0027"), "2026-09", { stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", retry: 2, note: "잔액 부족 — D+1·3 재시도 실패" }),
+  pay(T("0027"), "2026-09", { stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", retry: 3, note: "잔액 부족 — D+1·3·7 재시도 실패" }),
 ];
 const billed = p => p.stat === "실패" ? p.supply + p.vat : p.total; // 청구액(실패 건은 미수 금액)
 const taxDue = date => mAdd(date.slice(0, 7), 1) + "-10"; // 세금계산서 발급 기한 = 공급시기 다음 달 10일(부가가치세법 §34)
@@ -231,7 +231,7 @@ const refundable = p => p.stat === "결제완료" ? p.total - p.refunded - REFUN
 
 // 해지 신청(BO-CMP-08) — 관리자 앱 SET-05 → 신청 / 승인(해지 확정·해지예정) / 철회 / 완료(해지일 도래·보존 시작) · 파기 2인 승인
 const CANCELS = [
-  { id: 1, co: "소상공회계", status: "신청", reason: "비용 부담", detail: "직원 수가 줄어 상시 구독 유지 비용이 부담됩니다. 성수기에만 쓰다 보니 요금제가 맞지 않아요. 재계약은 추후 검토하겠습니다.", date: "2026-10-03", dp: "보존 후 파기", keep: 90, backup: true, exportDone: false, by: "정대리", at: "2026-09-28 15:40", log: [] },
+  { id: 1, co: "소상공회계", status: "신청", reason: "비용 부담", detail: "직원 수가 줄어 상시 구독 유지 비용이 부담됩니다. 성수기에만 쓰다 보니 요금제가 맞지 않아요. 재계약은 추후 검토하겠습니다.", date: "2026-11-03", dp: "보존 후 파기", keep: 90, backup: true, exportDone: false, by: "정대리", at: "2026-10-06 15:40", log: [] },
   { id: 2, co: "오렌지스튜디오", status: "완료", reason: "서비스 불만족", detail: "근태 기능이 우리 교대 방식과 맞지 않습니다.", date: "2026-07-31", dp: "보존 후 파기", keep: 90, backup: false, exportDone: false, by: "윤대표", at: "2026-07-10 11:00", procBy: "김운영", procAt: "2026-07-11 09:30", purgeDue: "2026-10-29", purge: { req: null, appr: [] }, log: [{ at: "2026-07-11 09:30", by: "김운영", what: "접수·승인(해지 확정 2026-07-31)" }, { at: "2026-07-31 23:59", by: "시스템", what: "해지 완료 · 보존 시작(90일)" }] },
 ];
 
@@ -781,7 +781,7 @@ function Settlement(){
 }
 
 // ═══ PG 연동(BO-BILL-12) — 키는 빈칸이면 기존 값 유지 · 환경별 분리 ═══
-const PG_CFG = { pg: "토스페이먼츠", env: "운영(Live)", keys: { "운영(Live)": { mid: "paydream_live", last4: "9f3a", at: "2026-03-01" }, "테스트(Sandbox)": { mid: "paydream_test", last4: "77c1", at: "2026-02-20" } }, hook: "https://api.paydream.io/webhook/pg", hookSecretLast4: "a51e", lastHook: "2026-10-01 03:10 · 성공" };
+const PG_CFG = { pg: "토스페이먼츠", env: "운영(Live)", keys: { "운영(Live)": { mid: "paydream_live", last4: "9f3a", at: "2026-03-01" }, "테스트(Sandbox)": { mid: "paydream_test", last4: "77c1", at: "2026-02-20" } }, hook: "https://api.paydream.io/webhook/pg", hookSecretLast4: "a51e", lastHook: "2026-10-08 03:10 · 성공" };
 function PGConfig({ flash }){
   const re=useTick();
   const [env,setEnv]=useState(PG_CFG.env); const [mid,setMid]=useState(PG_CFG.keys[PG_CFG.env].mid); const [sk,setSk]=useState(""); const [hook,setHook]=useState(PG_CFG.hook); const [hs,setHs]=useState("");

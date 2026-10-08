@@ -1959,19 +1959,19 @@ const AP_STAT = { 대기: "bg-amber-50 text-amber-600", 승인: "bg-emerald-50 t
 function apDocColor(t) { return t.indexOf("휴가") >= 0 ? "bg-blue-50 text-blue-600" : t.indexOf("연장") >= 0 ? "bg-orange-50 text-orange-600" : t.indexOf("제증명") >= 0 ? "bg-teal-50 text-teal-600" : t.indexOf("서식") >= 0 ? "bg-violet-50 text-violet-600" : "bg-slate-100 text-slate-500"; }
 // 신청 원천 — 휴가 = 휴가 내역(LEAVES, TA-04-02)의 신청 건 · 연장/근태정정/제증명 = 아래 저장소. 신청현황(APV-02)·대시보드가 apvAll()로 읽는다
 const OT_REQS = [ // 연장근무 신청(TA-05-03) — 승인 시 OT_APPROVED["사번|일자"] 기록 → 근태 집계(TA-06-02) 연장 인정
-  { id: 1, no: "2024-0014", date: "2026-10-05", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "설비 점검", stat: "승인", req: "2026-09-30", by: "한지원", at: "2026-09-30" },
-  { id: 2, no: "2024-0014", date: "2026-10-06", kind: "연장", from: "18:00", to: "22:00", min: 240, pre: "사전", reason: "설비 점검", stat: "승인", req: "2026-09-30", by: "한지원", at: "2026-09-30" },
-  { id: 3, no: "2024-0014", date: "2026-10-07", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "라인 교체", stat: "승인", req: "2026-09-30", by: "한지원", at: "2026-09-30" },
-  { id: 4, no: "2024-0014", date: "2026-10-08", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "라인 교체", stat: "대기", req: "2026-10-01" },
-  { id: 5, no: "2021-0007", date: "2026-10-02", kind: "야간", from: "22:00", to: "24:00", min: 120, pre: "사전", reason: "배치 모니터링", stat: "대기", req: "2026-10-01" },
-  { id: 6, no: "2022-0018", date: "2026-09-30", kind: "연장", from: "18:00", to: "20:00", min: 120, pre: "사후", reason: "출고 마감", stat: "대기", req: "2026-10-01" },
+  { id: 1, no: "2024-0014", date: "2026-10-12", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "설비 점검", stat: "승인", req: "2026-10-07", by: "한지원", at: "2026-10-07" },
+  { id: 2, no: "2024-0014", date: "2026-10-13", kind: "연장", from: "18:00", to: "22:00", min: 240, pre: "사전", reason: "설비 점검", stat: "승인", req: "2026-10-07", by: "한지원", at: "2026-10-07" },
+  { id: 3, no: "2024-0014", date: "2026-10-14", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "라인 교체", stat: "승인", req: "2026-10-07", by: "한지원", at: "2026-10-07" },
+  { id: 4, no: "2024-0014", date: "2026-10-15", kind: "연장", from: "18:00", to: "21:00", min: 180, pre: "사전", reason: "라인 교체", stat: "대기", req: "2026-10-08" },
+  { id: 5, no: "2021-0007", date: "2026-10-13", kind: "야간", from: "22:00", to: "24:00", min: 120, pre: "사전", reason: "배치 모니터링", stat: "대기", req: "2026-10-08" },
+  { id: 6, no: "2022-0018", date: "2026-10-07", kind: "연장", from: "18:00", to: "20:00", min: 120, pre: "사후", reason: "출고 마감", stat: "대기", req: "2026-10-08" },
 ];
 const ATT_FIX_REQS = [ // 근태정정(TA-05-01 · 출퇴근 변경 TA-05-04) — 승인 시 근무 기록 보정(fix 표시)
   { id: 1, no: "2024-0031", date: "2026-09-29", field: "퇴근", to: "18:10", reason: "퇴근 태그 누락", stat: "대기", req: "2026-09-30" },
 ];
 const FORM_REQS = [ // 제증명·서식(FRM-04) — 승인 시 발급 가능(FRM-05 A4)
-  { id: 1, no: "2023-0019", code: "FT-HR-04", form: "재직증명서", qty: 1, purpose: "은행 제출", stat: "대기", req: "2026-09-30" },
-  { id: 2, no: "2019-0002", code: "FT-HR-05", form: "경력증명서", qty: 1, purpose: "대학원 제출", stat: "대기", req: "2026-10-01" },
+  { id: 1, no: "2023-0019", code: "FT-HR-04", form: "재직증명서", qty: 1, purpose: "은행 제출", stat: "대기", req: "2026-10-07" },
+  { id: 2, no: "2019-0002", code: "FT-HR-05", form: "경력증명서", qty: 1, purpose: "대학원 제출", stat: "대기", req: "2026-10-08" },
 ];
 const APV_LOG = []; // 처리 이력 { key, act, by, at, cmt, bulk }
 const apvWeekStart = d => { const t = new Date(d + "T00:00:00Z"); return pdAdd(d, -((t.getUTCDay() + 6) % 7)); };
@@ -6696,7 +6696,7 @@ function EmpDetailBody({ ctx }) {
   );
 }
 // ── 인사 공용 저장소 — 인사 발령(HR-04-02)·퇴직 처리(HR-04-08)·상벌 관리(HR-04-09)·직원 정보(HR-04-05)가 같은 직원·이력을 본다
-const HR_TODAY = "2026-10-01"; // 프로토타입 기준일
+const HR_TODAY = "2026-10-08"; // 프로토타입 기준일
 let HR_CLOSED_UNTIL = "2026-08"; // 근태 마감 완료 월(TA-06-02에서 마감/해제 시 바뀜) — 이 달까지의 발령은 소급
 const HR = {
   emps: [
@@ -7182,7 +7182,7 @@ const ACCT = {
     { ini: "고", name: "고은솔", no: "2022-0018", email: "ko.es@company.com", role: "급여 담당자", stat: "활성", login: "2026-09-30 08:51" },
     { ini: "최", name: "최유나", no: "2020-0003", email: "choi.yn@company.com", role: "급여 담당자", stat: "비활성", login: "2026-07-10 09:02", note: "휴직" },
     { ini: "이", name: "이하늘", no: "2021-0007", email: "lee.haneul@company.com", role: "직원", stat: "활성", login: "2026-08-03 18:40" },
-    { ini: "김", name: "김예스", no: "2019-0007", email: "yes.kim@company.com", role: "직원", stat: "활성", login: "2026-10-01 08:57" },
+    { ini: "김", name: "김예스", no: "2019-0007", email: "yes.kim@company.com", role: "직원", stat: "활성", login: "2026-10-08 08:57" },
     { ini: "박", name: "박서진", no: "2023-0019", email: "park.sj@company.com", role: "직원", stat: "잠금", login: "2026-07-21 11:03", lockReason: "비밀번호 5회 연속 오류(자동)" },
   ],
   // 직원 레코드는 있지만 계정이 없는 직원 — 직원 정보(HR.emps)에서 계산(퇴직·프리랜서 제외)
@@ -7194,7 +7194,7 @@ const ACCT_STATS = ["활성", "초대중", "잠금", "비활성"];
 const SECURITY = { lockAfter: 5, inviteDays: 7, adminMfa: false, loginKeep: "2년", auditKeep: "3년" };
 // 감사 로그(audit_log) — 계정·권한·설정 변경
 const AUDIT_LOG = [
-  { at: "2026-09-30 10:05", actor: "시스템", target: "계정 박서진", action: "stat: 활성 → 잠금(자동)", detail: "비밀번호 5회 연속 오류" },
+  { at: "2026-10-07 10:05", actor: "시스템", target: "계정 박서진", action: "stat: 활성 → 잠금(자동)", detail: "비밀번호 5회 연속 오류" },
   { at: "2026-07-10 09:30", actor: "한지원", target: "계정 최유나", action: "stat: 활성 → 비활성", detail: "휴직 발령(HR-04-02) 연동" },
   { at: "2026-03-02 10:20", actor: "시스템", target: "역할 급여 담당자", action: "기본 역할 생성", detail: "" },
 ];
@@ -7203,12 +7203,12 @@ const audit = (target, action, detail) => AUDIT_LOG.unshift({ at: HR_TODAY + " "
 const OP_ACCESS = [{ at: "2026-08-30 10:15", until: "10:45", by: "payDream 운영자(박상담)", reason: "TCK-2026-0912 명세서 확인", ro: true }];
 // 접속기록(login_history) — 성공·실패, IP·기기
 const LOGIN_HIST = [
-  { at: "2026-10-01 09:01", name: "한지원", ip: "211.36.**.21", ua: "Chrome · Windows", ok: true },
-  { at: "2026-10-01 08:57", name: "김예스", ip: "211.36.**.33", ua: "Chrome · Android", ok: true },
-  { at: "2026-09-30 18:12", name: "김예스", ip: "223.38.**.10", ua: "Safari · iPhone", ok: true },
-  { at: "2026-09-30 17:20", name: "임철수", ip: "211.36.**.44", ua: "Edge · Windows", ok: true },
-  { at: "2026-09-30 10:04", name: "박서진", ip: "175.223.**.9", ua: "Safari · iPhone", ok: false, note: "5회째 실패 → 자동 잠금" },
-  { at: "2026-09-30 08:51", name: "고은솔", ip: "211.36.**.52", ua: "Chrome · macOS", ok: true },
+  { at: "2026-10-08 09:01", name: "한지원", ip: "211.36.**.21", ua: "Chrome · Windows", ok: true },
+  { at: "2026-10-08 08:57", name: "김예스", ip: "211.36.**.33", ua: "Chrome · Android", ok: true },
+  { at: "2026-10-07 18:12", name: "김예스", ip: "223.38.**.10", ua: "Safari · iPhone", ok: true },
+  { at: "2026-10-07 17:20", name: "임철수", ip: "211.36.**.44", ua: "Edge · Windows", ok: true },
+  { at: "2026-10-07 10:04", name: "박서진", ip: "175.223.**.9", ua: "Safari · iPhone", ok: false, note: "5회째 실패 → 자동 잠금" },
+  { at: "2026-10-07 08:51", name: "고은솔", ip: "211.36.**.52", ua: "Chrome · macOS", ok: true },
 ];
 // 직원계정 초대 발송(HR-04-01-M1) — 직원 등록(HR-04-01)과 계정 관리(HR-06-01 '계정 없는 직원')가 같이 쓴다
 function InviteModal({ target, email, onClose, onSubmit }) {
@@ -9478,8 +9478,8 @@ const LEAVES = [
   { id: 7, no: "2024-0031", code: "101", unit: "1일", from: "2026-10-15", to: "2026-10-15", src: "신청", stat: "승인", by: "한지원", at: "2026-09-29", reason: "개인 사유" },
   { id: 8, no: "2022-0018", code: "101", unit: "반차", half: "전반", from: "2026-10-22", to: "2026-10-22", src: "신청", stat: "승인", by: "김예스", at: "2026-09-30", reason: "은행 업무" },
   { id: 9, no: "2019-0002", code: "206", unit: "1일", from: "2026-10-12", to: "2026-10-12", src: "등록", stat: "승인", by: "김예스", at: "2026-09-30", reason: "예비군 훈련" },
-  { id: 10, no: "2019-0007", code: "101", unit: "반반차", q: 3, from: "2026-10-21", to: "2026-10-21", src: "신청", stat: "대기", req: "2026-10-01", reason: "관공서 방문" },
-  { id: 11, no: "2023-0019", code: "204", unit: "1일", from: "2026-10-05", to: "2026-10-06", src: "신청", stat: "대기", req: "2026-10-01", reason: "독감", attach: "진단서_박서진.pdf" },
+  { id: 10, no: "2019-0007", code: "101", unit: "반반차", q: 3, from: "2026-10-21", to: "2026-10-21", src: "신청", stat: "대기", req: "2026-10-07", reason: "관공서 방문" },
+  { id: 11, no: "2023-0019", code: "204", unit: "1일", from: "2026-10-12", to: "2026-10-13", src: "신청", stat: "대기", req: "2026-10-08", reason: "독감", attach: "진단서_박서진.pdf" },
   { id: 12, no: "2024-0014", code: "101", unit: "1일", from: "2026-10-27", to: "2026-10-27", src: "신청", stat: "대기", req: "2026-09-30", reason: "개인 사유" },
   { id: 13, no: "2025-0014", code: "101", unit: "1일", from: "2026-10-20", to: "2026-10-20", src: "신청", stat: "회수", req: "2026-09-29", reason: "개인 사유(직원이 회수)" },
   { id: 14, no: "1998-0001", code: "101", unit: "1일", from: "2026-10-16", to: "2026-10-16", src: "신청", stat: "대기", req: "2026-09-30", reason: "가족 행사" }, // 잔여 0일 — 신청현황 잔여 부족 경고 샘플
