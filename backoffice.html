@@ -328,7 +328,7 @@ function Dashboard({ go, open }){
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card title="미납·연체" right={<button onClick={()=>go("BO-BILL-08")} className="text-xs font-medium text-blue-600 hover:underline">미납 관리 →</button>} pad={false}>
           <Table min="420px" cols={[{t:"회원사"},{t:"미납액(VAT 포함)",r:1},{t:"경과",c:1},{t:"단계",c:1}]} rows={un} empty="미납이 없습니다." render={p=>{const d=dunOf(p);return <>
-            <Td><button onClick={()=>open(p.co)} className="font-medium text-blue-700 hover:underline">{p.co}</button></Td><Td r cls="font-mono text-red-500">{won(billed(p))}</Td><Td c cls="text-gray-500">D+{d.days}</Td><Td c><Badge tone={d.suspended?"red":"amber"}>{d.suspended?"정지":"재시도 "+d.done+"/3"}</Badge></Td></>;}} />
+            <Td><button onClick={()=>open(p.co)} className="font-medium text-blue-700 hover:underline">{p.co}</button></Td><Td r cls="font-mono text-red-500">{won(billed(p))}</Td><Td c cls="text-gray-500">D+{d.days}</Td><Td c><Badge tone={d.suspended?"red":"amber"}>{d.suspended?"조회 전용":"재시도 "+d.done+"/3"}</Badge></Td></>;}} />
         </Card>
         <Card title="문의" right={<button onClick={()=>go("BO-SUP-01")} className="text-xs font-medium text-blue-600 hover:underline">문의함 →</button>}>
           <div className="space-y-2 text-sm">{[["미배정",unassigned.length,"amber"],["처리 중(대기·처리중·보류)",tk.length,"blue"],["SLA 초과",breach.length,"red"]].map(([l,n,t])=><div key={l} className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2"><span className="text-gray-600">{l}</span><Badge tone={t}>{n}건</Badge></div>)}</div>
@@ -414,7 +414,7 @@ function TenantDetail({ sel, go, flash, open }){
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-3 rounded-md border border-gray-200 bg-slate-50/60 px-4 py-3"><span className="flex h-8 w-12 items-center justify-center rounded bg-blue-600 text-[10px] font-bold text-white">CARD</span>
                   <div><p className="text-sm font-medium text-gray-800">{t.card.brand} ****-{t.card.last4}</p><p className={"text-xs "+(t.card.exp<BO_TODAY.slice(0,7)?"text-red-500":"text-gray-400")}>정기결제(빌링키) · 유효 {t.card.exp}{t.card.exp<BO_TODAY.slice(0,7)&&" — 만료"}</p></div><Badge tone="emerald">기본</Badge></div>
-                <div className="text-xs text-gray-500">다음 자동결제 <b className="text-gray-700">{t.nextBill}</b> · 실패 시 D+1·3·7 재시도 후 D+14 정지(BO-BILL-08)</div>
+                <div className="text-xs text-gray-500">다음 자동결제 <b className="text-gray-700">{t.nextBill}</b> · 실패 시 D+1·3·7 재시도 후 D+14 조회 전용(BO-BILL-08)</div>
               </div>
             </Card>
             <Card title={"결제 내역 · "+pays.length+"건"} right={<button onClick={()=>go("BO-BILL-07")} className="text-xs text-blue-600 hover:underline">결제 내역 →</button>} pad={false}>
@@ -472,13 +472,13 @@ function StatusModal({ t, onClose, flash, go, re }){
   const err=!to?"이 상태에서는 전환할 수 없습니다 — 해지는 해지·탈퇴(BO-CMP-08)에서 처리합니다.":!why.trim()?"사유를 입력하세요(감사 로그).":eff<BO_TODAY?"효력일은 오늘 이후여야 합니다.":to==="유료"&&t.svc==="체험"&&!t.card?"결제 수단이 없어 유료로 바꿀 수 없습니다.":!can("회원 관리","X")?"권한이 없습니다.":"";
   const warn=to==="유료"&&t.svc==="정지"&&owe.length?"미납 "+won(owe.reduce((a,p)=>a+billed(p),0))+"원이 남아 있습니다 — 복구해도 미납은 유지되고 다음 재시도에 청구됩니다.":"";
   const save=()=>{ if(err) return; const before=t.svc; t.svc=to; t.sub=to==="정지"?"정지":to==="유료"?(owe.length?"연체":"이용중"):t.sub; if(before==="체험"&&to==="유료") t.trialEnd=eff;
-    t.hist.unshift({at:nowTs(),by:BO.me,what:"상태 "+before+" → "+to+" (효력 "+eff+") — "+why.trim()}); audit("상태 전환",t.name,before+" → "+to+" · "+why.trim()); onClose(); re(); flash(t.name+" 상태를 ‘"+to+"’(으)로 바꿨습니다."+(to==="정지"?" 회원사 관리자 로그인이 막히고 데이터는 보존됩니다.":"")); };
+    t.hist.unshift({at:nowTs(),by:BO.me,what:"상태 "+before+" → "+to+" (효력 "+eff+") — "+why.trim()}); audit("상태 전환",t.name,before+" → "+to+" · "+why.trim()); onClose(); re(); flash(t.name+" 상태를 ‘"+to+"’(으)로 바꿨습니다."+(to==="정지"?" 회원사는 조회 전용으로 바뀌고(로그인·내려받기 가능) 데이터는 보존됩니다.":"")); };
   return <Modal title="상태 전환" badge="BO-CMP-04-M1" onClose={onClose}
     footer={<><Btn tone="ghost" onClick={onClose}>취소</Btn>{t.svc!=="해지"&&<Btn tone="ghost" onClick={()=>{onClose();go("BO-CMP-08");}}>해지 처리로 →</Btn>}<Btn tone="danger" disabled={!!err} onClick={save}>전환 확정</Btn></>}>
     <div className="flex items-center gap-2 text-sm"><span className="text-gray-500">현재</span><StatusBadge s={t.svc} />{to&&<><span className="text-gray-400">→</span><StatusBadge s={to} /></>}</div>
     {NEXT.length>0&&<Field label="전환 상태" req><select value={to} onChange={e=>setTo(e.target.value)} className={INP+" w-full bg-white"}>{NEXT.map(o=><option key={o}>{o}</option>)}</select></Field>}
     <div className="grid grid-cols-2 gap-3"><Field label="사유" req><input value={why} onChange={e=>setWhy(e.target.value)} placeholder="예: 미납 해소 확인" className={INP+" w-full"} /></Field><Field label="효력일" req><input type="date" value={eff} min={BO_TODAY} onChange={e=>setEff(e.target.value)} className={INP+" w-full"} /></Field></div>
-    <p className="text-xs text-gray-500">{to==="정지"?"정지: 자동결제 중단 · 회원사 관리자·직원 로그인 차단 · 데이터 보존":to==="유료"?"유료: 로그인·자동결제 재개":""}</p>
+    <p className="text-xs text-gray-500">{to==="정지"?"정지 = 조회 전용(로그인·조회·내려받기 가능, 급여 계산·확정·명세서 발송·신청 불가) · 자동결제 중단 · 데이터 보존":to==="유료"?"유료: 모든 기능·자동결제 재개":""}</p>
     {warn && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">{warn}</p>}<Err m={err} />
   </Modal>;
 }
@@ -699,17 +699,17 @@ function Overdue({ flash, open }){
   const dun=p=>{ p.dunLog=(p.dunLog||[]).concat(nowTs()); audit("독촉 알림",p.co,"이메일·알림톡 · "+won(billed(p))+"원"); re(); flash(p.co+"에 미납 안내(이메일·알림톡)를 보냈습니다."); };
   return (
     <div className="p-5">
-      <ScrHead id="BO-BILL-08" title="미납·연체 관리" pri="P0" path="구독·결제 > 청구·결제" desc="결제 실패 후 아직 결제되지 않은 건입니다. 실패일 기준 D+1·3·7에 자동 재시도하고, D+14에 서비스를 정지합니다(BO-CMP-04). 단계마다 독촉 알림을 보내고, 회원사 화면에는 미납 배너가 뜹니다." />
-      <div className="mb-4 grid grid-cols-3 gap-3"><Stat n={new Set(rows.map(p=>p.co)).size+"개사"} l="미납 회원사" tone="text-red-500" /><Stat n={won(rows.reduce((a,p)=>a+billed(p),0))+"원"} l="미납 총액(VAT 포함)" tone="text-red-500" /><Stat n={rows.filter(p=>dunOf(p).suspended).length+"개사"} l="정지 단계(D+14 이상)" tone="text-amber-600" /></div>
+      <ScrHead id="BO-BILL-08" title="미납·연체 관리" pri="P0" path="구독·결제 > 청구·결제" desc="결제 실패 후 아직 결제되지 않은 건입니다. 실패일 기준 D+1·3·7에 자동 재시도하고, D+14에 조회 전용으로 바꿉니다(회원사 상태 정지 · BO-CMP-04 — 로그인·조회·내려받기는 가능, 계산·확정·발송은 불가). 단계마다 독촉 알림을 보내고, 회원사 화면에는 미납 배너가 뜹니다." />
+      <div className="mb-4 grid grid-cols-3 gap-3"><Stat n={new Set(rows.map(p=>p.co)).size+"개사"} l="미납 회원사" tone="text-red-500" /><Stat n={won(rows.reduce((a,p)=>a+billed(p),0))+"원"} l="미납 총액(VAT 포함)" tone="text-red-500" /><Stat n={rows.filter(p=>dunOf(p).suspended).length+"개사"} l="조회 전용 단계(D+14 이상)" tone="text-amber-600" /></div>
       <Card pad={false}>
         <Table min="1000px" cols={[{t:"회원사"},{t:"청구번호"},{t:"미납액",r:1},{t:"실패일"},{t:"경과",c:1},{t:"자동 재시도",c:1},{t:"다음 단계"},{t:"실패 사유"},{t:""}]} rows={rows} empty="미납이 없습니다." render={p=>{const d=dunOf(p);return <>
           <Td><button onClick={()=>open(p.co)} className="font-medium text-blue-700 hover:underline">{p.co}</button></Td><Td cls="font-mono text-xs text-gray-600">{p.inv}</Td><Td r cls="font-mono text-red-500">{won(billed(p))}원</Td><Td cls="text-gray-500">{p.date}</Td>
           <Td c cls="text-gray-600">D+{d.days}</Td><Td c><Badge tone="amber">{d.done}/3 완료</Badge></Td>
-          <Td cls="text-xs text-gray-600">{d.suspended?<span className="font-medium text-red-500">정지됨({d.suspendAt})</span>:d.nextAt?"재시도 "+d.nextAt+" · 정지 "+d.suspendAt:"정지 예정 "+d.suspendAt}</Td>
+          <Td cls="text-xs text-gray-600">{d.suspended?<span className="font-medium text-red-500">조회 전용({d.suspendAt}~)</span>:d.nextAt?"재시도 "+d.nextAt+" · 조회 전용 "+d.suspendAt:"조회 전용 예정 "+d.suspendAt}</Td>
           <Td cls="text-xs text-gray-500">{p.note}</Td>
           <Td c><div className="flex justify-center gap-2"><button onClick={()=>retry(p)} className="text-xs font-medium text-blue-600 hover:underline">재결제</button><button onClick={()=>dun(p)} className="text-xs font-medium text-gray-500 hover:underline">독촉{p.dunLog?"("+p.dunLog.length+")":""}</button></div></Td></>;}} />
       </Card>
-      <Note tone="amber"><b>dunning 정책</b> — D+1·3·7 자동 재시도 → D+14 정지(로그인 차단·데이터 보존) → 결제되면 즉시 재개. 카드 만료 등 재시도로 해결되지 않는 건은 결제 수단 변경 링크(회원 상세)를 보내세요.</Note>
+      <Note tone="amber"><b>dunning 정책</b> — D+1·3·7 자동 재시도 → D+14 조회 전용(로그인·조회·내려받기 가능, 급여 계산·확정·명세서 발송·신청 불가) · 데이터 보존 → 결제되면 즉시 재개. 카드 만료 등 재시도로 해결되지 않는 건은 결제 수단 변경 링크(회원 상세)를 보내세요.</Note>
     </div>
   );
 }
@@ -1337,13 +1337,13 @@ const BADGE = { "BO-BILL-08": () => unpaid().length, "BO-SUP-01": () => TICKETS.
 const BO_GUIDE = {
   "BO-DSH-01": [["처리할 일", "미납·세금계산서 기한 경과·해지 신청·환불 승인·미배정 문의·SLA 초과가 있을 때만 버튼으로 나타납니다. 누르면 해당 화면으로 이동합니다."], ["지표", "유료·체험 회원사와 월 반복 매출은 오늘 기준, 결제 건수·금액은 위에서 고른 달 기준입니다(VAT 포함·환불 차감)."], ["이탈 위험", "‘이탈위험’ 태그, 최근 30일 관리자 로그인 2회 이하, 해지 신청 중인 회원사가 표시됩니다."]],
   "BO-CMP-01": [["찾기", "회사명·대표자·가입 이메일·사업자번호로 검색하고 상태·요금제·태그로 좁힙니다. 행을 누르면 회원 상세로 갑니다."], ["이용 직원 수", "회원사의 급여 대상 재직 인원(과금 인원)이며 자동 계산됩니다. 운영자가 바꾸지 않습니다."], ["엑셀", "연락처를 뺀 목록을 내려받고, 내려받은 기록이 감사 로그에 남습니다."]],
-  "BO-CMP-02": [["한눈에 보기", "상단 탭(개요·구독/결제·사용량·담당자·문의이력·운영메모)을 누르면 해당 영역으로 이동합니다."], ["상태 전환", "체험→유료, 유료→정지, 정지→유료(복구)만 할 수 있고 사유·효력일이 필요합니다. 해지는 해지·탈퇴 화면에서 처리합니다."], ["대리 접속", "지원이 꼭 필요할 때만 사유(문의 번호)를 적고 시작합니다. 30분 뒤 끝나며 회원사 계정 관리 화면에도 기록이 보입니다."], ["결제 수단", "운영자는 카드 정보를 입력하지 않습니다. 변경 링크를 보내 회원사가 직접 등록하게 합니다."]],
+  "BO-CMP-02": [["한눈에 보기", "상단 탭(개요·구독/결제·사용량·담당자·문의이력·운영메모)을 누르면 해당 영역으로 이동합니다."], ["상태 전환", "체험→유료, 유료→정지(조회 전용), 정지→유료(복구)만 할 수 있고 사유·효력일이 필요합니다. 해지는 해지·탈퇴 화면에서 처리합니다."], ["대리 접속", "지원이 꼭 필요할 때만 사유(문의 번호)를 적고 시작합니다. 30분 뒤 끝나며 회원사 계정 관리 화면에도 기록이 보입니다."], ["결제 수단", "운영자는 카드 정보를 입력하지 않습니다. 변경 링크를 보내 회원사가 직접 등록하게 합니다."]],
   "BO-CMP-08": [["처리 순서", "신청 확인 → [접수·해지 승인](이때부터 다음 결제 청구 안 함) → 해지일 이후 [해지 완료] → 보존기간이 끝나면 파기."], ["철회", "승인 전에는 회원사가 관리자 앱에서 신청을 철회할 수 있습니다."], ["파기", "‘파기확인’ 입력 후 요청하고, 요청자가 아닌 운영자 2명이 승인해야 실행됩니다. 되돌릴 수 없습니다."], ["백업", "백업을 요청한 회원사는 파일을 전달한 뒤 [백업 전달 완료]를 눌러 기록합니다."]],
   "BO-BILL-01": [["요금 구조", "기본료 + 인당 단가(VAT 별도)이며, 대상 인원 구간을 벗어난 회원사는 그 요금제를 고를 수 없습니다. 연 결제는 10% 할인됩니다."], ["수정 = 새 버전", "고치면 새 버전이 만들어지고 시행일부터 신규·변경 구독에 적용됩니다. 기존 구독은 계약 버전을 그대로 씁니다."], ["관리자 앱 반영", "회원사 구독·이용요금제(SET-06) 화면이 이 값을 그대로 보여줍니다."]],
   "BO-BILL-04": [["구독 변경", "업그레이드는 바로 적용되고 남은 기간만큼 차액을 청구합니다. 다운그레이드와 결제 주기 변경은 다음 결제일부터 적용되며 그 전까지 취소할 수 있습니다."], ["과금 인원", "회원사 재직 인원으로 자동 계산되어 운영자가 바꾸지 않습니다."], ["사유", "변경할 때는 회원사 요청 문의 번호 같은 사유를 남깁니다."]],
   "BO-BILL-06": [["증빙 종류", "카드 결제는 PG가 카드매출전표를 자동 발급하고, 세금계산서는 운영자가 여기서 발급합니다."], ["기한", "결제한 달의 다음 달 10일까지 발급해야 합니다. 기한이 지나면 ‘기한 경과’로 표시되니 바로 발급하세요."], ["환불 건", "환불이 있었던 결제는 수정세금계산서(환입)를 발급합니다."]],
   "BO-BILL-07": [["조회", "회사·청구번호·승인번호로 찾고 귀속월·상태로 좁힙니다. 행을 누르면 PG 거래키까지 자세히 보입니다."], ["금액", "공급가·VAT·합계를 함께 보여주며 환불된 금액은 아래에 작게 표시됩니다."], ["환불", "결제 상세의 [환불 요청]으로 환불 관리 화면에서 요청을 이어서 등록합니다."]],
-  "BO-BILL-08": [["미납 기준", "결제에 실패한 뒤 같은 달 결제가 아직 성공하지 않은 건입니다."], ["자동 처리", "실패일 다음 1·3·7일에 자동으로 다시 결제하고, 14일째 서비스를 정지합니다. 결제되면 바로 다시 열립니다."], ["수동 처리", "[재결제]로 즉시 시도하고 [독촉]으로 안내를 보냅니다. 카드가 만료됐다면 회원 상세에서 결제 수단 변경 링크를 보내세요."]],
+  "BO-BILL-08": [["미납 기준", "결제에 실패한 뒤 같은 달 결제가 아직 성공하지 않은 건입니다."], ["자동 처리", "실패일 다음 1·3·7일에 자동으로 다시 결제하고, 14일째 조회 전용으로 바꿉니다(로그인·조회·내려받기만 가능). 결제되면 바로 모든 기능이 다시 열립니다."], ["수동 처리", "[재결제]로 즉시 시도하고 [독촉]으로 안내를 보냅니다. 카드가 만료됐다면 회원 상세에서 결제 수단 변경 링크를 보내세요."]],
   "BO-BILL-09": [["요청", "결제가 완료된 건만, 남은 금액 이하로 요청할 수 있습니다. 결제 실패 건은 미납 관리에서 처리합니다."], ["승인", "요청한 운영자가 아닌 운영관리자·슈퍼관리자가 승인합니다. 승인하면 PG 취소가 실행되고 세금계산서 수정이 안내됩니다."], ["반려", "반려할 때는 처리 의견을 꼭 남깁니다."]],
   "BO-BILL-11": [["기준", "매출은 결제 성공분(공급가), 환불은 승인 완료된 달, 미수는 결제 실패 후 아직 결제되지 않은 금액입니다."], ["확인 표시", "미수나 승인 대기 중인 환불이 있는 달은 ‘확인’에 표시되니 해당 화면에서 정리하세요."], ["전표", "[전표 내보내기]로 회계 입력용 파일을 받습니다."]],
   "BO-BILL-12": [["키 관리", "저장된 키는 끝 4자리만 보입니다. 바꿀 때만 새 키를 입력하고, 비워 두면 기존 키가 그대로 유지됩니다."], ["환경 분리", "운영(live)과 테스트(test) 키를 따로 저장하며, 환경과 키 종류가 다르면 저장되지 않습니다."], ["점검", "[연결 테스트]로 연동 상태를 확인합니다. 모든 변경은 감사 로그에 남습니다."]],
