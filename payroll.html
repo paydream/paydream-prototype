@@ -1015,6 +1015,9 @@ function ReportScheduleScreen() {
 // ═══════════════════════════════════════════════════════════════
 // 직원모드 본인 = 사번(EMP_ME.no) 하나로 식별 — 이름·부서·직위는 직원 정보(HR.emps)에서 읽는다
 const EMP_ME = { no: "2019-0007", get e() { return hrEmp(this.no) || {}; }, get name() { return this.e.name || ""; }, get dept() { return this.e.orgId ? hrOrg(this.e.orgId).split(" › ").pop() : ""; }, get pos() { return this.e.grade || ""; }, get join() { return this.e.join || ""; } };
+// 신청 시각(초까지) — 같은 날 신청도 최신순 정렬 · 신청일순 비교 = byReq
+const reqStamp = () => HR_TODAY + " " + new Date().toTimeString().slice(0, 8);
+const byReq = (a, b) => ((b.reqAt || b.req || b.at || "").localeCompare(a.reqAt || a.req || a.at || "")) || ((b.id || 0) - (a.id || 0));
 const empAudit = (target, action, detail) => AUDIT_LOG.unshift({ at: HR_TODAY + " " + new Date().toTimeString().slice(0, 5), actor: EMP_ME.name + "(본인)", target, action, detail: detail || "" }); // 직원 본인 동작 기록
 const DOW_KO = ["일", "월", "화", "수", "목", "금", "토"];
 const hm = m => m ? Math.floor(m / 60) + ":" + String(Math.round(m % 60)).padStart(2, "0") : "–";
@@ -1278,7 +1281,7 @@ function MyProfileScreen({ ctx }) {
   const cur = f => f === "성명" ? (pi.name || e.name) : pi.en;
   const cErr = !chg ? "" : !chg.to.trim() ? "변경할 값을 입력하세요." : chg.to.trim() === cur(chg.field) ? "지금 값과 같습니다." : chg.field === "영문명" && !/^[A-Za-z][A-Za-z .-]*$/.test(chg.to.trim()) ? "영문명은 영문·공백만 쓸 수 있습니다." : pend.some(x => x.field === chg.field) ? "이미 결재 대기 중인 " + chg.field + " 변경 신청이 있습니다." : !chg.reason.trim() ? "사유를 입력하세요." : chg.field === "성명" && !chg.attach ? "성명 변경은 증빙(기본증명서 등)을 첨부해야 합니다." : "";
   const submitChg = () => { if (cErr) return; const id = Math.max(0, ...INFO_CHG_REQS.map(x => x.id)) + 1;
-    INFO_CHG_REQS.push({ id, no, field: chg.field, key: INFO_FIELDS[chg.field], from: cur(chg.field), to: chg.to.trim(), reason: chg.reason.trim(), attach: chg.attach, stat: "대기", req: HR_TODAY });
+    INFO_CHG_REQS.push({ id, no, field: chg.field, key: INFO_FIELDS[chg.field], from: cur(chg.field), to: chg.to.trim(), reason: chg.reason.trim(), attach: chg.attach, stat: "대기", req: HR_TODAY, reqAt: reqStamp() });
     empAudit("인사정보 " + no, chg.field + " 변경 신청", cur(chg.field) + " → " + chg.to.trim()); setChg(null); setTick(t => t + 1); flash(chg.field + " 변경을 신청했습니다 — 승인되면 반영됩니다(신청현황 APV-02 · 내 신청 EMP-05)."); };
   const openRrn = () => { if (rrn) return setRrn(false); setRrn(true); empAudit("주민등록번호 " + no, "본인 열람", ""); flash("주민등록번호 열람을 기록했습니다(10초 후 다시 가려집니다)."); setTimeout(() => setRrn(false), 10000); };
   // 급여 — 급여 계약(PAY-02-04)·계좌(PAY-02-01)·배포된 명세서(PAY-03-03)
@@ -1989,7 +1992,7 @@ function apvAll() {
   const fm = FORM_REQS.map(x => { const t = FORM_TPLS.find(t => t.code === x.code) || { type: "발급형", rule: "일반" }, iss = t.type === "발급형", checks = t.rule === "반려 불가" ? [["안내", FORM_RULES["반려 불가"]]] : t.rule === "접수" ? [["안내", FORM_RULES["접수"]]] : t.rule === "법정 휴직" ? [["안내", FORM_RULES["법정 휴직"]]] : [];
     return { key: "C" + x.id, doc: iss ? "제증명" : "서식", type: iss ? "제증명" : "서식(" + x.form + ")", src: x, no: x.no, req: x.req, target: x.req, period: x.form + (iss ? " " + x.qty + "부" : ""), reason: x.purpose, stat: x.stat, rule: t.rule, checks, dept: dept(x.no), name: emp(x.no).name || x.no }; });
   const ic = INFO_CHG_REQS.map(x => ({ key: "I" + x.id, doc: "정보변경", type: "정보변경(" + x.field + ")", src: x, no: x.no, req: x.req, target: x.req, period: x.field + ": " + (x.from || "—") + " → " + x.to, reason: x.reason, stat: x.stat, attach: x.attach, checks: x.field === "성명" && !x.attach ? [["경고", "증빙 미첨부"]] : x.field === "성명" ? [["안내", "승인 후 4대보험 성명 변경(내용변경) 신고 확인"]] : [], dept: dept(x.no), name: emp(x.no).name || x.no }));
-  return [...lv, ...ot, ...fx, ...fm, ...ic].map(r => ({ ...r, self: r.name === ACCT.me, block: r.checks.some(c => c[0] === "차단"), warn: r.checks.some(c => c[0] === "경고"), log: APV_LOG.filter(l => l.key === r.key) })).sort((a, b) => (b.req || "").localeCompare(a.req || ""));
+  return [...lv, ...ot, ...fx, ...fm, ...ic].map(r => ({ ...r, self: r.name === ACCT.me, block: r.checks.some(c => c[0] === "차단"), warn: r.checks.some(c => c[0] === "경고"), log: APV_LOG.filter(l => l.key === r.key) })).sort((a, b) => byReq({ reqAt: a.src.reqAt, req: a.req, id: a.src.id }, { reqAt: b.src.reqAt, req: b.req, id: b.src.id }));
 }
 // 승인·반려·취소 → 원 신청 반영
 function apvApply(r, act, cmt, bulk) {
@@ -9664,7 +9667,7 @@ function AttRequestScreen({ ctx }) {
   const [, setTick] = useState(0);
   const no = EMP_ME.no, e = hrEmp(no);
   const pre = window.__fixTarget; React.useEffect(() => { window.__fixTarget = null; }, []);
-  const blank = () => ({ type: pre ? "근태정정" : "연차", from: pre ? pre.date : pdAdd(HR_TODAY, 1), to: pre ? pre.date : pdAdd(HR_TODAY, 1), half: "전반", q: 1, time: "16:00", reason: "", attach: "", field: "퇴근", fixTo: "18:00" });
+  const blank = () => ({ type: pre ? "근태정정" : "연차", from: pre ? pre.date : HR_TODAY, to: pre ? pre.date : HR_TODAY, half: "전반", q: 1, time: "16:00", reason: "", attach: "", field: "퇴근", fixTo: "18:00" });
   const [f, setF] = useState(blank);
   const [toast, setToast] = useState("");
   const flash = m => { setToast(m); setTimeout(() => setToast(""), 2600); };
@@ -9683,12 +9686,12 @@ function AttRequestScreen({ ctx }) {
   const warn = deduct && remain - span.days < 0 ? "잔여 연차(대기 포함 " + remain + "일)보다 많이 신청합니다 — 승인 시 마이너스 연차가 됩니다" : "";
   const submit = () => {
     if (errs.length) return flash(errs[0]);
-    if (isFix) { const id = Math.max(0, ...ATT_FIX_REQS.map(x => x.id)) + 1; ATT_FIX_REQS.push({ id, no, date: f.from, field: f.field, to: f.fixTo, from: fixRec ? fixRec[f.field === "출근" ? "in" : "out"] || "" : "", reason: f.reason.trim(), stat: "대기", req: HR_TODAY }); empAudit("근태정정 F" + id, "신청", f.from + " " + f.field + " → " + f.fixTo); }
-    else { const id = LEAVE_SEQ++; LEAVES.push({ id, ...L, src: "신청", stat: "대기", req: HR_TODAY, reason: f.reason.trim(), ...(f.attach ? { attach: f.attach } : {}) }); empAudit("휴가 L" + id, "신청", f.type + " " + f.from + (L.to !== L.from ? "~" + L.to : "")); }
+    if (isFix) { const id = Math.max(0, ...ATT_FIX_REQS.map(x => x.id)) + 1; ATT_FIX_REQS.push({ id, no, date: f.from, field: f.field, to: f.fixTo, from: fixRec ? fixRec[f.field === "출근" ? "in" : "out"] || "" : "", reason: f.reason.trim(), stat: "대기", req: HR_TODAY, reqAt: reqStamp() }); empAudit("근태정정 F" + id, "신청", f.from + " " + f.field + " → " + f.fixTo); }
+    else { const id = LEAVE_SEQ++; LEAVES.push({ id, ...L, src: "신청", stat: "대기", req: HR_TODAY, reqAt: reqStamp(), reason: f.reason.trim(), ...(f.attach ? { attach: f.attach } : {}) }); empAudit("휴가 L" + id, "신청", f.type + " " + f.from + (L.to !== L.from ? "~" + L.to : "")); }
     setF(blank()); setTick(t => t + 1); flash("신청했습니다 — 결재 결과는 내 신청·결재 현황(EMP-05)에서 확인하세요.");
   };
   const mine = [...LEAVES.filter(x => x.no === no && x.src === "신청").map(x => ({ key: "L" + x.id, src: x, type: (lvCodeRow(x.code) || {}).name + (x.unit !== "1일" ? "·" + x.unit : ""), period: x.from + (x.to !== x.from ? " ~ " + x.to : "") + (x.half ? " " + x.half : x.q ? " " + x.q + "/4" : x.time ? " " + x.time : ""), days: e ? leaveSpan(e, x).days : 0 })),
-    ...ATT_FIX_REQS.filter(x => x.no === no).map(x => ({ key: "F" + x.id, src: x, type: "근태정정(" + x.field + ")", period: x.date + " → " + x.to, days: "" }))].sort((a, b) => (b.src.req || "").localeCompare(a.src.req || ""));
+    ...ATT_FIX_REQS.filter(x => x.no === no).map(x => ({ key: "F" + x.id, src: x, type: "근태정정(" + x.field + ")", period: x.date + " → " + x.to, days: "" }))].sort((a, b) => byReq(a.src, b.src) || (b.key > a.key ? 1 : -1));
   const inp = INP + " w-full";
   return (
     <div className="space-y-4 p-5">
@@ -9748,8 +9751,8 @@ function AttOTRequestScreen() {
   const pre = d => d > HR_TODAY ? "사전" : "사후";
   const dup = dates.filter(d => OT_REQS.some(o => o.no === no && o.date === d && (o.stat === "대기" || o.stat === "승인")));
   const errs = [!dates.length && "신청 일자가 없습니다", !min && "시간을 확인하세요", min > 720 && "하루 연장은 12시간을 넘을 수 없습니다", W.some(w => w.tot > 720) && "주 연장 12시간을 넘습니다(근로기준법 §53) — 일정·시간을 줄이세요", dates.some(d => d <= HR_TODAY && attCloseStat(d.slice(0, 7)) === "마감") && "근태가 마감된 달의 사후 신청은 할 수 없습니다", dup.length && "이미 신청된 날짜가 있습니다: " + dup.join(", "), !f.reason.trim() && "사유를 입력하세요"].filter(Boolean);
-  const submit = () => { if (errs.length) return flash(errs[0]); dates.forEach(d => { const id = Math.max(0, ...OT_REQS.map(o => o.id)) + 1; OT_REQS.push({ id, no, date: d, kind: f.kind, from: f.s, to: f.t, min, pre: pre(d), reason: f.reason.trim(), stat: "대기", req: HR_TODAY }); }); empAudit("연장근무", "신청 " + dates.length + "건", dates.join(", ") + " " + f.s + "~" + f.t); setF(blank()); setTick(t => t + 1); flash(dates.length + "건 신청했습니다 — 승인되면 근태 집계에서 연장으로 인정됩니다."); };
-  const mine = OT_REQS.filter(o => o.no === no).slice().sort((a, b) => b.date.localeCompare(a.date));
+  const submit = () => { if (errs.length) return flash(errs[0]); dates.forEach(d => { const id = Math.max(0, ...OT_REQS.map(o => o.id)) + 1; OT_REQS.push({ id, no, date: d, kind: f.kind, from: f.s, to: f.t, min, pre: pre(d), reason: f.reason.trim(), stat: "대기", req: HR_TODAY, reqAt: reqStamp() }); }); empAudit("연장근무", "신청 " + dates.length + "건", dates.join(", ") + " " + f.s + "~" + f.t); setF(blank()); setTick(t => t + 1); flash(dates.length + "건 신청했습니다 — 승인되면 근태 집계에서 연장으로 인정됩니다."); };
+  const mine = OT_REQS.filter(o => o.no === no).slice().sort(byReq);
   const inp = INP + " w-full";
   return (
     <div className="space-y-4 p-5">
@@ -10715,7 +10718,7 @@ function Frm04Screen({ ctx }){
     if(missing.length) return flash("필수 항목을 입력하세요: "+missing.join(", "));
     if(leaveErr) return flash(leaveErr);
     var id=Math.max(0,...FORM_REQS.map(function(r){return r.id;}))+1, purpose=vals["발급 용도"]||vals["신청 사유"]||vals["사유"]||vals["사직 사유"]||vals["변경 내용"]||vals["경조 구분"]||vals["휴직 종류"]||"";
-    FORM_REQS.push({ id:id, no:EMP_ME.no, code:cur.code, form:sel.replace(/ 발급신청서$/,""), qty:+(vals["발급 부수"]||1), purpose:purpose, values:{...vals}, stat:"대기", req:HR_TODAY });
+    FORM_REQS.push({ id:id, no:EMP_ME.no, code:cur.code, form:sel.replace(/ 발급신청서$/,""), qty:+(vals["발급 부수"]||1), purpose:purpose, values:{...vals}, stat:"대기", req:HR_TODAY, reqAt:reqStamp() });
     delete FRM_DRAFTS[sel]; empAudit("서식 "+cur.code, "상신", sel); setVals({}); setPreview(false); setTick(function(t){return t+1;});
     flash(sel+" 상신 — 신청현황(APV-02)으로 올라갔습니다. 진행 상태는 내 신청·결재 현황(EMP-05)에서 확인하세요.");
   }
