@@ -192,30 +192,31 @@ const mrrOf = t => ["이용중", "연체", "해지예정"].includes(t.sub) ? fee
 // 결제/청구(BO-BILL-07) — 관리자 앱 PAYMENTS와 같은 구조(페이드림 행은 값 그대로)
 let PAY_SEQ = 0;
 const pay = (t, ym, x) => { const f = fee(t.plan, t.ver, (x && x.seats) || t.seats, "월"), date = ym + "-" + String(t.billDay).padStart(2, "0");
-  return { id: ++PAY_SEQ, inv: "INV-" + ym.slice(2).replace("-", "") + "-" + t.no, co: t.name, ym, date, at: date + " 03:10", plan: t.plan, seats: t.seats, supply: f.supply, vat: f.vat, total: f.total, method: t.card.brand + " ****-" + t.card.last4, stat: "결제완료", appr: String(30000000 + PAY_SEQ * 137), pgKey: "tx_" + ym.replace("-", "") + t.no + PAY_SEQ, taxInv: "발급", taxNo: "", retry: 0, refunded: 0, note: "", ...(x || {}) }; };
+  return { id: ++PAY_SEQ, inv: "INV-" + ym.slice(2).replace("-", "") + "-" + t.no, co: t.name, ym, date, at: date + " 03:10", plan: t.plan, seats: t.seats, supply: f.supply, vat: f.vat, total: f.total, method: t.card.brand + " ****-" + t.card.last4, stat: "결제완료", appr: String(30000000 + PAY_SEQ * 137), pgKey: "tx_" + ym.replace("-", "") + t.no + PAY_SEQ, evid: "카드매출전표", retry: 0, refunded: 0, note: "", ...(x || {}) }; };
 const T = n => TENANTS.find(t => t.no === n);
 const PAYMENTS = [
   // 페이드림 주식회사 — 관리자 앱 PAYMENTS와 동일
   pay(T("0031"), "2026-04", { seats: 10, date: "2026-04-01", at: "2026-04-01 03:10", supply: 12500, vat: 1250, total: 13750, note: "체험 종료 후 첫 결제(일할 14일)" }),
   pay(T("0031"), "2026-05", { seats: 10 }),
-  pay(T("0031"), "2026-06", { seats: 10, stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", note: "카드 한도초과 — 다음 날 자동 재시도" }),
+  pay(T("0031"), "2026-06", { seats: 10, stat: "실패", total: 0, evid: "—", appr: "-", note: "카드 한도초과 — 다음 날 자동 재시도" }),
   pay(T("0031"), "2026-06", { seats: 10, date: "2026-06-16", at: "2026-06-16 03:10", note: "06-15 한도초과 실패 → 06-16 재결제 성공" }),
-  pay(T("0031"), "2026-07", { seats: 11, taxInv: "미발급" }),
+  pay(T("0031"), "2026-07", { seats: 11 }),
   pay(T("0031"), "2026-08", { seats: 11 }),
-  pay(T("0031"), "2026-09", { seats: 11, taxInv: "미발급" }),
+  pay(T("0031"), "2026-09", { seats: 11 }),
   // 다른 회원사
   pay(T("0021"), "2026-07"), pay(T("0021"), "2026-08"), pay(T("0021"), "2026-09"),
-  pay(T("0021"), "2026-09", { inv: "INV-2609-0021-D", at: "2026-09-15 03:11", taxInv: "미발급", note: "PG 재시도 오류로 중복 승인" }),
-  pay(T("0022"), "2026-07"), pay(T("0022"), "2026-08", { refunded: 7920, note: "8월 장애 보상 20% 부분 환불" }), pay(T("0022"), "2026-09"), pay(T("0022"), "2026-10", { taxInv: "미발급" }),
+  pay(T("0021"), "2026-09", { inv: "INV-2609-0021-D", at: "2026-09-15 03:11", note: "PG 재시도 오류로 중복 승인" }),
+  pay(T("0022"), "2026-07"), pay(T("0022"), "2026-08", { refunded: 7920, note: "8월 장애 보상 20% 부분 환불" }), pay(T("0022"), "2026-09"), pay(T("0022"), "2026-10"),
   pay(T("0024"), "2026-07"), pay(T("0024"), "2026-08"),
-  pay(T("0024"), "2026-09", { stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", retry: 3, note: "카드 유효기간 만료 — D+1·3·7 재시도 실패" }),
-  pay(T("0009"), "2026-07"), pay(T("0009"), "2026-08"), pay(T("0009"), "2026-09"), pay(T("0009"), "2026-10", { taxInv: "미발급" }),
+  pay(T("0024"), "2026-09", { stat: "실패", total: 0, evid: "—", appr: "-", retry: 3, note: "카드 유효기간 만료 — D+1·3·7 재시도 실패" }),
+  pay(T("0009"), "2026-07"), pay(T("0009"), "2026-08"), pay(T("0009"), "2026-09"), pay(T("0009"), "2026-10"),
   pay(T("0027"), "2026-07"), pay(T("0027"), "2026-08"),
-  pay(T("0027"), "2026-09", { stat: "실패", total: 0, taxInv: "대상 아님", appr: "-", retry: 3, note: "잔액 부족 — D+1·3·7 재시도 실패" }),
+  pay(T("0027"), "2026-09", { stat: "실패", total: 0, evid: "—", appr: "-", retry: 3, note: "잔액 부족 — D+1·3·7 재시도 실패" }),
 ];
 const billed = p => p.stat === "실패" ? p.supply + p.vat : p.total; // 청구액(실패 건은 미수 금액)
-const taxDue = date => mAdd(date.slice(0, 7), 1) + "-10"; // 세금계산서 발급 기한 = 공급시기 다음 달 10일(부가가치세법 §34)
-const taxLabel = p => p.taxInv === "발급" ? "발급완료" : p.taxInv === "미발급" ? (taxDue(p.date) < BO_TODAY ? "기한 경과" : "발급대기") : "대상 아님";
+// 증빙 — 카드 결제는 PG가 카드매출전표를 발행하고 세금계산서는 발급하지 않음(부가가치세법 §33②·시행령 §71②·§88⑤) · 회원사는 카드매출전표로 매입세액공제(§46③)
+// 세금계산서(공급시기 다음 달 10일)·현금영수증은 계좌이체·현금 결제(P1) 도입 시에만 사용
+const slipLabel = p => p.stat === "실패" ? "전표 없음" : p.refunded >= p.total ? "전액취소" : p.refunded > 0 ? "부분취소" : "승인";
 // 미납 = 실패 후 같은 회원사·같은 월 결제완료가 없는 건 · dunning D+1/3/7 재시도 → D+14 정지
 const DUNNING = [1, 3, 7];
 const unpaid = () => PAYMENTS.filter(p => p.stat === "실패" && !PAYMENTS.some(q => q.co === p.co && q.ym === p.ym && q.stat === "결제완료"));
@@ -223,7 +224,7 @@ const dunOf = p => { const d = dDiff(BO_TODAY, p.date), done = DUNNING.filter(x 
 
 // 환불(BO-BILL-09) — 결제완료 건만 · 원결제 잔액 이하 · 요청자 ≠ 승인자
 const REFUNDS = [
-  { id: 1, co: "블루오션물류", payId: PAYMENTS.find(p => p.co === "블루오션물류" && p.ym === "2026-08").id, type: "부분", amt: 7920, method: "원결제 부분취소", reason: "8/14 급여계산 장애 보상(20%)", stat: "완료", reqBy: "박상담", reqAt: "2026-08-20 11:02", procBy: "이빌링", procAt: "2026-08-20 15:30", modTax: "수정세금계산서 발급" },
+  { id: 1, co: "블루오션물류", payId: PAYMENTS.find(p => p.co === "블루오션물류" && p.ym === "2026-08").id, type: "부분", amt: 7920, method: "원결제 부분취소", reason: "8/14 급여계산 장애 보상(20%)", stat: "완료", reqBy: "박상담", reqAt: "2026-08-20 11:02", procBy: "이빌링", procAt: "2026-08-20 15:30", modTax: "카드 취소 전표 자동 발행(PG)" },
   { id: 2, co: "(주)한빛테크", payId: PAYMENTS.find(p => p.inv === "INV-2609-0021-D").id, type: "전액", amt: 76340, method: "원결제 취소", reason: "PG 재시도 오류로 중복 승인", stat: "대기", reqBy: "이빌링", reqAt: "2026-09-30 10:20" },
   { id: 3, co: "소상공회계", payId: PAYMENTS.find(p => p.co === "소상공회계" && p.ym === "2026-09").id, type: "부분", amt: 9900, method: "원결제 부분취소", reason: "해지 예정 — 잔여기간 환불 요청", stat: "반려", reqBy: "박상담", reqAt: "2026-09-28 16:00", procBy: "김운영", procAt: "2026-09-29 10:10", cmt: "잔여기간 환불 정책 미정 — 해지일까지 이용(약관 §12)" },
 ];
@@ -257,7 +258,7 @@ const MACROS = { "[안내] 재계산 절차": "급여계산(PAY-03-01)에서 해
 const FAQS = [
   { id: 1, cat: "급여", q: "급여를 확정한 뒤에 수정할 수 있나요?", a: "급여 확정/마감(PAY-03-02)에서 확정을 해제하면 다시 계산할 수 있습니다. 명세서를 이미 배포했다면 재발행이 필요합니다.", target: "전체", pub: true, order: 1, views: 412 },
   { id: 2, cat: "근태", q: "근태 엑셀 업로드 형식이 궁금해요", a: "근태 일괄 업로드(TA-03-04)에서 양식을 내려받아 사번·일자·출퇴근 시각(HH:MM)을 입력해 올려 주세요.", target: "Basic", pub: true, order: 2, views: 233 },
-  { id: 3, cat: "구독·결제", q: "세금계산서는 언제 발급되나요?", a: "카드 결제는 카드매출전표가 자동 발급되며, 세금계산서는 결제월 다음 달 10일까지 발급됩니다. 결제 내역·영수증(SET-08)에서 내려받을 수 있습니다.", target: "전체", pub: true, order: 3, views: 188 },
+  { id: 3, cat: "구독·결제", q: "세금계산서는 발급되나요?", a: "카드로 결제하면 카드매출전표가 자동 발급되고 이것이 법정 증빙입니다. 카드매출전표로 매입세액공제를 받을 수 있어 세금계산서는 따로 발급되지 않습니다(부가가치세법 §33②·§46③). 결제 내역·영수증(SET-08)에서 내려받을 수 있습니다.", target: "전체", pub: true, order: 3, views: 188 },
   { id: 4, cat: "계정·권한", q: "직원 계정을 잠금 해제하려면?", a: "계정 관리(HR-06-01)에서 해당 계정의 [잠금 해제]를 누르세요. 최고관리자만 할 수 있습니다.", target: "전체", pub: false, order: 4, views: 0 },
 ];
 
@@ -309,9 +310,9 @@ function Dashboard({ go, open }){
   const sum=a=>a.reduce((s,p)=>s+p.total-p.refunded,0);
   const mrr=TENANTS.reduce((s,t)=>s+mrrOf(t),0), trial=TENANTS.filter(t=>t.sub==="체험");
   const un=unpaid(), tk=TICKETS.filter(t=>t.stat!=="완료"), unassigned=tk.filter(t=>!t.owner), breach=tk.filter(t=>!slaOf(t).ok);
-  const taxLate=PAYMENTS.filter(p=>taxLabel(p)==="기한 경과"), cxl=CANCELS.filter(c=>c.status==="신청"), rf=REFUNDS.filter(r=>r.stat==="대기");
+  const cxl=CANCELS.filter(c=>c.status==="신청"), rf=REFUNDS.filter(r=>r.stat==="대기");
   const risk=TENANTS.filter(t=>t.svc!=="해지"&&(t.tags.includes("이탈위험")||t.usage.login30<=2));
-  const ALERTS=[[un.length,"미납 회원사","BO-BILL-08","red"],[taxLate.length,"세금계산서 발급 기한 경과","BO-BILL-06","red"],[cxl.length,"해지 신청 처리 대기","BO-CMP-08","amber"],[rf.length,"환불 승인 대기","BO-BILL-09","amber"],[unassigned.length,"미배정 문의","BO-SUP-01","amber"],[breach.length,"SLA 초과 문의","BO-SUP-01","red"]].filter(a=>a[0]>0);
+  const ALERTS=[[un.length,"미납 회원사","BO-BILL-08","red"],[cxl.length,"해지 신청 처리 대기","BO-CMP-08","amber"],[rf.length,"환불 승인 대기","BO-BILL-09","amber"],[unassigned.length,"미배정 문의","BO-SUP-01","amber"],[breach.length,"SLA 초과 문의","BO-SUP-01","red"]].filter(a=>a[0]>0);
   return (
     <div className="p-5">
       <ScrHead id="BO-DSH-01" title="운영 대시보드" pri="P0" path="대시보드 > 홈" desc="회원사·구독·결제·CS 핵심 지표와 처리할 일. 모든 수치는 회원사·결제·문의 원천에서 계산합니다." />
@@ -418,8 +419,8 @@ function TenantDetail({ sel, go, flash, open }){
               </div>
             </Card>
             <Card title={"결제 내역 · "+pays.length+"건"} right={<button onClick={()=>go("BO-BILL-07")} className="text-xs text-blue-600 hover:underline">결제 내역 →</button>} pad={false}>
-              <Table min="560px" cols={[{t:"청구번호"},{t:"결제일시"},{t:"합계(VAT 포함)",r:1},{t:"상태",c:1},{t:"세금계산서",c:1}]} rows={pays.slice(0,6)} empty="결제 내역이 없습니다." render={r=><>
-                <Td cls="font-mono text-xs text-gray-700">{r.inv}</Td><Td cls="text-gray-500">{r.at}</Td><Td r cls="font-mono">{r.stat==="실패"?<span className="text-red-500">{won(billed(r))} 미수</span>:won(r.total)}{r.refunded>0&&<span className="block text-[11px] text-gray-400">환불 {won(r.refunded)}</span>}</Td><Td c><StatusBadge s={r.stat} /></Td><Td c><StatusBadge s={taxLabel(r)} /></Td></>} />
+              <Table min="560px" cols={[{t:"청구번호"},{t:"결제일시"},{t:"합계(VAT 포함)",r:1},{t:"상태",c:1},{t:"카드매출전표",c:1}]} rows={pays.slice(0,6)} empty="결제 내역이 없습니다." render={r=><>
+                <Td cls="font-mono text-xs text-gray-700">{r.inv}</Td><Td cls="text-gray-500">{r.at}</Td><Td r cls="font-mono">{r.stat==="실패"?<span className="text-red-500">{won(billed(r))} 미수</span>:won(r.total)}{r.refunded>0&&<span className="block text-[11px] text-gray-400">환불 {won(r.refunded)}</span>}</Td><Td c><StatusBadge s={r.stat} /></Td><Td c><SlipBadge p={r} /></Td></>} />
             </Card>
           </div>
         </section>
@@ -614,7 +615,7 @@ function SubChange({ m, setM, onClose, flash, re }){
   const err=same?"변경 내용이 없습니다.":t.seats>np.max||t.seats<np.min?m.plan+"은 "+np.min+"~"+np.max+"인 대상입니다(과금 인원 "+t.seats+"명).":!m.why.trim()?"사유를 입력하세요(회원사 요청 문의 번호 등).":!can("구독·결제","W")?"구독 변경 권한이 없습니다.":"";
   const apply=()=>{ if(err) return; const at=nowTs();
     if(up){ const before=t.plan+" "+t.cycle; t.plan=m.plan; t.ver=np.ver; t.cycle=m.cycle; t.pending=null;
-      if(pro){ const f={supply:pro,vat:Math.floor(pro/10)}; PAYMENTS.push({...PAYMENTS.find(p=>p.co===t.name)||{},id:++PAY_SEQ,inv:"INV-"+BO_TODAY.slice(2,7).replace("-","")+"-"+t.no+"-P",co:t.name,ym:BO_TODAY.slice(0,7),date:BO_TODAY,at:at,plan:t.plan,seats:t.seats,supply:f.supply,vat:f.vat,total:f.supply+f.vat,method:t.card.brand+" ****-"+t.card.last4,stat:"결제완료",appr:String(39000000+PAY_SEQ),pgKey:"tx_pro_"+PAY_SEQ,taxInv:"미발급",taxNo:"",retry:0,refunded:0,note:"업그레이드 일할 차액("+days+"일)"}); }
+      if(pro){ const f={supply:pro,vat:Math.floor(pro/10)}; PAYMENTS.push({...PAYMENTS.find(p=>p.co===t.name)||{},id:++PAY_SEQ,inv:"INV-"+BO_TODAY.slice(2,7).replace("-","")+"-"+t.no+"-P",co:t.name,ym:BO_TODAY.slice(0,7),date:BO_TODAY,at:at,plan:t.plan,seats:t.seats,supply:f.supply,vat:f.vat,total:f.supply+f.vat,method:t.card.brand+" ****-"+t.card.last4,stat:"결제완료",appr:String(39000000+PAY_SEQ),pgKey:"tx_pro_"+PAY_SEQ,evid:"카드매출전표",retry:0,refunded:0,note:"업그레이드 일할 차액("+days+"일)"}); }
       t.hist.unshift({at,by:BO.me,what:"업그레이드 즉시 "+before+" → "+m.plan+" "+m.cycle+(pro?" · 일할 차액 "+won(pro+Math.floor(pro/10))+"원 청구":"")+" — "+m.why.trim()}); }
     else { t.pending={plan:m.plan,cycle:m.cycle,at:t.nextBill}; t.hist.unshift({at,by:BO.me,what:"변경 예약 → "+m.plan+" "+m.cycle+" · "+t.nextBill+"부터 — "+m.why.trim()}); }
     audit("구독 변경",t.name,(up?"즉시 ":"예약 ")+m.plan+" "+m.cycle+" · "+m.why.trim()); onClose(); re(); flash(up?t.name+" 구독을 "+m.plan+"(으)로 바꿨습니다"+(pro?" — 일할 차액 "+won(pro+Math.floor(pro/10))+"원(VAT 포함)을 청구했습니다.":"."):t.nextBill+"부터 "+m.plan+" "+m.cycle+"(으)로 바뀝니다."); };
@@ -630,33 +631,35 @@ function SubChange({ m, setM, onClose, flash, re }){
   </Modal>;
 }
 
-// ═══ 결제증빙발급(BO-BILL-06) — 카드 결제 = 카드매출전표(PG 자동) + 세금계산서(공급시기 다음 달 10일까지 발급) ═══
+// ═══ 결제증빙발급(BO-BILL-06) — 카드 결제 = 카드매출전표(PG 발행)만 · 세금계산서 미발급(부가가치세법 §33②·시행령 §71②·§88⑤) · 조회·재발송 ═══
+const SLIP_TONE = { "승인": "emerald", "부분취소": "amber", "전액취소": "slate", "전표 없음": "gray" };
+function SlipBadge({ p }){ const l = slipLabel(p); return <Badge tone={SLIP_TONE[l]}>{l}</Badge>; }
 function Invoices({ flash, open }){
   const re=useTick();
-  const [st,setSt]=useState("전체"); const [q,setQ]=useState(""); const [m,setM]=useState(null); const [kind,setKind]=useState("정발행");
-  const rows=PAYMENTS.filter(p=>p.stat!=="실패").filter(p=>(st==="전체"||taxLabel(p)===st)&&(p.co+p.inv).includes(q)).sort((a,b)=>b.at.localeCompare(a.at));
-  const cnt=s=>PAYMENTS.filter(p=>p.stat!=="실패"&&taxLabel(p)===s).length;
-  const issue=()=>{ if(!can("결제증빙발급","X")) return flash("권한이 없습니다."); const p=m; p.taxInv="발급"; p.taxNo=p.date.replace(/-/g,"")+"-41000"+p.id+"-"+(1000+p.id); p.taxAt=nowTs(); p.taxKind=kind;
-    audit("세금계산서 발급",p.co+" · "+p.inv,kind+" · 승인번호 "+p.taxNo); setM(null); re(); flash(p.inv+" 세금계산서를 발급해 국세청에 전송했습니다 — 회원사 결제 내역·영수증(SET-08)에서 내려받을 수 있습니다."); };
+  const [st,setSt]=useState("전체"); const [q,setQ]=useState(""); const [m,setM]=useState(null);
+  const paid=PAYMENTS.filter(p=>p.stat!=="실패");
+  const rows=paid.filter(p=>(st==="전체"||slipLabel(p)===st)&&(p.co+p.inv+p.appr).includes(q)).sort((a,b)=>b.at.localeCompare(a.at));
+  const cnt=s=>paid.filter(p=>slipLabel(p)===s).length;
+  const resend=()=>{ if(!can("결제증빙발급","W")) return flash("권한이 없습니다."); const t=tOf(m.co)||{}; m.sentAt=nowTs();
+    audit("카드매출전표 재발송",m.co+" · "+m.inv,"승인번호 "+m.appr+" → "+(t.email||"관리자 이메일")); setM(null); re(); flash(m.inv+" 카드매출전표를 회원사 관리자 이메일로 다시 보냈습니다."); };
   return (
     <div className="p-5">
-      <ScrHead id="BO-BILL-06" title="결제증빙발급" pri="P0" path="구독·결제 > 청구·결제" desc="결제 건별 세금계산서를 발급·조회합니다. 카드 결제는 PG가 카드매출전표를 자동 발급하고, 회원사(사업자)에는 공급시기 다음 달 10일까지 세금계산서를 발급합니다. 현금영수증은 현금·계좌 결제(P1) 도입 시 사용합니다." />
-      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4"><Stat n={cnt("발급완료")} l="발급완료" tone="text-emerald-600" /><Stat n={cnt("발급대기")} l="발급대기(기한 전)" tone="text-amber-600" /><Stat n={cnt("기한 경과")} l="기한 경과" tone="text-red-500" sub="부가가치세법 §34 — 가산세 대상" /><Stat n={PAYMENTS.filter(p=>p.refunded>0&&p.taxInv==="발급").length} l="환불 후 수정 발급 대상" tone="text-gray-800" /></div>
+      <ScrHead id="BO-BILL-06" title="결제증빙발급" pri="P0" path="구독·결제 > 청구·결제" desc="결제 건별 카드매출전표를 조회하고 회원사에 다시 보냅니다. 카드 결제는 PG가 발행하는 카드매출전표가 법정 증빙이므로 세금계산서는 발급하지 않습니다(부가가치세법 §33②). 세금계산서·현금영수증은 계좌이체·현금 결제(P1) 도입 시 이 화면에 추가됩니다." />
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4"><Stat n={cnt("승인")} l="카드매출전표(승인)" tone="text-emerald-600" /><Stat n={cnt("부분취소")+cnt("전액취소")} l="취소 전표 동반" tone="text-amber-600" sub="환불 시 PG 자동 발행" /><Stat n={PAYMENTS.filter(p=>p.stat==="실패").length} l="결제 실패(전표 없음)" tone="text-gray-800" sub="미납·연체에서 처리" /><Stat n={0} l="세금계산서 대상" tone="text-gray-400" sub="계좌이체·현금 결제(P1)" /></div>
       <Card pad={false}>
-        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3"><Search value={q} onChange={setQ} ph="회사명·청구번호" /><Sel value={st} onChange={setSt} opts={["전체","발급완료","발급대기","기한 경과"]} label="발급상태" /></div>
-        <Table min="960px" cols={[{t:"청구번호"},{t:"회사명"},{t:"결제일"},{t:"공급가",r:1},{t:"VAT",r:1},{t:"합계",r:1},{t:"카드매출전표",c:1},{t:"세금계산서",c:1},{t:"발급 기한"},{t:""}]} rows={rows} render={p=><>
-          <Td cls="font-mono text-xs text-gray-700">{p.inv}</Td><Td><button onClick={()=>open(p.co)} className="font-medium text-blue-700 hover:underline">{p.co}</button></Td><Td cls="text-gray-500">{p.date}</Td>
-          <Td r cls="font-mono">{won(p.supply)}</Td><Td r cls="font-mono text-gray-500">{won(p.vat)}</Td><Td r cls="font-mono">{won(p.total)}</Td>
-          <Td c><Badge tone="emerald">PG 자동</Badge></Td><Td c><StatusBadge s={taxLabel(p)} /></Td><Td cls={"text-xs "+(taxLabel(p)==="기한 경과"?"font-medium text-red-500":"text-gray-500")}>{taxDue(p.date)}</Td>
-          <Td c><button onClick={()=>{setKind(p.refunded>0&&p.taxInv==="발급"?"수정(환입)":"정발행");setM(p);}} className="text-xs font-medium text-blue-600 hover:underline">{p.taxInv==="발급"?"조회":"발급"}</button></Td></>} />
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3"><Search value={q} onChange={setQ} ph="회사명·청구번호·승인번호" /><Sel value={st} onChange={setSt} opts={["전체","승인","부분취소","전액취소"]} label="전표 상태" /></div>
+        <Table min="960px" cols={[{t:"청구번호"},{t:"회사명"},{t:"결제일시"},{t:"공급가",r:1},{t:"VAT",r:1},{t:"합계",r:1},{t:"카드 · 승인번호"},{t:"전표",c:1},{t:""}]} rows={rows} render={p=><>
+          <Td cls="font-mono text-xs text-gray-700">{p.inv}</Td><Td><button onClick={()=>open(p.co)} className="font-medium text-blue-700 hover:underline">{p.co}</button></Td><Td cls="text-gray-500">{p.at}</Td>
+          <Td r cls="font-mono">{won(p.supply)}</Td><Td r cls="font-mono text-gray-500">{won(p.vat)}</Td><Td r cls="font-mono">{won(p.total)}{p.refunded>0&&<span className="block text-[11px] text-gray-400">취소 {won(p.refunded)}</span>}</Td>
+          <Td cls="text-xs text-gray-600">{p.method}<span className="block font-mono text-gray-400">{p.appr}</span></Td><Td c><SlipBadge p={p} /></Td>
+          <Td c><button onClick={()=>setM(p)} className="text-xs font-medium text-blue-600 hover:underline">전표 보기</button></Td></>} />
       </Card>
-      <Note><b>규칙</b> — 금액은 공급가·VAT·합계로 나눠 저장합니다. 환불이 있으면 수정세금계산서(환입)를 발급하고, 기한이 지난 건은 즉시 발급한 뒤 회원사에 안내합니다. 회원사 요청(유형 변경·재발급)은 1:1 문의로 접수됩니다.</Note>
-      {m && <Modal title={"세금계산서 · "+m.inv} badge="BO-BILL-06-M1" onClose={()=>setM(null)} wide footer={<><Btn tone="ghost" onClick={()=>setM(null)}>닫기</Btn>{m.taxInv!=="발급"&&<Btn onClick={issue}>발급·국세청 전송</Btn>}{m.taxInv==="발급"&&m.refunded>0&&<Btn onClick={()=>{m.modTax=nowTs();audit("수정세금계산서 발급",m.co+" · "+m.inv,"환입 -"+won(m.refunded));setM(null);re();flash("수정세금계산서(환입)를 발급했습니다.");}}>수정세금계산서 발급</Btn>}</>}>
-        <div className="flex justify-between"><div><p className="font-semibold text-gray-800">{m.co} <span className="text-xs font-normal text-gray-400">{(tOf(m.co)||{}).biz}</span></p><p className="text-xs text-gray-500">{m.inv} · 결제 {m.date} · {m.method}</p></div><StatusBadge s={taxLabel(m)} /></div>
-        <table className="w-full text-sm"><tbody>{[["공급가액",m.supply],["부가세(10%)",m.vat],["합계",m.total],...(m.refunded?[["환불(환입)",-m.refunded]]:[])].map(([k,v])=><tr key={k} className="border-b border-gray-100"><td className="py-2 text-gray-600">{k}</td><td className="py-2 text-right font-mono">{won(v)}원</td></tr>)}</tbody></table>
-        {m.taxInv==="발급"?<p className="text-xs text-gray-600">국세청 승인번호 {m.taxNo||"(기존 발급분)"} {m.taxAt&&"· "+m.taxAt}{m.modTax&&" · 수정 발급 "+m.modTax}</p>
-          :<Field label="발급 구분"><select value={kind} onChange={e=>setKind(e.target.value)} className={INP+" w-full bg-white"}><option>정발행</option></select></Field>}
-        {taxLabel(m)==="기한 경과"&&<p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">발급 기한({taxDue(m.date)})이 지났습니다 — 지금 발급하고 지연 사유를 메모해 두세요.</p>}
+      <Note><b>규칙</b> — 카드 결제는 PG가 승인 즉시 카드매출전표를 발행하고, 이 전표가 회원사의 매입세액공제 증빙입니다(부가가치세법 §46③). 카드매출전표를 발행한 거래에는 세금계산서를 발급하지 않습니다(§33② · 시행령 §71②·§88⑤ — 이중 발급 금지). 회원사가 세금계산서를 요청하면 이 근거로 안내하고 카드매출전표를 다시 보냅니다. 환불하면 PG가 취소 전표를 자동 발행합니다. 금액은 공급가·VAT·합계로 나눠 저장합니다.</Note>
+      {m && <Modal title={"카드매출전표 · "+m.inv} badge="BO-BILL-06-M1" onClose={()=>setM(null)} wide footer={<><Btn tone="ghost" onClick={()=>setM(null)}>닫기</Btn><Btn onClick={resend}>회원사에 재발송</Btn></>}>
+        <div className="flex justify-between"><div><p className="font-semibold text-gray-800">{m.co} <span className="text-xs font-normal text-gray-400">{(tOf(m.co)||{}).biz}</span></p><p className="text-xs text-gray-500">{m.inv} · 승인 {m.at} · {m.method}</p></div><SlipBadge p={m} /></div>
+        <table className="w-full text-sm"><tbody>{[["공급가액",m.supply],["부가세(10%)",m.vat],["승인금액",m.total],...(m.refunded?[["취소(취소 전표)",-m.refunded]]:[])].map(([k,v])=><tr key={k} className="border-b border-gray-100"><td className="py-2 text-gray-600">{k}</td><td className="py-2 text-right font-mono">{won(v)}원</td></tr>)}</tbody></table>
+        <p className="text-xs text-gray-600">가맹점 (주)예스폼 · 승인번호 {m.appr} · PG 거래키 {m.pgKey}{m.sentAt&&" · 재발송 "+m.sentAt}</p>
+        <p className="rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600">이 전표로 회원사가 매입세액공제를 받습니다 — 세금계산서는 발급하지 않습니다(부가가치세법 §33②).</p>
       </Modal>}
     </div>
   );
@@ -681,7 +684,7 @@ function Payments({ open, go }){
           <Td cls="text-xs text-gray-600">{p.method}</Td><Td c><StatusBadge s={p.stat} /></Td><Td cls="font-mono text-xs text-gray-500">{p.appr}</Td></>} />
       </Card>
       {m && <Modal title={"결제 상세 · "+m.inv} badge="BO-BILL-07" onClose={()=>setM(null)} footer={<><Btn tone="ghost" onClick={()=>setM(null)}>닫기</Btn>{refundable(m)>0&&<Btn onClick={()=>{setM(null);go("BO-BILL-09",{payId:m.id});}}>환불 요청 →</Btn>}</>}>
-        <dl className="space-y-1.5 text-sm">{[["회원사",m.co],["결제일시",m.at],["이용기간",m.date+" ~ "+dAdd(mAdd(m.date.slice(0,7),1)+m.date.slice(7),-1)],["요금제",m.plan+" · "+m.seats+"명"],["공급가 / VAT / 합계",won(m.supply)+" / "+won(m.vat)+" / "+won(m.total)+"원"],["환불",m.refunded?won(m.refunded)+"원":"–"],["수단",m.method],["승인번호",m.appr],["PG 거래키",m.pgKey],["세금계산서",taxLabel(m)+(m.taxNo?" · "+m.taxNo:"")],["비고",m.note||"–"]].map(([k,v])=><div key={k} className="flex justify-between gap-3"><dt className="text-gray-500">{k}</dt><dd className="text-right font-medium text-gray-700">{v}</dd></div>)}</dl>
+        <dl className="space-y-1.5 text-sm">{[["회원사",m.co],["결제일시",m.at],["이용기간",m.date+" ~ "+dAdd(mAdd(m.date.slice(0,7),1)+m.date.slice(7),-1)],["요금제",m.plan+" · "+m.seats+"명"],["공급가 / VAT / 합계",won(m.supply)+" / "+won(m.vat)+" / "+won(m.total)+"원"],["환불",m.refunded?won(m.refunded)+"원":"–"],["수단",m.method],["승인번호",m.appr],["PG 거래키",m.pgKey],["증빙",m.stat==="실패"?"–":"카드매출전표 · "+slipLabel(m)],["비고",m.note||"–"]].map(([k,v])=><div key={k} className="flex justify-between gap-3"><dt className="text-gray-500">{k}</dt><dd className="text-right font-medium text-gray-700">{v}</dd></div>)}</dl>
       </Modal>}
     </div>
   );
@@ -693,7 +696,7 @@ function Overdue({ flash, open }){
   const rows=unpaid();
   const retry=p=>{ if(!can("구독·결제","X")) return flash("권한이 없습니다."); const t=tOf(p.co), expired=t.card.exp<BO_TODAY.slice(0,7);
     p.retry++; if(expired){ audit("수동 재결제",p.co+" · "+p.inv,"실패 — 카드 유효기간 만료","실패"); re(); return flash(p.co+" 재결제 실패 — 카드 유효기간이 지났습니다. 결제 수단 변경 링크를 보내세요."); }
-    PAYMENTS.push({...p,id:++PAY_SEQ,date:BO_TODAY,at:nowTs(),stat:"결제완료",total:p.supply+p.vat,appr:String(39000000+PAY_SEQ),pgKey:"tx_retry_"+PAY_SEQ,taxInv:"미발급",note:p.date+" 실패분 수동 재결제 성공"});
+    PAYMENTS.push({...p,id:++PAY_SEQ,date:BO_TODAY,at:nowTs(),stat:"결제완료",total:p.supply+p.vat,appr:String(39000000+PAY_SEQ),pgKey:"tx_retry_"+PAY_SEQ,evid:"카드매출전표",note:p.date+" 실패분 수동 재결제 성공"});
     if(!unpaid().some(x=>x.co===p.co)){ t.sub="이용중"; if(t.svc==="정지") t.svc="유료"; t.hist.unshift({at:nowTs(),by:BO.me,what:"미납 해소(수동 재결제) — 이용 재개"}); }
     audit("수동 재결제",p.co+" · "+p.inv,"성공 "+won(p.supply+p.vat)+"원"); re(); flash(p.co+" 재결제에 성공했습니다 — 미납이 해소되어 이용이 재개됩니다."); };
   const dun=p=>{ p.dunLog=(p.dunLog||[]).concat(nowTs()); audit("독촉 알림",p.co,"이메일·알림톡 · "+won(billed(p))+"원"); re(); flash(p.co+"에 미납 안내(이메일·알림톡)를 보냈습니다."); };
@@ -714,7 +717,7 @@ function Overdue({ flash, open }){
   );
 }
 
-// ═══ 환불(BO-BILL-09) — 결제완료 건만 · 잔액 이하 · 요청자 ≠ 승인자 · 승인 시 PG 취소·세금계산서 수정 ═══
+// ═══ 환불(BO-BILL-09) — 결제완료 건만 · 잔액 이하 · 요청자 ≠ 승인자 · 승인 시 PG 취소 · 취소 전표 자동 발행 ═══
 function Refunds({ flash, open, arg }){
   const re=useTick();
   const [m,setM]=useState(arg&&arg.payId?{mode:"add",payId:arg.payId,type:"전액",amt:"",method:"원결제 취소",reason:""}:null); const [cmt,setCmt]=useState("");
@@ -726,11 +729,11 @@ function Refunds({ flash, open, arg }){
   const add=()=>{ if(err) return; const id=Math.max(0,...REFUNDS.map(r=>r.id))+1; REFUNDS.unshift({id,co:p.co,payId:p.id,type:m.type,amt,method:m.method,reason:m.reason.trim(),stat:"대기",reqBy:BO.me,reqAt:nowTs()}); audit("환불 요청",p.co+" · "+p.inv,m.type+" "+won(amt)+"원 · "+m.reason.trim(),"승인대기"); setM(null); re(); flash("환불 요청을 등록했습니다 — 요청자가 아닌 운영관리자·슈퍼관리자가 승인합니다."); };
   const decide=(r,ok)=>{ if(!can("민감기능(대리접속·환불·파기)","승인")) return flash("환불 승인 권한이 없습니다(운영관리자·슈퍼관리자)."); if(r.reqBy===BO.me) return flash("본인이 요청한 환불은 승인할 수 없습니다 — 다른 운영자로 전환하세요(헤더)."); if(!ok&&!cmt.trim()) return flash("반려 사유를 입력하세요.");
     const pp=PAYMENTS.find(x=>x.id===r.payId); r.stat=ok?"완료":"반려"; r.procBy=BO.me; r.procAt=nowTs(); r.cmt=cmt.trim();
-    if(ok){ pp.refunded+=r.amt; if(pp.refunded>=pp.total) pp.stat="환불"; r.modTax=pp.taxInv==="발급"?"수정세금계산서 발급 필요":"세금계산서 미발급 — 환불 후 금액으로 발급"; }
+    if(ok){ pp.refunded+=r.amt; if(pp.refunded>=pp.total) pp.stat="환불"; r.modTax="카드 취소 전표 자동 발행(PG)"; }
     audit(ok?"환불 승인":"환불 반려",r.co+" · "+pp.inv,won(r.amt)+"원"+(ok?" · PG "+r.method:" · "+cmt.trim())); setM(null); setCmt(""); re(); flash(ok?"환불을 승인했습니다 — PG "+r.method+" 처리, "+r.modTax+".":"반려했습니다."); };
   return (
     <div className="p-5">
-      <ScrHead id="BO-BILL-09" title="환불 관리" pri="P0" path="구독·결제 > 정산·세무" desc="결제완료 건에 대해 전액·부분 환불을 요청하고, 요청자가 아닌 운영자가 승인합니다. 승인하면 PG 원결제 취소·부분취소가 실행되고 세금계산서는 수정 발급합니다. 잔여기간 환불 정책은 미정입니다." />
+      <ScrHead id="BO-BILL-09" title="환불 관리" pri="P0" path="구독·결제 > 정산·세무" desc="결제완료 건에 대해 전액·부분 환불을 요청하고, 요청자가 아닌 운영자가 승인합니다. 승인하면 PG 원결제 취소·부분취소가 실행되고 카드 취소 전표가 자동 발행됩니다(카드 결제라 수정세금계산서 대상 아님). 잔여기간 환불 정책은 미정입니다." />
       <div className="mb-4 grid grid-cols-3 gap-3"><Stat n={REFUNDS.filter(r=>r.stat==="대기").length+"건"} l="승인 대기" tone="text-amber-600" /><Stat n={won(done.filter(r=>r.procAt.startsWith(ym)).reduce((a,r)=>a+r.amt,0))+"원"} l={ym+" 환불 완료액"} tone="text-red-500" /><Stat n={won(done.reduce((a,r)=>a+r.amt,0))+"원"} l="누적 환불 완료액" /></div>
       <div className="mb-3 flex justify-end"><Btn onClick={()=>setM({mode:"add",payId:"",type:"전액",amt:"",method:"원결제 취소",reason:""})}>+ 환불 요청</Btn></div>
       <Card pad={false}>
@@ -752,7 +755,7 @@ function Refunds({ flash, open, arg }){
         <Err m={err} />
       </Modal>}
       {m && m.mode==="view" && (()=>{const r=REFUNDS.find(x=>x.id===m.id), pp=PAYMENTS.find(x=>x.id===r.payId);return <Modal title={"환불 · "+r.co} badge="BO-BILL-09-M1" onClose={()=>setM(null)} wide footer={r.stat==="대기"?<><Btn tone="ghost" onClick={()=>decide(r,false)}>반려</Btn><Btn onClick={()=>decide(r,true)}>승인·PG 처리</Btn></>:<Btn tone="ghost" onClick={()=>setM(null)}>닫기</Btn>}>
-        <dl className="space-y-1.5 text-sm">{[["결제 건",pp.inv+" · "+pp.at+" · "+won(pp.total)+"원"],["유형·금액",r.type+" · "+won(r.amt)+"원"],["수단",r.method],["사유",r.reason],["요청",r.reqBy+" · "+r.reqAt],["처리",r.procBy?r.procBy+" · "+r.procAt+(r.cmt?" · "+r.cmt:""):"대기"],["세금계산서",r.modTax||(pp.taxInv==="발급"?"승인 시 수정세금계산서 발급":"미발급 — 환불 후 금액으로 발급")]].map(([k,v])=><div key={k} className="flex justify-between gap-3"><dt className="text-gray-500">{k}</dt><dd className="text-right font-medium text-gray-700">{v}</dd></div>)}</dl>
+        <dl className="space-y-1.5 text-sm">{[["결제 건",pp.inv+" · "+pp.at+" · "+won(pp.total)+"원"],["유형·금액",r.type+" · "+won(r.amt)+"원"],["수단",r.method],["사유",r.reason],["요청",r.reqBy+" · "+r.reqAt],["처리",r.procBy?r.procBy+" · "+r.procAt+(r.cmt?" · "+r.cmt:""):"대기"],["증빙",r.modTax||"승인 시 카드 취소 전표 자동 발행(PG)"]].map(([k,v])=><div key={k} className="flex justify-between gap-3"><dt className="text-gray-500">{k}</dt><dd className="text-right font-medium text-gray-700">{v}</dd></div>)}</dl>
         {r.stat==="대기"&&<><Field label="처리 의견" hint="반려 시 필수"><input value={cmt} onChange={e=>setCmt(e.target.value)} className={INP+" w-full"} /></Field>{r.reqBy===BO.me&&<p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">본인이 요청한 건입니다 — 다른 운영자가 승인해야 합니다.</p>}</>}
       </Modal>;})()}
     </div>
@@ -1331,20 +1334,26 @@ const NAV = [
   { key:"stat", icon:ICN.stat, label:"통계", items:[["BO-STAT-01","가입·활성·이탈"],["BO-STAT-02","매출·구독 지표"],["BO-STAT-03","사용량·기능 통계"]] },
   { key:"adm", icon:ICN.set, label:"운영·설정", items:[["BO-ADM-01","운영자 계정"],["BO-ADM-02","역할·권한"],["BO-ADM-03","감사 로그"],["BO-SET-06","공휴일 관리"],["BO-SET-07","요율·세액표 관리"]] },
 ];
-const BADGE = { "BO-BILL-08": () => unpaid().length, "BO-SUP-01": () => TICKETS.filter(t => !t.owner && t.stat !== "완료").length, "BO-CMP-08": () => CANCELS.filter(c => c.status === "신청").length, "BO-BILL-09": () => REFUNDS.filter(r => r.stat === "대기").length, "BO-BILL-06": () => PAYMENTS.filter(p => taxLabel(p) === "기한 경과").length };
+// 메뉴 배지 = 그 화면의 처리 대기 전체 건수(화면 상단 숫자와 같음) · 빨강 = 급한 건 포함, 회색 = 기한 안 · 마우스를 올리면 기준 표시
+const BADGE = {
+  "BO-CMP-08": () => { const n = CANCELS.filter(c => c.status === "신청").length; return { n, hot: n > 0, tip: "해지 신청 접수 대기 " + n + "건" }; },
+  "BO-BILL-08": () => { const u = unpaid(), n = new Set(u.map(p => p.co)).size; return { n, hot: n > 0, tip: "미납 회원사 " + n + "개사" }; },
+  "BO-BILL-09": () => { const n = REFUNDS.filter(r => r.stat === "대기").length; return { n, hot: n > 0, tip: "환불 승인 대기 " + n + "건" }; },
+  "BO-SUP-01": () => { const open = TICKETS.filter(t => t.stat === "대기" || t.stat === "처리중"), late = open.filter(t => !slaOf(t).ok).length; return { n: open.length, hot: late > 0 || open.some(t => !t.owner), tip: "답변 대기·처리중 " + open.length + "건(미배정 " + open.filter(t => !t.owner).length + " · SLA 초과 " + late + ")" }; },
+};
 
 // ─── 화면 하단 '이 화면 이용 안내' — 공휴일·요율(BO-SET-06/07)은 화면 안에 있음 ───
 const BO_GUIDE = {
-  "BO-DSH-01": [["처리할 일", "미납·세금계산서 기한 경과·해지 신청·환불 승인·미배정 문의·SLA 초과가 있을 때만 버튼으로 나타납니다. 누르면 해당 화면으로 이동합니다."], ["지표", "유료·체험 회원사와 월 반복 매출은 오늘 기준, 결제 건수·금액은 위에서 고른 달 기준입니다(VAT 포함·환불 차감)."], ["이탈 위험", "‘이탈위험’ 태그, 최근 30일 관리자 로그인 2회 이하, 해지 신청 중인 회원사가 표시됩니다."]],
+  "BO-DSH-01": [["처리할 일", "미납·해지 신청·환불 승인·미배정 문의·SLA 초과가 있을 때만 버튼으로 나타납니다. 누르면 해당 화면으로 이동합니다."], ["지표", "유료·체험 회원사와 월 반복 매출은 오늘 기준, 결제 건수·금액은 위에서 고른 달 기준입니다(VAT 포함·환불 차감)."], ["이탈 위험", "‘이탈위험’ 태그, 최근 30일 관리자 로그인 2회 이하, 해지 신청 중인 회원사가 표시됩니다."]],
   "BO-CMP-01": [["찾기", "회사명·대표자·가입 이메일·사업자번호로 검색하고 상태·요금제·태그로 좁힙니다. 행을 누르면 회원 상세로 갑니다."], ["이용 직원 수", "회원사의 급여 대상 재직 인원(과금 인원)이며 자동 계산됩니다. 운영자가 바꾸지 않습니다."], ["엑셀", "연락처를 뺀 목록을 내려받고, 내려받은 기록이 감사 로그에 남습니다."]],
   "BO-CMP-02": [["한눈에 보기", "상단 탭(개요·구독/결제·사용량·담당자·문의이력·운영메모)을 누르면 해당 영역으로 이동합니다."], ["상태 전환", "체험→유료, 유료→정지(조회 전용), 정지→유료(복구)만 할 수 있고 사유·효력일이 필요합니다. 해지는 해지·탈퇴 화면에서 처리합니다."], ["대리 접속", "지원이 꼭 필요할 때만 사유(문의 번호)를 적고 시작합니다. 30분 뒤 끝나며 회원사 계정 관리 화면에도 기록이 보입니다."], ["결제 수단", "운영자는 카드 정보를 입력하지 않습니다. 변경 링크를 보내 회원사가 직접 등록하게 합니다."]],
   "BO-CMP-08": [["처리 순서", "신청 확인 → [접수·해지 승인](이때부터 다음 결제 청구 안 함) → 해지일 이후 [해지 완료] → 보존기간이 끝나면 파기."], ["철회", "승인 전에는 회원사가 관리자 앱에서 신청을 철회할 수 있습니다."], ["파기", "‘파기확인’ 입력 후 요청하고, 요청자가 아닌 운영자 2명이 승인해야 실행됩니다. 되돌릴 수 없습니다."], ["백업", "백업을 요청한 회원사는 파일을 전달한 뒤 [백업 전달 완료]를 눌러 기록합니다."]],
   "BO-BILL-01": [["요금 구조", "기본료 + 인당 단가(VAT 별도)이며, 대상 인원 구간을 벗어난 회원사는 그 요금제를 고를 수 없습니다. 연 결제는 10% 할인됩니다."], ["수정 = 새 버전", "고치면 새 버전이 만들어지고 시행일부터 신규·변경 구독에 적용됩니다. 기존 구독은 계약 버전을 그대로 씁니다."], ["관리자 앱 반영", "회원사 구독·이용요금제(SET-06) 화면이 이 값을 그대로 보여줍니다."]],
   "BO-BILL-04": [["구독 변경", "업그레이드는 바로 적용되고 남은 기간만큼 차액을 청구합니다. 다운그레이드와 결제 주기 변경은 다음 결제일부터 적용되며 그 전까지 취소할 수 있습니다."], ["과금 인원", "회원사 재직 인원으로 자동 계산되어 운영자가 바꾸지 않습니다."], ["사유", "변경할 때는 회원사 요청 문의 번호 같은 사유를 남깁니다."]],
-  "BO-BILL-06": [["증빙 종류", "카드 결제는 PG가 카드매출전표를 자동 발급하고, 세금계산서는 운영자가 여기서 발급합니다."], ["기한", "결제한 달의 다음 달 10일까지 발급해야 합니다. 기한이 지나면 ‘기한 경과’로 표시되니 바로 발급하세요."], ["환불 건", "환불이 있었던 결제는 수정세금계산서(환입)를 발급합니다."]],
+  "BO-BILL-06": [["증빙 종류", "카드 결제는 PG가 발행하는 카드매출전표가 증빙입니다. 세금계산서는 발급하지 않습니다(부가가치세법 §33②) — 회원사는 카드매출전표로 매입세액공제를 받습니다."], ["재발송", "‘전표 보기’에서 회원사 관리자 이메일로 다시 보낼 수 있습니다. 세금계산서를 요청받으면 이 근거로 안내하세요."], ["환불 건", "환불하면 PG가 취소 전표를 자동 발행하고 ‘부분취소·전액취소’로 표시됩니다."]],
   "BO-BILL-07": [["조회", "회사·청구번호·승인번호로 찾고 귀속월·상태로 좁힙니다. 행을 누르면 PG 거래키까지 자세히 보입니다."], ["금액", "공급가·VAT·합계를 함께 보여주며 환불된 금액은 아래에 작게 표시됩니다."], ["환불", "결제 상세의 [환불 요청]으로 환불 관리 화면에서 요청을 이어서 등록합니다."]],
   "BO-BILL-08": [["미납 기준", "결제에 실패한 뒤 같은 달 결제가 아직 성공하지 않은 건입니다."], ["자동 처리", "실패일 다음 1·3·7일에 자동으로 다시 결제하고, 14일째 조회 전용으로 바꿉니다(로그인·조회·내려받기만 가능). 결제되면 바로 모든 기능이 다시 열립니다."], ["수동 처리", "[재결제]로 즉시 시도하고 [독촉]으로 안내를 보냅니다. 카드가 만료됐다면 회원 상세에서 결제 수단 변경 링크를 보내세요."]],
-  "BO-BILL-09": [["요청", "결제가 완료된 건만, 남은 금액 이하로 요청할 수 있습니다. 결제 실패 건은 미납 관리에서 처리합니다."], ["승인", "요청한 운영자가 아닌 운영관리자·슈퍼관리자가 승인합니다. 승인하면 PG 취소가 실행되고 세금계산서 수정이 안내됩니다."], ["반려", "반려할 때는 처리 의견을 꼭 남깁니다."]],
+  "BO-BILL-09": [["요청", "결제가 완료된 건만, 남은 금액 이하로 요청할 수 있습니다. 결제 실패 건은 미납 관리에서 처리합니다."], ["승인", "요청한 운영자가 아닌 운영관리자·슈퍼관리자가 승인합니다. 승인하면 PG 취소가 실행되고 카드 취소 전표가 자동 발행됩니다."], ["반려", "반려할 때는 처리 의견을 꼭 남깁니다."]],
   "BO-BILL-11": [["기준", "매출은 결제 성공분(공급가), 환불은 승인 완료된 달, 미수는 결제 실패 후 아직 결제되지 않은 금액입니다."], ["확인 표시", "미수나 승인 대기 중인 환불이 있는 달은 ‘확인’에 표시되니 해당 화면에서 정리하세요."], ["전표", "[전표 내보내기]로 회계 입력용 파일을 받습니다."]],
   "BO-BILL-12": [["키 관리", "저장된 키는 끝 4자리만 보입니다. 바꿀 때만 새 키를 입력하고, 비워 두면 기존 키가 그대로 유지됩니다."], ["환경 분리", "운영(live)과 테스트(test) 키를 따로 저장하며, 환경과 키 종류가 다르면 저장되지 않습니다."], ["점검", "[연결 테스트]로 연동 상태를 확인합니다. 모든 변경은 감사 로그에 남습니다."]],
   "BO-SUP-01": [["처리 순서", "목록에서 문의를 고르고 담당자를 지정한 뒤, 정형답변을 참고해 답변을 보냅니다."], ["SLA", "첫 응답 목표는 우선순위 높음 4시간·보통 1일·낮음 2일입니다. 넘기면 빨간색으로 표시됩니다."], ["내부 메모", "‘내부 메모’에 체크하면 회원사에는 보이지 않고 운영자끼리만 봅니다."], ["회원사 화면", "보낸 답변은 회원사 1:1 문의(SET-09)에 바로 보이고 메일·알림톡으로 알려집니다."]],
@@ -1402,9 +1411,9 @@ function App(){
                 <Ic cls="h-4 w-4 text-gray-400" d={g.icon} />{g.label}<span className="ml-auto text-xs text-gray-300">{open[g.key]?"▾":"▸"}</span>
               </button>
               {open[g.key] && <div className="mb-1 ml-4 border-l border-gray-100 pl-2">
-                {g.items.map(([id,nm])=>{ const n=BADGE[id]?BADGE[id]():0; return (
+                {g.items.map(([id,nm])=>{ const bd=BADGE[id]?BADGE[id]():{n:0}, n=bd.n; return (
                   <button key={id} onClick={()=>go(id)} className={"flex w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-left text-sm "+(cur===id||(cur==="BO-CMP-02"&&id==="BO-CMP-01")?"bg-blue-50 font-medium text-blue-700":"text-gray-600 hover:bg-gray-50")}>
-                    {nm}{n>0&&<span className="ml-auto rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{n}</span>}
+                    {nm}{n>0&&<span title={bd.tip} className={"ml-auto rounded-full px-1.5 text-[10px] font-bold "+(bd.hot?"bg-red-500 text-white":"bg-gray-200 text-gray-600")}>{n}</span>}
                   </button>); })}
               </div>}
             </div>
