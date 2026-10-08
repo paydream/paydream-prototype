@@ -11413,7 +11413,9 @@ function Content({ domain, item, label, ctx }) {
 // ═══════════════════════════════════════════════════════════════
 // 셸
 // ═══════════════════════════════════════════════════════════════
-function TopBar({ onMenu, onAccount, onCompany, onSupport, onNav, empMode, onMode }) {
+function TopBar({ onMenu, onAccount, onCompany, onSupport, onAlert, onLogout, onNav, empMode, onMode }) {
+  // 로그인 사용자 = 관리자 화면은 ACCT.me, 직원모드는 EMP_ME(계정 원천 ACCT.rows)
+  const who = (empMode ? ACCT.rows.find(a => a.no === EMP_ME.no) : ACCT.rows.find(a => a.name === ACCT.me)) || { name: ACCT.me, email: "", role: "" };
   const [open, setOpen] = useState(false);
   const [mq, setMq] = useState("");
   const [mOpen, setMOpen] = useState(false);
@@ -11430,7 +11432,7 @@ function TopBar({ onMenu, onAccount, onCompany, onSupport, onNav, empMode, onMod
         <button onClick={() => onMode("sys")} className={"rounded px-2.5 py-1 text-xs font-medium transition " + (!empMode ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700")}>관리자</button>
         <button onClick={() => onMode("emp")} className={"rounded px-2.5 py-1 text-xs font-medium transition " + (empMode ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700")}>직원모드</button>
       </div>
-      <span className="hidden text-sm text-gray-400 sm:inline">{empMode ? "직원 모드" : "최고관리자"}</span>
+      <span className="hidden text-sm text-gray-400 sm:inline">{empMode ? "직원 모드" : who.role}</span>
       <div className="flex-1" />
       <div className="relative"><input value={mq} onChange={e => { setMq(e.target.value); setMOpen(true); }} onFocus={() => setMOpen(true)} onKeyDown={e => { if (e.key === "Enter" && mRes.length) goMenu(mRes[0]); if (e.key === "Escape") setMOpen(false); }} placeholder="메뉴 검색" className="w-36 rounded-full border border-gray-300 py-1.5 pl-4 pr-9 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:w-64" /><span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Ic cls="h-4 w-4" d={P("M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z")} /></span>
         {mOpen && mkw && <>
@@ -11445,19 +11447,19 @@ function TopBar({ onMenu, onAccount, onCompany, onSupport, onNav, empMode, onMod
       </div>
       {!empMode && <button onClick={onSupport} title="1:1 문의(SET-09)" className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"><Ic cls="h-5 w-5" d={P("M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")} /><span className="hidden md:inline">고객지원</span></button>}
       <div className="relative">
-        <button onClick={() => setOpen(o => !o)} className="ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">{EMP_PHOTOS["한지원"] ? <img src={EMP_PHOTOS["한지원"]} alt="한지원" className="h-8 w-8 rounded-full object-cover" /> : "한"}</button>
+        <button onClick={() => setOpen(o => !o)} className="ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">{EMP_PHOTOS[who.name] ? <img src={EMP_PHOTOS[who.name]} alt={who.name} className="h-8 w-8 rounded-full object-cover" /> : who.name.slice(0, 1)}</button>
         {open && <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-11 z-50 w-60 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
             <div className="border-b border-gray-100 px-4 py-3">
-              <p className="text-sm font-semibold text-gray-800">한지원</p>
-              <p className="text-xs text-gray-400">han.jiwon@company.com</p>
-              <span className="mt-1 inline-block rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">최고관리자</span>
+              <p className="text-sm font-semibold text-gray-800">{who.name}</p>
+              <p className="text-xs text-gray-400">{who.email}</p>
+              <span className="mt-1 inline-block rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">{who.role}</span>
             </div>
             <button onClick={() => { setOpen(false); onAccount(); }} className={mi + " text-blue-700"}><Ic cls="h-4 w-4" d={P("M16 7a4 4 0 11-8 0 4 4 0 018 0zM6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2")} />내 계정</button>
-            <button onClick={() => { setOpen(false); onCompany(); }} className={mi + " text-gray-700"}><Ic cls="h-4 w-4" d={P("M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1")} />회사 정보</button>
-            <button onClick={() => setOpen(false)} className={mi + " text-gray-700"}><Ic cls="h-4 w-4" d={P("M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1")} />알림 설정</button>
-            <button onClick={() => setOpen(false)} className={mi + " text-red-500"}><Ic cls="h-4 w-4" d={P("M17 16l4-4m0 0l-4-4m4 4H7M13 16v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1")} />로그아웃</button>
+            {!empMode && <button onClick={() => { setOpen(false); onCompany(); }} className={mi + " text-gray-700"}><Ic cls="h-4 w-4" d={P("M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1m-6 4h1m4 0h1")} />회사 정보</button>}
+            {!empMode && <button onClick={() => { setOpen(false); onAlert(); }} className={mi + " text-gray-700"}><Ic cls="h-4 w-4" d={P("M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1")} />알림 설정</button>}
+            <button onClick={() => { setOpen(false); onLogout(who); }} className={mi + " text-red-500"}><Ic cls="h-4 w-4" d={P("M17 16l4-4m0 0l-4-4m4 4H7M13 16v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1")} />로그아웃</button>
           </div>
         </>}
       </div>
@@ -11493,7 +11495,7 @@ function App() {
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 text-gray-900">
-      <TopBar onMenu={() => setNavOpen(true)} onAccount={() => setGlobalScr("account")} onCompany={() => { setGlobalScr(null); setView({ domain: "설정", item: "HR-01-01", label: "설정" }); }} onSupport={() => pick({ domain: "설정", item: "SET-09", label: "설정" })} onNav={pick} empMode={empMode} onMode={setMode} />
+      <TopBar onMenu={() => setNavOpen(true)} onAccount={() => setGlobalScr("account")} onCompany={() => { setGlobalScr(null); setView({ domain: "설정", item: "HR-01-01", label: "설정" }); }} onSupport={() => pick({ domain: "설정", item: "SET-09", label: "설정" })} onAlert={() => pick({ domain: "설정", item: "SET-02", label: "설정" })} onLogout={w => { audit("계정 " + w.name, "로그아웃", ""); setGlobalScr("logout:" + w.name); }} onNav={pick} empMode={empMode} onMode={setMode} />
       {publicScr === "emailAuth" && (
         <div className="fixed inset-0 z-[60] overflow-y-auto bg-slate-100">
           <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700">
@@ -11558,7 +11560,7 @@ function App() {
 
         <main className="flex min-w-0 flex-1 flex-col">
           {globalScr ? (
-            <div className="min-h-0 flex-1 overflow-y-auto"><MyAccountScreen ctx={{ emp: view.domain === "직원모드" }} /></div>
+            <div className="min-h-0 flex-1 overflow-y-auto">{String(globalScr).startsWith("logout:") ? <div className="flex h-full items-center justify-center p-6"><div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 text-center shadow-sm"><p className="text-lg font-bold text-gray-800">로그아웃되었습니다</p><p className="mt-1 text-sm text-gray-500">{globalScr.slice(7)}님, 이용해 주셔서 감사합니다. 이 기기의 세션이 종료되었고 기록이 남았습니다.</p><button onClick={() => setGlobalScr(null)} className="mt-4 w-full rounded-md bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700">다시 로그인(프로토타입)</button><p className="mt-2 text-[11px] text-gray-400">실서비스는 로그인 화면으로 이동합니다.</p></div></div> : <MyAccountScreen ctx={{ emp: view.domain === "직원모드" }} />}</div>
           ) : (
           <React.Fragment>
           <div className="flex h-10 shrink-0 items-center gap-1 overflow-x-auto border-b border-gray-200 bg-white px-2">
