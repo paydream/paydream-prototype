@@ -236,6 +236,9 @@ Object.keys(IA).forEach(function(g){
   }).filter(function(gr){ return gr.items.length > 0; });
   if (groups.length) NAV[g] = { label: ({"대시보드":"홈","급여관리":"급여","신청/결재":"신청·결재","리포트/통계":"리포트"}[g]||g), groups: groups };
 });
+// 화면 ID → 소속 메뉴(LNB) — 다른 화면으로 이동할 때 아이콘 레일·LNB·탭·경로를 도착 화면 기준으로 맞춘다(직원모드는 직원모드 유지)
+const navOf = (id, prefer) => { const has = d => NAV[d] && NAV[d].groups.some(g => g.items.some(i => i.id === id)); if (has(prefer) || prefer === "직원모드") return prefer; return Object.keys(NAV).find(k => k !== "직원모드" && has(k)) || Object.keys(IA).find(k => k !== "직원모드" && NAV[k] && Object.values(IA[k]).some(a => a.some(x => x.id === id))) || prefer; };
+const railLabel = d => (RAIL.find(r => r.domain === d) || {}).label || d;
 // 화면명은 IA·SCREENS_LIST 데이터에서 화면목록(정본)으로 일원화됨 (RENAME 매핑 불필요)
 // 메뉴 순서 재정의 (직원관리)
 const ORDER = { "직원": ["HR-04-01", "HR-04-04", "HR-04-05", "HR-04-02", "HR-04-09", "HR-04-08"], "직원관리": ["HR-04-01", "HR-04-04", "HR-04-05", "HR-04-02", "HR-04-09", "HR-04-08"] };
@@ -11465,7 +11468,7 @@ function App() {
     const first = nav.groups[0].items[0].id;
     setView({ domain: r.domain, item: first, label: r.label });
   };
-  const pick = (v) => { setView(v); setNavOpen(false); setGlobalScr(null); }; if(typeof window!=="undefined"){window.__nav=pick;}
+  const pick = (v) => { const d = v.item ? navOf(v.item, v.domain) : v.domain; setView(d === v.domain ? v : { ...v, domain: d, label: railLabel(d) }); setNavOpen(false); setGlobalScr(null); }; if(typeof window!=="undefined"){window.__nav=pick;}
 
   const nav = NAV[view.domain];
   const groups = nav ? nav.groups : [];
@@ -11559,7 +11562,7 @@ function App() {
             <Ic cls="h-3.5 w-3.5" d={P("M3 12l9-9 9 9M5 10v10h14V10")} />
             {crumbs.map((c, i) => <span key={i} className="flex items-center gap-1.5">{i > 0 && <span className="text-gray-300">›</span>}<span className={i === crumbs.length - 1 ? "font-medium text-gray-600" : ""}>{c}</span></span>)}
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto"><Content domain={view.domain} item={view.item} label={view.label} ctx={{ openSignup: () => setPublicScr("emailAuth"), go: (item) => { setGlobalScr(null); setView({ domain: view.domain, item: item, label: view.label }); } }} /></div>
+          <div className="min-h-0 flex-1 overflow-y-auto"><Content domain={view.domain} item={view.item} label={view.label} ctx={{ openSignup: () => setPublicScr("emailAuth"), go: (item) => { setGlobalScr(null); const d = navOf(item, view.domain); setView({ domain: d, item: item, label: d === view.domain ? view.label : railLabel(d) }); } }} /></div>
           </React.Fragment>
           )}
         </main>
