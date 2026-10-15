@@ -1211,7 +1211,6 @@ function EmpDashScreen({ ctx }) {
   const SHORT = [["근태 기록", "EMP-01"], ["휴가 신청", "TA-05-01"], ["급여명세서", "EMP-04"], ["신청 현황", "EMP-05"]];
   // 급여 금액 가림 — 기본 가림, 금액 클릭 시 로그인 비밀번호 재확인(EMP-00-M1) 후 이 화면에서만 표시
   const [payShow, setPayShow] = useState(false), [pwAsk, setPwAsk] = useState(false), [pw, setPw] = useState(""), [pwErr, setPwErr] = useState(""), [pwFail, setPwFail] = useState(0);
-  const BLIND = "●●●,●●●";
   const askPw = () => { setPw(""); setPwErr(""); setPwAsk(true); };
   const checkPw = () => {
     if (!pw) return setPwErr("비밀번호를 입력하세요.");
@@ -1239,11 +1238,21 @@ function EmpDashScreen({ ctx }) {
         <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3"><span className="flex items-center gap-2 text-sm font-semibold text-gray-700">🧾 급여{last && payShow && <button onClick={() => setPayShow(false)} className="rounded border border-gray-200 px-1.5 py-0.5 text-[11px] font-normal text-gray-500 hover:bg-gray-50">🙈 가리기</button>}</span><button onClick={() => go("EMP-04")} className="text-xs font-medium text-blue-600 hover:underline">명세서 →</button></div>
           <div className="p-4">
-            {last ? <><div className="mb-1 flex flex-wrap items-end justify-between gap-2">{payShow
-                ? <p className="whitespace-nowrap"><span className="font-mono text-2xl font-bold text-gray-800">{paWon(last.r.net)}</span> <span className="text-sm text-gray-500">원 실수령</span></p>
-                : <button onClick={askPw} title="비밀번호를 확인하면 금액을 볼 수 있습니다" className="group flex flex-wrap items-center gap-x-2 gap-y-1 text-left"><span className="whitespace-nowrap"><span className="font-mono text-2xl font-bold tracking-wider text-gray-300 group-hover:text-gray-400">{BLIND}</span> <span className="text-sm text-gray-500">원 실수령</span></span><span className="whitespace-nowrap rounded bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 group-hover:bg-blue-100">🔒 금액 보기</span></button>}
+            {last ? (payShow ? <><div className="mb-1 flex flex-wrap items-end justify-between gap-2">
+                <p className="whitespace-nowrap"><span className="font-mono text-2xl font-bold text-gray-800">{paWon(last.r.net)}</span> <span className="text-sm text-gray-500">원 실수령</span></p>
                 <span className="whitespace-nowrap rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">{last.m}월 · 지급 {payDateOf(last.m)}</span></div>
-              <p className="text-xs text-gray-400">{payShow ? <>지급 {paWon(last.r.gross)} · 공제 {paWon(last.r.ded)}</> : <button onClick={askPw} className="hover:text-gray-500">지급 {BLIND} · 공제 {BLIND}</button>}</p></> : <p className="text-sm text-gray-400">배포된 명세서가 없습니다.</p>}
+              <p className="text-xs text-gray-400">지급 {paWon(last.r.gross)} · 공제 {paWon(last.r.ded)}</p></>
+              : <div className="flex items-start justify-between gap-2">
+                {/* 가림 = 가짜 숫자를 흐리게(실제 금액은 화면에 그리지 않음) + 가운데 안내 · 귀속월 배지는 선명하게 유지 */}
+                <button onClick={askPw} title="비밀번호를 확인하면 금액을 볼 수 있습니다" className="group relative min-w-0 flex-1 rounded-md text-left">
+                  <div aria-hidden="true" className="pointer-events-none select-none opacity-60 blur-[5px]">
+                    <p className="whitespace-nowrap"><span className="font-mono text-2xl font-bold text-gray-800">8,888,888</span> <span className="text-sm text-gray-500">원 실수령</span></p>
+                    <p className="mt-1 text-xs text-gray-400">지급 8,888,888 · 공제 888,888</p>
+                  </div>
+                  <span className="absolute inset-0 flex items-center justify-center"><span className="whitespace-nowrap rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 shadow-sm group-hover:border-blue-300 group-hover:text-blue-600">🔒 눌러서 금액 확인</span></span>
+                </button>
+                <span className="whitespace-nowrap rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">{last.m}월 · 지급 {payDateOf(last.m)}</span></div>)
+              : <p className="text-sm text-gray-400">배포된 명세서가 없습니다.</p>}
             {(!curRun || curRun.status !== "확정") && <p className="mt-2 rounded bg-slate-50 px-2 py-1 text-xs text-slate-600">{cur}월 급여는 지급 예정 — 지급일 {payDateOf(cur)} (확정·배포 후 명세서 제공)</p>}
           </div>
         </div>
@@ -1263,7 +1272,7 @@ function EmpDashScreen({ ctx }) {
       <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600 shadow-sm"><p className="mb-2 font-semibold text-gray-800">이 화면 이용 안내</p><div className="text-[13px] leading-relaxed"><b>내 홈</b> — 본인 데이터만 보여줍니다. 회사 공지는 회사 공지 관리(HR-07-01)에서 나에게 게시된 공지(중요 먼저·최신순 4건), 신청은 신청현황(APV-02)과 같은 데이터, 급여는 확정·배포된 명세서, 연차는 연차 발생 기준(TA-04-01) 계산값입니다. 출퇴근 기록은 관리자 업로드로 들어오므로 [근태 기록]에서 확인하세요(모바일 출퇴근은 P1).</div></div>
       {nOpen && <NoticeView n={nOpen} badge="EMP-00" onClose={() => setNOpen(null)} />}
       {pwAsk && <TreeModal title="비밀번호 확인" badge="EMP-00-M1" submit="확인" onClose={() => setPwAsk(false)} onSubmit={checkPw}>
-        <p className="text-gray-700">급여 금액은 다른 사람이 보지 않도록 가려져 있습니다. 본인 확인을 위해 로그인 비밀번호를 다시 입력하세요.</p>
+        <p className="text-gray-700">본인 확인을 위해 비밀번호를 재입력해주세요.</p>
         <div><label className="mb-1 block font-medium text-gray-700">로그인 계정</label><input readOnly value={EMP_ME.name + " (" + EMP_ME.no + ")"} className={INP + " w-full bg-gray-50 text-gray-500"} /></div>
         <div><label className="mb-1 block font-medium text-gray-700"><span className="text-red-500">*</span> 비밀번호</label><input type="password" autoFocus autoComplete="current-password" value={pw} onChange={ev => { setPw(ev.target.value); setPwErr(""); }} onKeyDown={ev => { if (ev.key === "Enter") checkPw(); }} className={INP + " w-full" + (pwErr ? " border-red-400" : "")} />
           {pwErr ? <p className="mt-1 text-xs text-red-600">{pwErr}</p> : <Hint>확인하면 이 화면을 벗어나거나 [가리기]를 누를 때까지 금액이 보입니다. (프로토타입 테스트 비밀번호: 1111)</Hint>}</div>
