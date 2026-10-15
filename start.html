@@ -1245,8 +1245,8 @@ function EmpDashScreen({ ctx }) {
               <p className="text-xs text-gray-400">지급 {paWon(last.r.gross)} · 공제 {paWon(last.r.ded)}</p></>
               : <div className="flex flex-wrap-reverse items-center justify-between gap-2">
                 {/* 가림 = 가짜 숫자를 흐리게(실제 금액은 화면에 그리지 않음) + 가운데 안내 · 귀속월 배지는 선명하게 유지 · 좁으면 배지가 위 줄로(겹침 방지) */}
-                <button onClick={askPw} title="비밀번호를 확인하면 금액을 볼 수 있습니다" className="group relative min-w-[190px] flex-1 overflow-hidden rounded-md text-left">
-                  <div aria-hidden="true" className="pointer-events-none select-none opacity-60 blur-[5px]">
+                <button onClick={askPw} title="비밀번호를 확인하면 금액을 볼 수 있습니다" className="group relative -ml-2 min-w-[190px] flex-1 overflow-hidden rounded-md text-left">
+                  <div aria-hidden="true" className="pointer-events-none select-none px-2 py-1 opacity-60 blur-[5px]">
                     <p className="whitespace-nowrap"><span className="font-mono text-2xl font-bold text-gray-800">8,888,888</span> <span className="text-sm text-gray-500">원 실수령</span></p>
                     <p className="mt-1 text-xs text-gray-400">지급 8,888,888 · 공제 888,888</p>
                   </div>
